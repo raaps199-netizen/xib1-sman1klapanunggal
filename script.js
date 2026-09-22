@@ -57,7 +57,7 @@ const studentGrid = document.getElementById('studentGrid');
 students.forEach(s => {
     const card = document.createElement('div');
     card.className = "p-4 rounded-xl bg-techCard border border-slate-800 hover:border-techCyan/50 cursor-pointer text-center transition transform hover:-translate-y-1";
-    card.onclick = () => openModal(s);
+    card.addEventListener('click', () => openModal(s));
     card.innerHTML = `
         <h4 class="text-sm font-semibold text-slate-200 py-4">${s.name}</h4>
     `;
