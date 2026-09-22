@@ -341,6 +341,436 @@
       "description": "Kas September",
       "source": "whatsapp-bot",
       "created_at": "2026-09-22T15:36:40.599Z"
+    },
+    {
+      "id": "initial-poe-aisahra",
+      "type": "income",
+      "category": "poe",
+      "student": "aisahra",
+      "amount": 15000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 15 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-almira",
+      "type": "income",
+      "category": "poe",
+      "student": "almira",
+      "amount": 11000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 11 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-alvian",
+      "type": "income",
+      "category": "poe",
+      "student": "alvian",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-andrian",
+      "type": "income",
+      "category": "poe",
+      "student": "andrian",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-ara",
+      "type": "income",
+      "category": "poe",
+      "student": "ara",
+      "amount": 14000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 14 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-arya",
+      "type": "income",
+      "category": "poe",
+      "student": "arya",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-khafi",
+      "type": "income",
+      "category": "poe",
+      "student": "khafi",
+      "amount": 1000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 1 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-fadhil",
+      "type": "income",
+      "category": "poe",
+      "student": "fadhil",
+      "amount": 15000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 15 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-aura",
+      "type": "income",
+      "category": "poe",
+      "student": "aura",
+      "amount": 14000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 14 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-avisha",
+      "type": "income",
+      "category": "poe",
+      "student": "avisha",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-brella",
+      "type": "income",
+      "category": "poe",
+      "student": "brella",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-orlen",
+      "type": "income",
+      "category": "poe",
+      "student": "orlen",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-dhirgam",
+      "type": "income",
+      "category": "poe",
+      "student": "dhirgam",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-dude",
+      "type": "income",
+      "category": "poe",
+      "student": "dude",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-dzaki",
+      "type": "income",
+      "category": "poe",
+      "student": "dzaki",
+      "amount": 15000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 15 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-effan",
+      "type": "income",
+      "category": "poe",
+      "student": "effan",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-elang",
+      "type": "income",
+      "category": "poe",
+      "student": "elang",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-fareal",
+      "type": "income",
+      "category": "poe",
+      "student": "fareal",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-fathian",
+      "type": "income",
+      "category": "poe",
+      "student": "fathian",
+      "amount": 16000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 16 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-gibran",
+      "type": "income",
+      "category": "poe",
+      "student": "gibran",
+      "amount": 15000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 15 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-yusuf",
+      "type": "income",
+      "category": "poe",
+      "student": "yusuf",
+      "amount": 14000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 14 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-jauharah",
+      "type": "income",
+      "category": "poe",
+      "student": "jauharah",
+      "amount": 1000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 1 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-keyla",
+      "type": "income",
+      "category": "poe",
+      "student": "keyla",
+      "amount": 13000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 13 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-kirana",
+      "type": "income",
+      "category": "poe",
+      "student": "kirana",
+      "amount": 13000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 13 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-lutfan",
+      "type": "income",
+      "category": "poe",
+      "student": "lutfan",
+      "amount": 13000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 13 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-daffa",
+      "type": "income",
+      "category": "poe",
+      "student": "daffa",
+      "amount": 13000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 13 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-dzaky",
+      "type": "income",
+      "category": "poe",
+      "student": "dzaky",
+      "amount": 13000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 13 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-fahri",
+      "type": "income",
+      "category": "poe",
+      "student": "fahri",
+      "amount": 13000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 13 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-nishar",
+      "type": "income",
+      "category": "poe",
+      "student": "nishar",
+      "amount": 13000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 13 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-putri",
+      "type": "income",
+      "category": "poe",
+      "student": "putri",
+      "amount": 13000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 13 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-reno",
+      "type": "income",
+      "category": "poe",
+      "student": "reno",
+      "amount": 8000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 8 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-reva",
+      "type": "income",
+      "category": "poe",
+      "student": "reva",
+      "amount": 13000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 13 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-ridho",
+      "type": "income",
+      "category": "poe",
+      "student": "ridho",
+      "amount": 11000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 11 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-rifqi",
+      "type": "income",
+      "category": "poe",
+      "student": "rifqi",
+      "amount": 11000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 11 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-rizky",
+      "type": "income",
+      "category": "poe",
+      "student": "rizky",
+      "amount": 11000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 11 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-sadam",
+      "type": "income",
+      "category": "poe",
+      "student": "sadam",
+      "amount": 15000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 15 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-salsabila",
+      "type": "income",
+      "category": "poe",
+      "student": "salsabila",
+      "amount": 15000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 15 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-arjasena",
+      "type": "income",
+      "category": "poe",
+      "student": "arjasena",
+      "amount": 15000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 15 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-satria",
+      "type": "income",
+      "category": "poe",
+      "student": "satria",
+      "amount": 14000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 14 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-surya",
+      "type": "income",
+      "category": "poe",
+      "student": "surya",
+      "amount": 13000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 13 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-wisnu",
+      "type": "income",
+      "category": "poe",
+      "student": "wisnu",
+      "amount": 11000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 11 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-yoga",
+      "type": "income",
+      "category": "poe",
+      "student": "yoga",
+      "amount": 11000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 11 hari",
+      "source": "initial-poe-table"
+    },
+    {
+      "id": "initial-poe-zyella",
+      "type": "income",
+      "category": "poe",
+      "student": "zyella",
+      "amount": 11000,
+      "month": "Agustus-September",
+      "description": "Poe Ibu 11 hari",
+      "source": "initial-poe-table"
     }
   ]
 }
