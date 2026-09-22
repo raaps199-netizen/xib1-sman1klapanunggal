@@ -1,7 +1,7 @@
 lucide.createIcons();
 
 const students = [
-    { id: 1, name: "Khafi", fullName: "Ashabul Khafi", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 1, name: "Khafi", fullName: "Ashabul Khafi", role: "Siswa XI.B1", quote: "carpe diem, seize the day make your life extraordinary", ig: "#" },
     { id: 2, name: "Arjasena", fullName: "Satria Arjasena Maulana", role: "Siswa XI.B1", quote: "If it's meant for you, it will find it's way to you.", ig: "#" },
     { id: 3, name: "Orlen", fullName: "Danendra Orlen Wasatha", role: "Siswa XI.B1", quote: "Simply lovely", ig: "#" },
     { id: 4, name: "Avisha", fullName: "Avisha Fakhiran Anwar", role: "Siswa XI.B1", quote: "be urself until u grow up", ig: "#" },
@@ -10,7 +10,7 @@ const students = [
     { id: 7, name: "Sadam", fullName: "Sadam Al Fahri", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 8, name: "Wisnu", fullName: "Wisnu Panji Pratama", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 9, name: "Tania", fullName: "Tania Fitri Izati", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 10, name: "Jauharah", fullName: "Jauharah Tuhfah", role: "Siswa XI.B1", quote: "Happy girls are the prettiest girls", ig: "#" },
+    { id: 10, name: "Jauharah", fullName: "Jauharah Tuhfah", role: "Siswa XI.B1", quote: "relax diva, you're going to be a engineer", ig: "#" },
     { id: 11, name: "Keyla", fullName: "Keyla Ajeng Firmansyah", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 12, name: "Mikaela", fullName: "Mikaela Leona", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 13, name: "Ridho", fullName: "Ridho Saputra Ependi", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
@@ -25,7 +25,7 @@ const students = [
     { id: 22, name: "Rafif", fullName: "Ahmad Rafif Hidayat", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 23, name: "Kevin", fullName: "Kevin Habiyal Huda", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 24, name: "Arya", fullName: "Arya Pratama", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 25, name: "Al Mira", fullName: "Al Mira Berlian Handayani", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 25, name: "Al Mira", fullName: "Al Mira Berlian Handayani", role: "Siswa XI.B1", quote: "you never fail until you stop trying", ig: "#" },
     { id: 26, name: "Elang", fullName: "Elang Bari Dermawan", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 27, name: "Dzaky", fullName: "Muhammad Dzaky Pradana", role: "Siswa XI.B1", quote: "No excuses. Just results", ig: "#" },
     { id: 28, name: "Aisahra", fullName: "Aisahra Mayjasti Aulia Putri", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
@@ -50,7 +50,7 @@ const students = [
     { id: 47, name: "Anissa", fullName: "Annisa Zahra", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 48, name: "Meli", fullName: "Meli Anggraeni", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 49, name: "Gibran", fullName: "Gibran Ayatullah", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 50, name: "Salsabila", fullName: "Salsabil Fajrianita", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 50, name: "Salsabila", fullName: "Salsabil Fajrianita", role: "Siswa XI.B1", quote: "Ready or not ready, kudu ready", ig: "#" },
 ];
 
 const studentGrid = document.getElementById('studentGrid');
