@@ -60,10 +60,7 @@ students.forEach(s => {
     card.className = "p-4 rounded-xl bg-techCard border border-slate-800 hover:border-techCyan/50 cursor-pointer text-center transition transform hover:-translate-y-1";
     card.onclick = () => openModal(s);
     card.innerHTML = `
-        <div class="w-12 h-12 mx-auto rounded-full bg-slate-800 text-techCyan flex items-center justify-center font-bold mb-2">
-            ${s.name.charAt(0)}
-        </div>
-        <h4 class="text-xs font-semibold truncate text-slate-200">${s.name}</h4>
+        <h4 class="text-sm font-semibold text-slate-200 py-4">${s.name}</h4>
     `;
     studentGrid.appendChild(card);
 });
