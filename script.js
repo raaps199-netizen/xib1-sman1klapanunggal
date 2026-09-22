@@ -1,4 +1,3 @@
-// Init Lucide Icons
 lucide.createIcons();
 
 const students = [
