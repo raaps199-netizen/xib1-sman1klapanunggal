@@ -18,7 +18,7 @@
 
 <section class="p-6 rounded-2xl bg-techCard border border-cyan-500/20 mb-6">
 <div class="flex items-center gap-2 mb-2"><i data-lucide="users-round" class="text-techCyan"></i><h2 class="text-xl font-bold">Student Accounts</h2></div>
-<p class="text-sm text-slate-400 mb-5">Provision akun anggota XI.B1 melalui Edge Function.</p>
+<p class="text-sm text-slate-400 mb-5">Database akun anggota XI.B1 tersimpan sebagai data JSON di repository.</p>
 <button id="seedBtn" class="px-5 py-3 rounded-xl bg-cyan-500 text-slate-950 font-bold hover:bg-cyan-400 transition disabled:opacity-50">
 Buat Semua Akun
 </button>
@@ -31,7 +31,6 @@ Buat Semua Akun
 </section>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="auth.js"></script>
 <script>
 const MEMBERS = [
@@ -53,72 +52,41 @@ const MEMBERS = [
 (async()=>{
  const {data:{session}}=await supabaseClient.auth.getSession();
  if(!session){location.href='login.html';return;}
- const {data:me,error:meError}=await supabaseClient.from('profiles').select('role').eq('id',session.user.id).single();
- if(meError||me?.role!=='super_admin'){location.href='dashboard.html';return;}
+ const profile=JSON.parse(sessionStorage.getItem('bionestSession')||'null');
+ if(!profile || profile.role!=='super_admin'){location.href='dashboard.html';return;}
  await loadStudents();
 })();
 
 async function loadStudents(){
- const {data:students}=await supabaseClient.from('profiles').select('username,full_name,role,quote').order('full_name');
+ const response=await fetch('data/accounts.json?v='+Date.now(),{cache:'no-store'});
+ const json=await response.json();
+ const students=json.members||[];
  const list=document.getElementById('studentList');
- list.innerHTML=(students||[]).map(s=>'<div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800"><p class="font-semibold">'+(s.full_name||'-')+'</p><p class="text-xs text-techCyan mt-1">@'+s.username+'</p><p class="text-xs text-slate-500 mt-2">'+s.role+'</p></div>').join('')||'<p class="text-sm text-slate-500">Belum ada akun.</p>';
+ list.innerHTML=students.map(s=>'<div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800"><p class="font-semibold">'+(s.full_name||'-')+'</p><p class="text-xs text-techCyan mt-1">@'+s.username+'</p><p class="text-xs text-slate-500 mt-2">'+s.role+'</p></div>').join('')||'<p class="text-sm text-slate-500">Belum ada akun.</p>';
 }
 
 document.getElementById('seedBtn').onclick=async()=>{
  const btn=document.getElementById('seedBtn');
  const status=document.getElementById('seedStatus');
- if(!confirm('Buat/reset semua 50 akun XI.B1?')) return;
-
+ if(!confirm('Periksa 50 akun XI.B1 dari database GitHub?')) return;
  btn.disabled=true;
  status.className='text-sm mt-4 min-h-5 text-slate-400';
- status.textContent='Memproses 50 akun...';
-
+ status.textContent='Memuat database akun...';
  try {
-   const members=MEMBERS.map(([username,full_name])=>({
-     username,
-     full_name,
-     role: username === 'daffa' ? 'super_admin' : 'student'
-   }));
-
-   const {data:{session:currentSession},error:sessionError}=await supabaseClient.auth.getSession();
-   console.log('SESSION:', currentSession);
-   console.log('ACCESS TOKEN:', currentSession?.access_token);
-   if(sessionError) throw new Error('Gagal membaca sesi: '+sessionError.message);
-   if(!currentSession?.access_token) throw new Error('Sesi login tidak ditemukan. Silakan login ulang.');
-
-   const functionUrl='https://jszzaqnggaatrgyiksfs.supabase.co/functions/v1/smooth-service';
-   const response=await fetch(functionUrl,{
-     method:'POST',
-     headers:{
-       'Content-Type':'application/json',
-       'apikey':SUPABASE_PUBLISHABLE_KEY,
-       'Authorization':'Bearer '+currentSession.access_token
-     },
-     body:JSON.stringify({members})
-   });
-   const raw=await response.text();
-   let data;
-   try{data=JSON.parse(raw);}catch{data={error:raw};}
-   if(!response.ok){
-     throw new Error((data?.error||data?.message||('HTTP '+response.status))+(data?.details?' | '+JSON.stringify(data.details):''));
-   }
-
-   const created=data?.results?.created?.length||0;
-   const updated=data?.results?.updated?.length||0;
-   const failed=data?.results?.failed?.length||0;
-
-   status.className='text-sm mt-4 min-h-5 '+(failed?'text-yellow-300':'text-emerald-300');
-   status.textContent='Selesai. Dibuat: '+created+' | Diupdate: '+updated+' | Gagal: '+failed;
+   const response=await fetch('data/accounts.json?v='+Date.now(),{cache:'no-store'});
+   if(!response.ok) throw new Error('Database akun tidak dapat dimuat.');
+   const data=await response.json();
+   const total=(data.members||[]).length;
+   status.className='text-sm mt-4 min-h-5 '+(total===50?'text-emerald-300':'text-yellow-300');
+   status.textContent='Database aktif. Total akun: '+total;
    await loadStudents();
  } catch(error) {
    status.className='text-sm mt-4 min-h-5 text-red-400';
    status.textContent='Gagal: '+(error.message||error);
- } finally {
-   btn.disabled=false;
- }
+ } finally { btn.disabled=false; }
 };
 
-document.getElementById('logout').onclick=async()=>{await supabaseClient.auth.signOut();sessionStorage.clear();location.href='index.html';};
+document.getElementById('logout').onclick=async()=>{await supabaseClient.auth.signOut();location.href='index.html';};
 lucide.createIcons();
 </script>
 </body>
