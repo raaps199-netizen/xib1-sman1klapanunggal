@@ -40,7 +40,26 @@ visitorBtn.addEventListener('click', () => {
     closeMemberGate();
 });
 
-window.addEventListener('DOMContentLoaded', showMemberGate);
+function updateCashNavigation() {
+    const loggedIn = sessionStorage.getItem('bionestAccess') === 'member' &&
+        !!sessionStorage.getItem('bionestSession');
+
+    const desktop = document.getElementById('cashNavLink');
+    const mobile = document.getElementById('mobileCashNavLink');
+
+    [desktop, mobile].forEach(link => {
+        if (!link) return;
+        link.classList.toggle('hidden', !loggedIn);
+        if (loggedIn) link.classList.add('flex');
+    });
+
+    if (loggedIn) lucide.createIcons();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    showMemberGate();
+    updateCashNavigation();
+});
 
 async function renderMemberProfile(session) {
     if (!window.supabaseClient) return;
