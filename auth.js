@@ -1,33 +1,26 @@
 /*
  * XI.B1 AUTH
- * Backend: Supabase Auth + profiles table.
+ * Supabase Auth + public profiles.
  *
- * Isi dua nilai ini setelah membuat project Supabase:
- * 1. SUPABASE_URL
- * 2. SUPABASE_ANON_KEY
- *
- * Jangan pernah menaruh service_role key di frontend.
+ * IMPORTANT: put only the Supabase Publishable Key here.
+ * Never put a service_role/secret key in the frontend.
  */
 
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://jszzaqnggaatrgyiksfs.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE';
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
 
 async function loginWithUsername(username, password) {
     const cleanUsername = username.trim().toLowerCase();
 
-    const { data: profile, error: profileError } = await supabaseClient
-        .from('profiles')
-        .select('id, username, role, full_name')
-        .eq('username', cleanUsername)
-        .maybeSingle();
+    if (!cleanUsername) throw new Error('Username wajib diisi.');
 
-    if (profileError) throw profileError;
-    if (!profile) throw new Error('Username atau password salah.');
-
-    // Supabase Auth uses an internal email identity.
-    const authEmail = profile.id + '@bionest.local';
+    // Auth accounts are provisioned with this internal email convention.
+    const authEmail = cleanUsername + '@bionest.local';
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({
         email: authEmail,
@@ -36,7 +29,18 @@ async function loginWithUsername(username, password) {
 
     if (error) throw new Error('Username atau password salah.');
 
-    if (data.user?.id !== profile.id) {
+    const { data: profile, error: profileError } = await supabaseClient
+        .from('profiles')
+        .select('id, username, role, full_name, quote')
+        .eq('id', data.user.id)
+        .single();
+
+    if (profileError || !profile) {
+        await supabaseClient.auth.signOut();
+        throw new Error('Profil akun belum terdaftar.');
+    }
+
+    if (profile.username !== cleanUsername) {
         await supabaseClient.auth.signOut();
         throw new Error('Akun tidak valid.');
     }
@@ -44,36 +48,36 @@ async function loginWithUsername(username, password) {
     return profile;
 }
 
-document.getElementById('loginForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
+const loginForm = document.getElementById('loginForm');
 
-    const button = document.getElementById('loginBtn');
-    const status = document.getElementById('loginStatus');
-    button.disabled = true;
-    button.classList.add('opacity-60');
-    status.className = 'text-xs text-center min-h-5 text-slate-400';
-    status.textContent = 'Memeriksa akun...';
+if (loginForm) {
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    try {
-        const profile = await loginWithUsername(
-            document.getElementById('username').value,
-            document.getElementById('password').value
-        );
+        const button = document.getElementById('loginBtn');
+        const status = document.getElementById('loginStatus');
 
-        sessionStorage.setItem('bionestRole', profile.role);
+        button.disabled = true;
+        button.classList.add('opacity-60');
+        status.className = 'text-xs text-center min-h-5 pt-1 text-slate-400';
+        status.textContent = 'Memeriksa akun...';
 
-        if (profile.role === 'super_admin') {
-            window.location.href = 'admin.html';
-        } else {
-            window.location.href = 'dashboard.html';
+        try {
+            const profile = await loginWithUsername(
+                document.getElementById('username').value,
+                document.getElementById('password').value
+            );
+
+            sessionStorage.setItem('bionestRole', profile.role);
+
+            window.location.href =
+                profile.role === 'super_admin' ? 'admin.html' : 'dashboard.html';
+        } catch (error) {
+            status.className = 'text-xs text-center min-h-5 pt-1 text-red-400';
+            status.textContent = error.message || 'Login gagal.';
+        } finally {
+            button.disabled = false;
+            button.classList.remove('opacity-60');
         }
-    } catch (error) {
-        status.className = 'text-xs text-center min-h-5 text-red-400';
-        status.textContent = error.message || 'Login gagal.';
-    } finally {
-        button.disabled = false;
-        button.classList.remove('opacity-60');
-    }
-});
-
-lucide.createIcons();
+    });
+}
