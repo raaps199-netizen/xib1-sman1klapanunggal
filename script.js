@@ -6,7 +6,7 @@ const visitorBtn = document.getElementById('visitorBtn');
 async function showMemberGate() {
     try {
         if (window.supabaseClient) {
-            const { data: { session } } = await supabaseClient.auth.getSession();
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
             if (session) {
                 sessionStorage.setItem('bionestAccess', 'member');
                 await renderMemberProfile(session);
@@ -45,7 +45,7 @@ window.addEventListener('DOMContentLoaded', showMemberGate);
 async function renderMemberProfile(session) {
     if (!window.supabaseClient) return;
 
-    const { data: profile } = await supabaseClient
+    const { data: profile } = await window.supabaseClient
         .from('profiles')
         .select('id, username, full_name, role, quote, bio, hobby, favourite_subject, instagram, avatar_url')
         .eq('id', session.user.id)
@@ -147,7 +147,7 @@ function openMemberProfile(profile) {
 
         document.getElementById('closeProfileModal').onclick = () => closeMemberProfile();
         document.getElementById('profileLogout').onclick = async () => {
-            await supabaseClient.auth.signOut();
+            await window.supabaseClient.auth.signOut();
             sessionStorage.clear();
             location.href = 'index.html';
         };
@@ -159,7 +159,7 @@ function openMemberProfile(profile) {
             status.textContent = 'Menyimpan...';
 
             try {
-                const { error } = await supabaseClient
+                const { error } = await window.supabaseClient
                     .from('profiles')
                     .update({
                         full_name: document.getElementById('profileFullName').value.trim(),
