@@ -69,6 +69,35 @@ async function renderMemberProfile(session) {
     button.addEventListener('click', () => openMemberProfile(profile));
     container.insertBefore(button, container.firstChild);
 
+    renderMemberOverview(profile);
+    lucide.createIcons();
+}
+
+function renderMemberOverview(profile) {
+    const section = document.getElementById('memberOverview');
+    if (!section) return;
+    section.classList.remove('hidden');
+    document.getElementById('overviewAvatar').textContent = getInitials(profile.full_name || profile.username);
+    document.getElementById('overviewName').textContent = profile.full_name || profile.username || 'Member';
+    document.getElementById('overviewUsername').textContent = '@' + (profile.username || '');
+    const student = students.find(s => s.username === profile.username);
+    document.getElementById('overviewDuty').textContent = student ? (dayByStudent[student.name] || 'Tidak bertugas') : 'Tidak bertugas';
+    document.getElementById('overviewHobby').textContent = profile.hobby || 'Belum diisi';
+    document.getElementById('overviewSubject').textContent = profile.favourite_subject || 'Belum diisi';
+    document.getElementById('overviewBio').textContent = profile.bio || profile.quote || 'Belum ada bio.';
+    const instagram = document.getElementById('overviewInstagram');
+    const instagramText = document.getElementById('overviewInstagramText');
+    if (profile.instagram) {
+        instagram.href = profile.instagram.startsWith('http') ? profile.instagram : 'https://instagram.com/' + profile.instagram.replace(/^@/, '');
+        instagramText.textContent = profile.instagram;
+        instagram.classList.remove('hidden');
+        instagram.classList.add('inline-flex');
+    } else {
+        instagram.removeAttribute('href');
+        instagramText.textContent = '';
+        instagram.classList.add('hidden');
+        instagram.classList.remove('inline-flex');
+    }
     lucide.createIcons();
 }
 
@@ -313,21 +342,26 @@ function renderStudents(query = '') {
         s.fullName.toLowerCase().includes(keyword)
     );
 
-    studentGrid.innerHTML = filtered.map(s => `
-        <div class="student-card p-4 rounded-xl bg-techCard border border-slate-800 hover:border-techCyan/50 cursor-pointer text-center transition transform hover:-translate-y-1">
-            <h4 class="text-sm font-semibold text-slate-200 py-4">${s.name}</h4>
-        </div>
-    `).join('');
+    studentGrid.innerHTML = filtered.map(s => {
+        const instagramUrl = s.instagram ? (s.instagram.startsWith('http') ? s.instagram : 'https://instagram.com/' + s.instagram.replace(/^@/, '')) : '';
+        const instagramButton = instagramUrl
+            ? '<a href="' + instagramUrl + '" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="p-1.5 rounded-lg text-slate-500 hover:text-techCyan hover:bg-cyan-500/10 transition" aria-label="Instagram ' + s.name + '"><i data-lucide="instagram" class="w-4 h-4"></i></a>'
+            : '';
+        return '<div class="student-card p-4 rounded-xl bg-techCard border border-slate-800 hover:border-techCyan/50 cursor-pointer text-center transition transform hover:-translate-y-1 relative">' +
+            '<div class="flex items-center justify-center gap-2">' +
+            '<h4 class="text-sm font-semibold text-slate-200 py-4">' + s.name + '</h4>' +
+            instagramButton +
+            '</div></div>';
+    }).join('');
 
     studentGrid.querySelectorAll('.student-card').forEach((card, index) => {
         card.addEventListener('click', () => openModal(filtered[index]));
     });
 
     studentSearchInfo.innerText = keyword
-        ? `${filtered.length} dari ${students.length} siswa ditemukan`
-        : `${students.length} siswa terdaftar`;
+        ? filtered.length + ' dari ' + students.length + ' siswa ditemukan'
+        : students.length + ' siswa terdaftar';
 }
-
 renderStudents();
 studentSearch.addEventListener('input', e => renderStudents(e.target.value));
 syncPublicProfiles();
@@ -364,7 +398,19 @@ function openModal(student) {
     document.getElementById('modalIg').href = student.instagram ? (student.instagram.startsWith('http') ? student.instagram : 'https://instagram.com/' + student.instagram.replace(/^@/, '')) : '#';
     document.getElementById('modalHobby').innerText = student.hobby || 'Belum diisi';
     document.getElementById('modalSubject').innerText = student.favouriteSubject || 'Belum diisi';
-    document.getElementById('modalInstagramText').innerText = student.instagram || 'Belum diisi';
+    const modalInstagramLink = document.getElementById('modalInstagramLink');
+    const modalInstagramText = document.getElementById('modalInstagramText');
+    if (student.instagram) {
+        modalInstagramLink.href = student.instagram.startsWith('http') ? student.instagram : 'https://instagram.com/' + student.instagram.replace(/^@/, '');
+        modalInstagramLink.innerText = student.instagram;
+        modalInstagramLink.classList.remove('hidden');
+        modalInstagramText.classList.add('hidden');
+    } else {
+        modalInstagramLink.removeAttribute('href');
+        modalInstagramLink.classList.add('hidden');
+        modalInstagramText.innerText = 'Belum diisi';
+        modalInstagramText.classList.remove('hidden');
+    }
     document.getElementById('studentModal').classList.remove('hidden');
     lucide.createIcons();
 }
