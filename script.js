@@ -54,15 +54,33 @@ const students = [
 ];
 
 const studentGrid = document.getElementById('studentGrid');
-students.forEach(s => {
-    const card = document.createElement('div');
-    card.className = "p-4 rounded-xl bg-techCard border border-slate-800 hover:border-techCyan/50 cursor-pointer text-center transition transform hover:-translate-y-1";
-    card.addEventListener('click', () => openModal(s));
-    card.innerHTML = `
-        <h4 class="text-sm font-semibold text-slate-200 py-4">${s.name}</h4>
-    `;
-    studentGrid.appendChild(card);
-});
+const studentSearch = document.getElementById('studentSearch');
+const studentSearchInfo = document.getElementById('studentSearchInfo');
+
+function renderStudents(query = '') {
+    const keyword = query.trim().toLowerCase();
+    const filtered = students.filter(s =>
+        s.name.toLowerCase().includes(keyword) ||
+        s.fullName.toLowerCase().includes(keyword)
+    );
+
+    studentGrid.innerHTML = filtered.map(s => `
+        <div class="student-card p-4 rounded-xl bg-techCard border border-slate-800 hover:border-techCyan/50 cursor-pointer text-center transition transform hover:-translate-y-1">
+            <h4 class="text-sm font-semibold text-slate-200 py-4">${s.name}</h4>
+        </div>
+    `).join('');
+
+    studentGrid.querySelectorAll('.student-card').forEach((card, index) => {
+        card.addEventListener('click', () => openModal(filtered[index]));
+    });
+
+    studentSearchInfo.innerText = keyword
+        ? `${filtered.length} dari ${students.length} siswa ditemukan`
+        : `${students.length} siswa terdaftar`;
+}
+
+renderStudents();
+studentSearch.addEventListener('input', e => renderStudents(e.target.value));
 
 function openModal(student) {
     document.getElementById('modalName').innerText = student.fullName || student.name;
@@ -166,3 +184,81 @@ bgmBtn.onclick = () => {
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.switchDay = switchDay;
+
+
+const announcements = [
+    {
+        date: '22 September 2026',
+        type: 'Informasi',
+        title: 'Ujian Tengah Semester Dimulai',
+        description: 'Jangan lupa belajar dan persiapkan laptop/alat tulis kalian dengan baik!'
+    }
+];
+
+function renderAnnouncements() {
+    const container = document.getElementById('announcementList');
+    container.innerHTML = announcements.map(item => `
+        <article class="p-6 rounded-2xl bg-gradient-to-r from-techCard to-slate-800 border-l-4 border-techCyan">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs text-techCyan font-mono">${item.date}</span>
+                <span class="px-2 py-1 rounded-full bg-cyan-950 text-techCyan border border-techCyan/20 text-[10px] uppercase tracking-wider">${item.type}</span>
+            </div>
+            <h3 class="text-lg font-bold mt-2">${item.title}</h3>
+            <p class="text-slate-300 text-sm mt-2">${item.description}</p>
+        </article>
+    `).join('');
+}
+
+function renderTimeline() {
+    const container = document.getElementById('timelineList');
+    container.innerHTML = announcements.map((item, index) => `
+        <div class="relative pl-8 ${index < announcements.length - 1 ? 'pb-6' : ''}">
+            ${index < announcements.length - 1 ? '<div class="absolute left-2 top-4 bottom-0 w-px bg-cyan-500/20"></div>' : ''}
+            <div class="absolute left-0 top-1 w-5 h-5 rounded-full bg-techDark border-2 border-techCyan"></div>
+            <div class="p-5 rounded-xl bg-techCard border border-slate-800">
+                <span class="text-xs text-techCyan font-mono">${item.date}</span>
+                <h4 class="font-bold mt-1">${item.title}</h4>
+                <p class="text-sm text-slate-400 mt-1">${item.description}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+renderAnnouncements();
+renderTimeline();
+
+const classStats = document.getElementById('classStats');
+const totalLessons = Object.values(schedules).reduce((total, day) => total + day.mapel.length, 0);
+classStats.innerHTML = [
+    { value: students.length, label: 'Siswa', icon: 'users' },
+    { value: Object.keys(schedules).length, label: 'Hari Sekolah', icon: 'calendar-days' },
+    { value: totalLessons, label: 'Sesi Mapel / Minggu', icon: 'book-open' },
+    { value: 'XI.B1', label: 'Kelas', icon: 'cpu' }
+].map(stat => `
+    <div class="p-5 rounded-2xl bg-techCard border border-cyan-500/20 text-center">
+        <i data-lucide="${stat.icon}" class="w-5 h-5 mx-auto mb-2 text-techCyan"></i>
+        <div class="text-2xl font-extrabold text-white">${stat.value}</div>
+        <p class="text-xs text-slate-400 mt-1">${stat.label}</p>
+    </div>
+`).join('');
+
+const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+
+mobileMenuToggle.addEventListener('click', () => {
+    const isHidden = mobileMenu.classList.toggle('hidden');
+    mobileMenuIcon.setAttribute('data-lucide', isHidden ? 'menu' : 'x');
+    mobileMenuToggle.setAttribute('aria-label', isHidden ? 'Buka menu' : 'Tutup menu');
+    lucide.createIcons();
+});
+
+document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        mobileMenuIcon.setAttribute('data-lucide', 'menu');
+        lucide.createIcons();
+    });
+});
+
+lucide.createIcons();
