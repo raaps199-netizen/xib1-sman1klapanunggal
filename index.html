@@ -44,10 +44,24 @@
                 <a href="#pengumuman" class="hover:text-techCyan transition">Info</a>
             </div>
 
-            <!-- Interaktif: Audio Toggle -->
+            <div class="flex items-center gap-2">
+                <button id="mobileMenuToggle" class="md:hidden p-2 rounded-lg border border-cyan-500/30 text-techCyan hover:bg-cyan-500/10 transition" aria-label="Buka menu">
+                    <i data-lucide="menu" id="mobileMenuIcon"></i>
+                </button>
+
+                <!-- Interaktif: Audio Toggle -->
             <button id="bgmToggle" class="p-2 rounded-full border border-cyan-500/30 text-techCyan hover:bg-cyan-500/10 transition">
                 <i data-lucide="volume-x" id="bgmIcon"></i>
             </button>
+        </div>
+        <div id="mobileMenu" class="hidden md:hidden border-t border-cyan-500/20 bg-techDark/95 backdrop-blur-md">
+            <div class="px-4 py-4 flex flex-col gap-3 text-sm font-medium">
+                <a href="#home" class="mobile-nav-link hover:text-techCyan transition">Home</a>
+                <a href="#struktur" class="mobile-nav-link hover:text-techCyan transition">Struktur</a>
+                <a href="#siswa" class="mobile-nav-link hover:text-techCyan transition">Anggota</a>
+                <a href="#jadwal" class="mobile-nav-link hover:text-techCyan transition">Jadwal</a>
+                <a href="#pengumuman" class="mobile-nav-link hover:text-techCyan transition">Info</a>
+            </div>
         </div>
     </nav>
 
@@ -83,6 +97,11 @@
                 </div>
             </div>
         </div>
+    </section>
+
+    <!-- STATISTIK KELAS -->
+    <section id="statistik" class="py-12 max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="classStats"></div>
     </section>
 
     <!-- STRUKTUR ORGANISASI -->
@@ -135,7 +154,15 @@
             <h2 class="text-3xl font-bold text-center mb-4 flex items-center justify-center gap-2">
                 <i data-lucide="users" class="text-techCyan"></i> Member Engine (Siswa)
             </h2>
-            <p class="text-center text-slate-400 text-sm mb-12">Klik pada kartu siswa untuk melihat profil lengkap.</p>
+            <p class="text-center text-slate-400 text-sm mb-6">Klik pada kartu siswa untuk melihat profil lengkap.</p>
+
+            <div class="max-w-xl mx-auto mb-8 relative">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                <input id="studentSearch" type="search" placeholder="Cari nama siswa..." autocomplete="off"
+                    class="w-full pl-11 pr-4 py-3 rounded-xl bg-techCard border border-slate-700 text-sm text-white placeholder:text-slate-500 outline-none focus:border-techCyan/60 transition">
+            </div>
+
+            <p id="studentSearchInfo" class="text-center text-xs text-slate-500 mb-6"></p>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4" id="studentGrid">
                 <!-- Data siswa akan di-render via JavaScript -->
@@ -177,14 +204,17 @@
 
 
     <!-- PAPAN PENGUMUMAN -->
-    <section id="pengumuman" class="py-20 max-w-4xl mx-auto px-4">
+    <section id="pengumuman" class="py-20 max-w-5xl mx-auto px-4">
         <h2 class="text-3xl font-bold text-center mb-8 flex items-center justify-center gap-2">
             <i data-lucide="bell" class="text-techCyan"></i> Information Center
         </h2>
-        <div class="p-6 rounded-2xl bg-gradient-to-r from-techCard to-slate-800 border-l-4 border-techCyan">
-            <span class="text-xs text-techCyan font-mono">22 September 2026</span>
-            <h3 class="text-lg font-bold mt-1">Ujian Tengah Semester Dimulai</h3>
-            <p class="text-slate-300 text-sm mt-2">Jangan lupa belajar dan persiapkan laptop/alat tulis kalian dengan baik!</p>
+        <div id="announcementList" class="space-y-4"></div>
+
+        <div class="mt-16">
+            <h3 class="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+                <i data-lucide="milestone" class="text-techCyan"></i> Timeline Kegiatan
+            </h3>
+            <div id="timelineList" class="max-w-3xl mx-auto space-y-6"></div>
         </div>
     </section>
 
