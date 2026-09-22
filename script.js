@@ -134,7 +134,7 @@ function openMemberProfile(profile) {
                         <p id="profileSaveStatus" class="text-xs min-h-5 text-center"></p>
 
                         <div class="flex flex-col sm:flex-row gap-3 pt-2">
-                            <button type="submit" class="flex-1 py-3 rounded-xl bg-white text-slate-950 font-black hover:bg-cyan-100 transition">Simpan perubahan</button>
+                            <button type="submit" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-black tech-glow-hover hover:opacity-90 transition">Simpan perubahan</button>
                             <button type="button" id="profileLogout" class="px-5 py-3 rounded-xl border border-red-500/20 text-red-300 hover:bg-red-500/10 transition">Logout</button>
                         </div>
 
