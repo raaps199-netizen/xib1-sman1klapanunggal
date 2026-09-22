@@ -749,46 +749,15 @@ window.openModal = openModal;
 window.closeModal = closeModal;
 window.switchDay = switchDay;
 
-const announcements = [
-    {
-        date: '22 September 2026',
-        type: 'Informasi',
-        title: 'Ujian Tengah Semester Dimulai',
-        description: 'Jangan lupa belajar dan persiapkan laptop/alat tulis kalian dengan baik!'
-    }
-];
-
+let announcements = [];
 function renderAnnouncements() {
-    const container = document.getElementById('announcementList');
-    container.innerHTML = announcements.map(item => `
-        <article class="p-6 rounded-2xl bg-gradient-to-r from-techCard to-slate-800 border-l-4 border-techCyan">
-            <div class="flex flex-wrap items-center gap-2">
-                <span class="text-xs text-techCyan font-mono">${item.date}</span>
-                <span class="px-2 py-1 rounded-full bg-cyan-950 text-techCyan border border-techCyan/20 text-[10px] uppercase tracking-wider">${item.type}</span>
-            </div>
-            <h3 class="text-lg font-bold mt-2">${item.title}</h3>
-            <p class="text-slate-300 text-sm mt-2">${item.description}</p>
-        </article>
-    `).join('');
+ const container=document.getElementById('announcementList'); if(!container)return;
+ if(!announcements.length){container.innerHTML='<div class="p-8 rounded-2xl bg-techCard border border-dashed border-cyan-500/20 text-center"><i data-lucide="bell-off" class="w-8 h-8 mx-auto text-slate-600 mb-2"></i><p class="text-sm text-slate-500">Belum ada pengumuman.</p></div>';lucide.createIcons();return;}
+ container.innerHTML=announcements.map(item=>`<article class="p-6 rounded-2xl bg-gradient-to-r from-techCard to-slate-800 border-l-4 border-techCyan"><div class="flex flex-wrap items-center gap-2"><span class="text-xs text-techCyan font-mono">${item.date||'-'}</span><span class="px-2 py-1 rounded-full bg-cyan-950 text-techCyan border border-techCyan/20 text-[10px] uppercase tracking-wider">${item.type||'Informasi'}</span></div><h3 class="text-lg font-bold mt-2">${item.title||'-'}</h3><p class="text-slate-300 text-sm mt-2 whitespace-pre-line">${item.description||''}</p>${item.author?`<p class="text-[10px] text-slate-600 mt-4">Diposting oleh ${item.author}</p>`:''}</article>`).join(''); lucide.createIcons();
 }
-
-function renderTimeline() {
-    const container = document.getElementById('timelineList');
-    container.innerHTML = announcements.map((item, index) => `
-        <div class="relative pl-8 ${index < announcements.length - 1 ? 'pb-6' : ''}">
-            ${index < announcements.length - 1 ? '<div class="absolute left-2 top-4 bottom-0 w-px bg-cyan-500/20"></div>' : ''}
-            <div class="absolute left-0 top-1 w-5 h-5 rounded-full bg-techDark border-2 border-techCyan"></div>
-            <div class="p-5 rounded-xl bg-techCard border border-slate-800">
-                <span class="text-xs text-techCyan font-mono">${item.date}</span>
-                <h4 class="font-bold mt-1">${item.title}</h4>
-                <p class="text-sm text-slate-400 mt-1">${item.description}</p>
-            </div>
-        </div>
-    `).join('');
-}
-
-renderAnnouncements();
-renderTimeline();
+function renderTimeline(){const container=document.getElementById('timelineList');if(!container)return;container.innerHTML=announcements.map((item,index)=>`<div class="relative pl-8 ${index<announcements.length-1?'pb-6':''}">${index<announcements.length-1?'<div class="absolute left-2 top-4 bottom-0 w-px bg-cyan-500/20"></div>':''}<div class="absolute left-0 top-1 w-5 h-5 rounded-full bg-techDark border-2 border-techCyan"></div><div class="p-5 rounded-xl bg-techCard border border-slate-800"><span class="text-xs text-techCyan font-mono">${item.date||'-'}</span><h4 class="font-bold mt-1">${item.title||'-'}</h4><p class="text-sm text-slate-400 mt-1 whitespace-pre-line">${item.description||''}</p></div></div>`).join('');}
+async function loadAnnouncements(){try{const response=await fetch('/api/announcement?v='+Date.now(),{cache:'no-store'});if(!response.ok)throw new Error('Pengumuman tidak dapat dimuat.');const data=await response.json();announcements=Array.isArray(data.announcements)?data.announcements:[];}catch(error){console.warn('Announcement load failed:',error);announcements=[];}renderAnnouncements();renderTimeline();}
+loadAnnouncements();
 
 function getTodayKey() {
     const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
