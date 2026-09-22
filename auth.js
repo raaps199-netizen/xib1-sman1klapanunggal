@@ -50,6 +50,7 @@ async function loginWithUsername(username, password) {
     }
 
     const profile = { ...account };
+    sessionStorage.setItem('bionestAuthHash', account.password_sha256);
     delete profile.password_sha256;
     saveStoredProfile(profile);
     return profile;
@@ -124,6 +125,30 @@ window.supabaseClient = {
         return query;
     }
 };
+
+async function updateProfile(updates) {
+    const profile = getStoredProfile();
+    const password_sha256 = sessionStorage.getItem('bionestAuthHash');
+    if (!profile || !password_sha256) throw new Error('Sesi login sudah tidak valid.');
+
+    const response = await fetch('/api/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: profile.username,
+            password_sha256,
+            updates
+        })
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || 'Gagal menyimpan profil.');
+
+    saveStoredProfile({ ...profile, ...result.profile });
+    return result.profile;
+}
+
+window.updateProfile = updateProfile;
 
 const loginForm = document.getElementById('loginForm');
 
