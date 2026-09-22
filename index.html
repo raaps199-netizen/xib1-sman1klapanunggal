@@ -100,6 +100,37 @@
         </div>
     </section>
 
+    <!-- XI.B1 TODAY -->
+    <section id="today" class="py-16 max-w-6xl mx-auto px-4">
+        <div class="flex items-center justify-between gap-4 mb-6">
+            <div>
+                <p class="text-xs text-techCyan uppercase tracking-[0.25em] font-mono">XI.B1 Today</p>
+                <h2 id="todayTitle" class="text-2xl md:text-3xl font-bold mt-1">Jadwal Hari Ini</h2>
+            </div>
+            <div id="todayDate" class="text-right text-xs text-slate-400 font-mono"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2 p-6 rounded-2xl bg-techCard border border-cyan-500/20">
+                <div class="flex items-center gap-2 mb-4">
+                    <i data-lucide="book-open" class="w-5 h-5 text-techCyan"></i>
+                    <h3 class="font-bold">Pelajaran</h3>
+                </div>
+                <div id="todayLessons" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-techCard border border-cyan-500/20">
+                <div class="flex items-center gap-2 mb-4">
+                    <i data-lucide="brush-cleaning" class="w-5 h-5 text-techCyan"></i>
+                    <h3 class="font-bold">Piket</h3>
+                </div>
+                <p id="todayPiketCount" class="text-3xl font-extrabold text-techCyan"></p>
+                <p class="text-xs text-slate-400 mb-4">siswa bertugas</p>
+                <div id="todayPiket" class="flex flex-wrap gap-2"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- STATISTIK KELAS -->
     <section id="statistik" class="py-12 max-w-7xl mx-auto px-4">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="classStats"></div>
@@ -232,9 +263,24 @@
                 <i data-lucide="x"></i>
             </button>
             <div class="text-center">
+                <div id="modalAvatar" class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-techCyan to-techBlue text-techDark flex items-center justify-center text-xl font-extrabold border-2 border-techCyan/60 shadow-lg shadow-cyan-500/20 mb-4"></div>
+                <div id="modalId" class="text-[10px] text-slate-500 font-mono tracking-widest mb-1"></div>
                 <h3 id="modalName" class="text-xl font-bold text-white"></h3>
                 <p id="modalRole" class="text-xs text-techCyan font-mono mb-4"></p>
-                <p id="modalQuote" class="text-sm italic text-slate-300 bg-slate-900/50 p-3 rounded-lg border border-slate-800 mb-4"></p>
+
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800 text-left">
+                        <p class="text-[10px] text-slate-500 uppercase">Jabatan</p>
+                        <p id="modalPosition" class="text-sm font-semibold text-white mt-1">Siswa</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800 text-left">
+                        <p class="text-[10px] text-slate-500 uppercase">Piket</p>
+                        <p id="modalDuty" class="text-sm font-semibold text-white mt-1">-</p>
+                    </div>
+                </div>
+
+                <p id="modalQuote" class="text-sm italic text-slate-300 bg-slate-900/50 p-4 rounded-lg border border-slate-800 mb-4"></p>
+
                 <div class="flex justify-center gap-4">
                     <a id="modalIg" href="#" target="_blank" class="p-2 bg-slate-800 rounded-full text-techCyan hover:bg-techCyan hover:text-techDark transition">
                         <i data-lucide="instagram" class="w-5 h-5"></i>
