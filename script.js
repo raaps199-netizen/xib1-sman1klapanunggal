@@ -28,7 +28,7 @@ const students = [
     { id: 25, name: "Al Mira", fullName: "Al Mira Berlian Handayani", role: "Siswa XI.B1", quote: "you never fail until you stop trying", ig: "#" },
     { id: 26, name: "Elang", fullName: "Elang Bari Dermawan", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 27, name: "Dzaky", fullName: "Muhammad Dzaky Pradana", role: "Siswa XI.B1", quote: "No excuses. Just results", ig: "#" },
-    { id: 28, name: "Aisahra", fullName: "Aisahra Mayjasti Aulia Putri", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 28, name: "Aisahra", fullName: "Aisahra Mayjasti Aulia Putri", role: "Siswa XI.B1", quote: "dare to dream dare to achieve", ig: "#" },
     { id: 29, name: "Satria", fullName: "Satria Putra Pratama", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 30, name: "Putri", fullName: "Putri Aulia", role: "Siswa XI.B1", quote: "calm is power. i choose peace over chaos", ig: "#" },
     { id: 31, name: "Fahri", fullName: "Muhammad Fahri Maulana", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
