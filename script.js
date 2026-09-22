@@ -65,7 +65,6 @@ students.forEach(s => {
 });
 
 function openModal(student) {
-    document.getElementById('modalAvatar').innerText = student.name.charAt(0);
     document.getElementById('modalName').innerText = student.fullName || student.name;
     document.getElementById('modalRole').innerText = student.role;
     document.getElementById('modalQuote').innerText = `"${student.quote}"`;
