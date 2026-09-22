@@ -703,7 +703,7 @@ function renderGallery() {
         const featured = index === 0 ? ' featured' : '';
         return `
             <article class="gallery-item${featured}" data-gallery-index="${index}" tabindex="0" role="button" aria-label="Buka foto ${item.title}">
-                <img src="${item.url}" alt="${item.title}" loading="${index === 0 ? 'eager' : 'lazy'}">
+                <img src="${item.url}" data-raw-src="${item.rawUrl || item.url}" alt="${item.title}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async" onerror="this.onerror=null; this.src=this.dataset.rawSrc;">
                 <span class="gallery-badge">BIONEST MOMENT</span>
                 <div class="gallery-caption">
                     <p>${item.title}</p>
@@ -730,7 +730,7 @@ function openGallery(index) {
     galleryIndex = (index + galleryItems.length) % galleryItems.length;
     const item = galleryItems[galleryIndex];
 
-    galleryLightboxImage.src = item.url;
+    galleryLightboxImage.src = item.rawUrl || item.url;
     galleryLightboxImage.alt = item.title;
     galleryLightboxTitle.textContent = item.title;
     galleryLightboxMeta.textContent = `${galleryIndex + 1} / ${galleryItems.length} • XI.B1`;
@@ -781,7 +781,8 @@ async function loadGallery() {
             .filter(file => file.type === 'file' && /.(jpe?g|png|webp|gif|avif)$/i.test(file.name))
             .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
             .map(file => ({
-                url: file.download_url,
+                rawUrl: file.download_url,
+                url: 'https://images.weserv.nl/?url=' + encodeURIComponent(file.download_url) + '&w=1400&q=82&output=webp',
                 title: prettifyGalleryName(file.name)
             }));
 
