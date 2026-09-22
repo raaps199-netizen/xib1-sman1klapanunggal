@@ -61,10 +61,21 @@ export default async function handler(req, res) {
             const totalIncome = totalKas + totalPoe;
             const totalExpense = expenses.reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
+            // Poe Ibu dihitung Rp1.000 per hari sekolah, mulai Senin pertama Agustus 2026.
+            const poeStartDate = new Date('2026-08-03T00:00:00+07:00');
+            const nowJakarta = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+            const dayOnly = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            let poeDueDays = 0;
+            for (let d = dayOnly(poeStartDate), end = dayOnly(nowJakarta); d <= end; d.setDate(d.getDate() + 1)) {
+                const weekday = d.getDay();
+                if (weekday >= 1 && weekday <= 5) poeDueDays++;
+            }
+            const poeDueAmount = poeDueDays * 1000;
+
             const byStudent = {};
             for (const t of transactions) {
                 if (!t.student) continue;
-                if (!byStudent[t.student]) byStudent[t.student] = { kas: 0, poe: 0, total: 0 };
+                if (!byStudent[t.student]) byStudent[t.student] = { kas: 0, poe: 0, poeDue: poeDueAmount, poeRemaining: poeDueAmount, total: 0 };
                 const amount = Number(t.amount || 0);
                 if (t.type === 'income') {
                     if (t.category === 'kas') byStudent[t.student].kas += amount;
@@ -73,8 +84,18 @@ export default async function handler(req, res) {
                 }
             }
 
+            for (const row of Object.values(byStudent)) {
+                row.poeRemaining = Math.max(0, row.poeDue - row.poe);
+            }
+
             return res.status(200).json({
                 ok: true,
+                poe: {
+                    startDate: '2026-08-03',
+                    dueDays: poeDueDays,
+                    dueAmount: poeDueAmount,
+                    ratePerDay: 1000
+                },
                 totals: { kas: totalKas, poe: totalPoe, income: totalIncome, expense: totalExpense, balance: totalIncome - totalExpense },
                 byStudent,
                 transactions: transactions.slice().reverse()
