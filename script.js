@@ -19,7 +19,7 @@ const students = [
     { id: 16, name: "Nishar", fullName: "Nishar Soma Maulana", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 17, name: "Alvian", fullName: "Alvian Arkan Iniesta", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 18, name: "Brella", fullName: "Brela Terta Zafina", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 19, name: "Fathian", fullName: "Fathian Khairul Akbar", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 19, name: "Fathian", fullName: "Fathian Khairul Akbar", role: "Siswa XI.B1", quote: "there's nothing you can't do if you try", ig: "#" },
     { id: 20, name: "Reno", fullName: "Reno Ramzi Nararya", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 21, name: "Lutfan", fullName: "Lutfan Attaullah Sultoni", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 22, name: "Rafif", fullName: "Ahmad Rafif Hidayat", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
