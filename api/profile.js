@@ -19,17 +19,17 @@ export default async function handler(req, res) {
         // Profile picture upload uses the same authenticated profile endpoint.
         if (body.action === 'profile_picture') {
             const image = String(body.image || '');
-            if (!image.startsWith('data:image/')) {
+            if (image && !image.startsWith('data:image/')) {
                 return res.status(400).json({ error: 'File foto tidak valid.' });
             }
 
             const match = image.match(/^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/i);
-            if (!match) {
+            if (image && !match) {
                 return res.status(400).json({ error: 'Gunakan JPG, PNG, atau WebP.' });
             }
 
-            const imageBase64 = match[2];
-            if (Buffer.byteLength(imageBase64, 'base64') > 2 * 1024 * 1024) {
+            const imageBase64 = match ? match[2] : '';
+            if (imageBase64 && Buffer.byteLength(imageBase64, 'base64') > 2 * 1024 * 1024) {
                 return res.status(400).json({ error: 'Ukuran foto maksimal 2 MB.' });
             }
 
@@ -65,26 +65,47 @@ export default async function handler(req, res) {
                 existingSha = (await existingResponse.json()).sha;
             }
 
-            const imageResponse = await fetch(
-                `https://api.github.com/repos/raaps199-netizen/xib1-sman1klapanunggal/contents/${profilePath}`,
-                {
-                    method: 'PUT',
-                    headers: { ...headers, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: `profile: update picture ${username}`,
-                        content: imageBase64,
-                        ...(existingSha ? { sha: existingSha } : {}),
-                        branch: 'main'
-                    })
+            if (imageBase64) {
+                const imageResponse = await fetch(
+                    `https://api.github.com/repos/raaps199-netizen/xib1-sman1klapanunggal/contents/${profilePath}`,
+                    {
+                        method: 'PUT',
+                        headers: { ...headers, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: `profile: update picture ${username}`,
+                            content: imageBase64,
+                            ...(existingSha ? { sha: existingSha } : {}),
+                            branch: 'main'
+                        })
+                    }
+                );
+
+                if (!imageResponse.ok) {
+                    const errorData = await imageResponse.json().catch(() => ({}));
+                    throw new Error(errorData.message || 'Gagal menyimpan foto profil.');
                 }
-            );
-
-            if (!imageResponse.ok) {
-                const errorData = await imageResponse.json().catch(() => ({}));
-                throw new Error(errorData.message || 'Gagal menyimpan foto profil.');
+                account.avatar_url = profileUrl;
+            } else if (existingSha) {
+                const deleteResponse = await fetch(
+                    `https://api.github.com/repos/raaps199-netizen/xib1-sman1klapanunggal/contents/${profilePath}`,
+                    {
+                        method: 'DELETE',
+                        headers: { ...headers, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: `profile: remove picture ${username}`,
+                            sha: existingSha,
+                            branch: 'main'
+                        })
+                    }
+                );
+                if (!deleteResponse.ok) {
+                    const errorData = await deleteResponse.json().catch(() => ({}));
+                    throw new Error(errorData.message || 'Gagal menghapus foto profil.');
+                }
+                account.avatar_url = '';
+            } else {
+                account.avatar_url = '';
             }
-
-            account.avatar_url = profileUrl;
             const newContent = Buffer.from(JSON.stringify(database, null, 2) + '\n', 'utf8').toString('base64');
             const updateResponse = await fetch(apiUrl, {
                 method: 'PUT',
