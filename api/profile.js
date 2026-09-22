@@ -12,7 +12,17 @@ export default async function handler(req, res) {
         const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
         const username = String(body.username || '').trim().toLowerCase();
         const password_sha256 = String(body.password_sha256 || '');
-        const updates = body.updates || {};
+        const updates = {
+            ...(body.updates && typeof body.updates === 'object' ? body.updates : {})
+        };
+
+        // Support both the current payload ({ updates: {...} })
+        // and older cached clients that send editable fields at the top level.
+        for (const key of ['quote', 'bio', 'hobby', 'favourite_subject', 'instagram']) {
+            if (Object.prototype.hasOwnProperty.call(body, key)) {
+                updates[key] = body[key];
+            }
+        }
 
         if (!username || !password_sha256) {
             return res.status(400).json({ error: 'Data autentikasi tidak lengkap.' });
