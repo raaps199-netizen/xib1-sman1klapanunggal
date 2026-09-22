@@ -82,12 +82,43 @@ function renderStudents(query = '') {
 renderStudents();
 studentSearch.addEventListener('input', e => renderStudents(e.target.value));
 
+const positions = {
+    "Daffa": "Ketua Kelas",
+    "Rifqi": "Wakil Ketua",
+    "Keyla": "Sekretaris",
+    "Al Mira": "Sekretaris",
+    "Alvian": "Bendahara",
+    "Brella": "Bendahara"
+};
+
+const dayByStudent = {};
+Object.entries(schedules).forEach(([day, data]) => {
+    data.piket.forEach(name => {
+        dayByStudent[name] = day;
+    });
+});
+
+function getInitials(name) {
+    return name
+        .split(' ')
+        .filter(Boolean)
+        .map(part => part[0])
+        .join('')
+        .slice(0, 3)
+        .toUpperCase();
+}
+
 function openModal(student) {
+    document.getElementById('modalAvatar').innerText = getInitials(student.fullName || student.name);
+    document.getElementById('modalId').innerText = `MEMBER #${String(student.id).padStart(2, '0')}`;
     document.getElementById('modalName').innerText = student.fullName || student.name;
     document.getElementById('modalRole').innerText = student.role;
+    document.getElementById('modalPosition').innerText = positions[student.name] || 'Siswa';
+    document.getElementById('modalDuty').innerText = dayByStudent[student.name] || 'Belum ditentukan';
     document.getElementById('modalQuote').innerText = `"${student.quote}"`;
     document.getElementById('modalIg').href = student.ig;
     document.getElementById('studentModal').classList.remove('hidden');
+    lucide.createIcons();
 }
 
 function closeModal() {
@@ -226,6 +257,50 @@ function renderTimeline() {
 
 renderAnnouncements();
 renderTimeline();
+
+function getTodayKey() {
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    return days[new Date().getDay()];
+}
+
+function getNextSchoolDay() {
+    const order = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+    const today = getTodayKey();
+    if (order.includes(today)) return today;
+    return today === 'Sabtu' ? 'Senin' : 'Senin';
+}
+
+function renderToday() {
+    const today = getNextSchoolDay();
+    const data = schedules[today];
+    const now = new Date();
+
+    document.getElementById('todayTitle').innerText =
+        getTodayKey() === today ? `Jadwal ${today}` : `Jadwal ${today} (Hari Sekolah Berikutnya)`;
+
+    document.getElementById('todayDate').innerText = now.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    document.getElementById('todayLessons').innerHTML = data.mapel.map((item, index) => `
+        <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800">
+            <span class="w-8 h-8 rounded-lg bg-cyan-950 text-techCyan flex items-center justify-center text-xs font-bold">${index + 1}</span>
+            <span class="text-sm font-medium text-slate-200">${item}</span>
+        </div>
+    `).join('');
+
+    document.getElementById('todayPiketCount').innerText = data.piket.length;
+    document.getElementById('todayPiket').innerHTML = data.piket.map(name => `
+        <span class="px-2.5 py-1 rounded-full bg-cyan-950 text-techCyan border border-techCyan/30 text-xs">${name}</span>
+    `).join('');
+
+    lucide.createIcons();
+}
+
+renderToday();
 
 const classStats = document.getElementById('classStats');
 const totalLessons = Object.values(schedules).reduce((total, day) => total + day.mapel.length, 0);
