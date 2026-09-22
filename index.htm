@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XI.B1 - Brilliant of Engineering One</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        techCyan: '#00f2fe',
+                        techBlue: '#4facfe',
+                        techDark: '#0b1120',
+                        techCard: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tech-glow {
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+        }
+        .tech-glow-hover:hover {
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.8);
+        }
+        .bg-grid {
+            background-size: 30px 30px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-techDark text-slate-100 font-sans antialiased bg-grid relative overflow-x-hidden">
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full z-50 bg-techDark/80 backdrop-blur-md border-b border-cyan-500/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="cpu" class="text-techCyan w-8 h-8 animate-pulse"></i>
+                <span class="font-bold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-techCyan to-techBlue">
+                    XI.B1
+                </span>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-6 font-medium text-sm">
+                <a href="#home" class="hover:text-techCyan transition">Home</a>
+                <a href="#struktur" class="hover:text-techCyan transition">Struktur</a>
+                <a href="#siswa" class="hover:text-techCyan transition">Anggota</a>
+                <a href="#jadwal" class="hover:text-techCyan transition">Jadwal</a>
+                <a href="#galeri" class="hover:text-techCyan transition">Galeri</a>
+                <a href="#pengumuman" class="hover:text-techCyan transition">Info</a>
+            </div>
+
+            <!-- Interaktif: Audio Toggle -->
+            <button id="bgmToggle" class="p-2 rounded-full border border-cyan-500/30 text-techCyan hover:bg-cyan-500/10 transition">
+                <i data-lucide="volume-x" id="bgmIcon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section id="home" class="min-h-screen pt-24 flex items-center justify-center relative px-4">
+        <div class="text-center max-w-3xl z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-techCyan/30 bg-cyan-950/40 text-techCyan text-xs tracking-widest uppercase mb-6">
+                <i data-lucide="zap" class="w-3.5 h-3.5"></i> SMAN 1 Klapanunggal
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
+                Class Of <span class="text-transparent bg-clip-text bg-gradient-to-r from-techCyan via-cyan-300 to-techBlue">XI.B1</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-cyan-200/80 font-light italic mb-8">
+                "Brilliant of Engineering One"
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#siswa" class="px-6 py-3 rounded-lg bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold tech-glow tech-glow-hover transition transform hover:-translate-y-0.5">
+                    Jelajahi Anggota
+                </a>
+                <a href="#jadwal" class="px-6 py-3 rounded-lg border border-techCyan/50 hover:bg-techCyan/10 text-techCyan font-semibold transition">
+                    Lihat Jadwal
+                </a>
+            </div>
+
+            <!-- Interaktif: Countdown to Graduation -->
+            <div class="mt-12 p-4 rounded-xl bg-techCard/50 border border-cyan-500/20 backdrop-blur inline-block">
+                <p class="text-xs text-slate-400 mb-2 uppercase tracking-wider">Estimasi Menuju Kelulusan</p>
+                <div class="flex gap-4 text-center justify-center font-mono text-techCyan font-bold" id="countdown">
+                    <div><span id="days" class="text-2xl">00</span><p class="text-[10px] text-slate-400">HARI</p></div>:
+                    <div><span id="hours" class="text-2xl">00</span><p class="text-[10px] text-slate-400">JAM</p></div>:
+                    <div><span id="minutes" class="text-2xl">00</span><p class="text-[10px] text-slate-400">MENIT</p></div>:
+                    <div><span id="seconds" class="text-2xl">00</span><p class="text-[10px] text-slate-400">DETIK</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STRUKTUR ORGANISASI -->
+    <section id="struktur" class="py-20 max-w-7xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 flex items-center justify-center gap-2">
+            <i data-lucide="shield" class="text-techCyan"></i> Struktur Organisasi
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Wali Kelas -->
+            <div class="md:col-span-3 max-w-md mx-auto w-full p-6 rounded-2xl bg-techCard border border-cyan-500/30 text-center tech-glow">
+                <div class="w-24 h-24 mx-auto rounded-full bg-slate-700 mb-4 border-2 border-techCyan flex items-center justify-center text-3xl font-bold">
+                    👨‍🏫
+                </div>
+                <h3 class="text-lg font-bold text-techCyan">Nama Wali Kelas, S.Pd</h3>
+                <p class="text-xs text-slate-400">Wali Kelas XI.B1</p>
+            </div>
+
+            <!-- Ketua & Wakil -->
+            <div class="p-6 rounded-2xl bg-techCard border border-slate-700 text-center hover:border-techCyan/50 transition">
+                <h4 class="text-sm font-semibold text-slate-400 uppercase">Ketua Kelas</h4>
+                <p class="text-lg font-bold text-white mt-1">Nama Ketua</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-techCard border border-slate-700 text-center hover:border-techCyan/50 transition">
+                <h4 class="text-sm font-semibold text-slate-400 uppercase">Wakil Ketua</h4>
+                <p class="text-lg font-bold text-white mt-1">Nama Wakil</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-techCard border border-slate-700 text-center hover:border-techCyan/50 transition">
+                <h4 class="text-sm font-semibold text-slate-400 uppercase">Sekretaris & Bendahara</h4>
+                <p class="text-lg font-bold text-white mt-1">Nama Sekr & Bend</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DAFTAR ANGGOTA (INTERAKTIF MODAL) -->
+    <section id="siswa" class="py-20 bg-slate-900/50">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-4 flex items-center justify-center gap-2">
+                <i data-lucide="users" class="text-techCyan"></i> Member Engine (Siswa)
+            </h2>
+            <p class="text-center text-slate-400 text-sm mb-12">Klik pada kartu siswa untuk melihat profil lengkap.</p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4" id="studentGrid">
+                <!-- Data siswa akan di-render via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- JADWAL PELAJARAN (INTERAKTIF TAB) -->
+    <section id="jadwal" class="py-20 max-w-7xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+            <i data-lucide="calendar" class="text-techCyan"></i> Jadwal Pelajaran & Piket
+        </h2>
+
+        <!-- Tab Hari -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8" id="dayTabs">
+            <button onclick="switchDay('Senin')" class="tab-btn px-4 py-2 rounded-lg bg-techCyan text-techDark font-bold transition">Senin</button>
+            <button onclick="switchDay('Selasa')" class="tab-btn px-4 py-2 rounded-lg bg-techCard text-slate-300 hover:text-white transition">Selasa</button>
+            <button onclick="switchDay('Rabu')" class="tab-btn px-4 py-2 rounded-lg bg-techCard text-slate-300 hover:text-white transition">Rabu</button>
+            <button onclick="switchDay('Kamis')" class="tab-btn px-4 py-2 rounded-lg bg-techCard text-slate-300 hover:text-white transition">Kamis</button>
+            <button onclick="switchDay('Jumat')" class="tab-btn px-4 py-2 rounded-lg bg-techCard text-slate-300 hover:text-white transition">Jumat</button>
+        </div>
+
+        <!-- Jadwal Content -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div class="p-6 rounded-2xl bg-techCard border border-cyan-500/20">
+                <h3 class="font-bold text-techCyan mb-4 flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4"></i> Pelajaran</h3>
+                <ul id="scheduleList" class="space-y-3 text-sm">
+                    <!-- Dynamic -->
+                </ul>
+            </div>
+            <div class="p-6 rounded-2xl bg-techCard border border-cyan-500/20">
+                <h3 class="font-bold text-techCyan mb-4 flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4"></i> Petugas Piket</h3>
+                <div id="piketList" class="flex flex-wrap gap-2">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALERI FOTO -->
+    <section id="galeri" class="py-20 bg-slate-900/50">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 flex items-center justify-center gap-2">
+                <i data-lucide="image" class="text-techCyan"></i> Galeri Kenangan
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="h-48 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 font-mono">Foto Kegiatan 1</div>
+                <div class="h-48 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 font-mono">Foto Kegiatan 2</div>
+                <div class="h-48 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 font-mono">Foto Kegiatan 3</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PAPAN PENGUMUMAN -->
+    <section id="pengumuman" class="py-20 max-w-4xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+            <i data-lucide="bell" class="text-techCyan"></i> Information Center
+        </h2>
+        <div class="p-6 rounded-2xl bg-gradient-to-r from-techCard to-slate-800 border-l-4 border-techCyan">
+            <span class="text-xs text-techCyan font-mono">22 September 2026</span>
+            <h3 class="text-lg font-bold mt-1">Ujian Tengah Semester Dimulai</h3>
+            <p class="text-slate-300 text-sm mt-2">Jangan lupa belajar dan persiapkan laptop/alat tulis kalian dengan baik!</p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-500">
+        <p>© 2026 XI.B1 SMAN 1 Klapanunggal. All rights reserved.</p>
+        <p class="mt-1">Designed with Tech & Passion.</p>
+    </footer>
+
+    <!-- MODAL POPUP DETAIL SISWA -->
+    <div id="studentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-techCard border border-techCyan/50 rounded-2xl max-w-sm w-full p-6 relative tech-glow">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="text-center">
+                <div id="modalAvatar" class="w-20 h-20 rounded-full bg-cyan-950 text-techCyan border-2 border-techCyan mx-auto flex items-center justify-center text-2xl font-bold mb-4">
+                </div>
+                <h3 id="modalName" class="text-xl font-bold text-white"></h3>
+                <p id="modalRole" class="text-xs text-techCyan font-mono mb-4"></p>
+                <p id="modalQuote" class="text-sm italic text-slate-300 bg-slate-900/50 p-3 rounded-lg border border-slate-800 mb-4"></p>
+                <div class="flex justify-center gap-4">
+                    <a id="modalIg" href="#" target="_blank" class="p-2 bg-slate-800 rounded-full text-techCyan hover:bg-techCyan hover:text-techDark transition">
+                        <i data-lucide="instagram" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIO BACKSOUND AMBIENT (OPTIONAL) -->
+    <audio id="bgmAudio" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+
+        // 1. DATA SISWA (Bisa kamu tambah/ganti)
+        const students = [
+            { id: 1, name: "Ahmad Rizky", role: "Siswa / Tech Guy", quote: "Koding hari ini, kuasai dunia besok.", ig: "https://instagram.com" },
+            { id: 2, name: "Siti Nurhaliza", role: "Siswa / Creative", quote: "Desain adalah jiwa dari teknologi.", ig: "https://instagram.com" },
+            { id: 3, name: "Budi Santoso", role: "Siswa / Gamer", quote: "GG WP di kelas dan di game.", ig: "https://instagram.com" },
+            { id: 4, name: "Anisa Rahma", role: "Siswa / Logic", quote: "Matematika itu seni berpikir.", ig: "https://instagram.com" },
+            // Tambahkan nama anggota lainnya di sini...
+        ];
+
+        // Render Siswa
+        const studentGrid = document.getElementById('studentGrid');
+        students.forEach(s => {
+            const card = document.createElement('div');
+            card.className = "p-4 rounded-xl bg-techCard border border-slate-800 hover:border-techCyan/50 cursor-pointer text-center transition transform hover:-translate-y-1";
+            card.onclick = () => openModal(s);
+            card.innerHTML = `
+                <div class="w-12 h-12 mx-auto rounded-full bg-slate-800 text-techCyan flex items-center justify-center font-bold mb-2">
+                    ${s.name.charAt(0)}
+                </div>
+                <h4 class="text-xs font-semibold truncate text-slate-200">${s.name}</h4>
+            `;
+            studentGrid.appendChild(card);
+        });
+
+        // Modal Handler
+        function openModal(student) {
+            document.getElementById('modalAvatar').innerText = student.name.charAt(0);
+            document.getElementById('modalName').innerText = student.name;
+            document.getElementById('modalRole').innerText = student.role;
+            document.getElementById('modalQuote').innerText = `"${student.quote}"`;
+            document.getElementById('modalIg').href = student.ig;
+            document.getElementById('studentModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('studentModal').classList.add('hidden');
+        }
+
+        // 2. DATA JADWAL & TAB SWITCHING
+        const schedules = {
+            'Senin': { mapel: ['Upacara', 'Matematika Lanjut', 'Fisika', 'Bahasa Indonesia'], piket: ['Ahmad', 'Siti', 'Budi'] },
+            'Selasa': { mapel: ['Informatika', 'Bahasa Inggris', 'Pancasila'], piket: ['Anisa', 'Doni', 'Eka'] },
+            'Rabu': { mapel: ['Kimia', 'Biologi', 'Sejarah'], piket: ['Fajar', 'Gita', 'Hadi'] },
+            'Kamis': { mapel: ['Olahraga', 'Seni Budaya', 'PAI'], piket: ['Indah', 'Joko', 'Kiki'] },
+            'Jumat': { mapel: ['Jumat Bersih', 'PKWU', 'B. Sunda'], piket: ['Lani', 'Maman', 'Nia'] }
+        };
+
+        function switchDay(day) {
+            const list = document.getElementById('scheduleList');
+            const piket = document.getElementById('piketList');
+            list.innerHTML = '';
+            piket.innerHTML = '';
+
+            schedules[day].mapel.forEach(m => {
+                list.innerHTML += `<li class="flex items-center gap-2 text-slate-300"><i data-lucide="check-circle-2" class="w-4 h-4 text-techCyan"></i> ${m}</li>`;
+            });
+
+            schedules[day].piket.forEach(p => {
+                piket.innerHTML += `<span class="px-3 py-1 rounded-full bg-cyan-950 text-techCyan border border-techCyan/30 text-xs">${p}</span>`;
+            });
+
+            // Re-init icons for dynamic content
+            lucide.createIcons();
+        }
+        // Default Load Monday
+        switchDay('Senin');
+
+        // 3. COUNTDOWN TO GRADUATION (Contoh Target: Mei 2028)
+        const gradDate = new Date("May 1, 2028 00:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const diff = gradDate - now;
+            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('minutes').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('seconds').innerText = Math.floor((diff % (1000 * 60)) / 1000);
+        }, 1000);
+
+        // 4. BGM AUDIO TOGGLE
+        const bgm = document.getElementById('bgmAudio');
+        const bgmBtn = document.getElementById('bgmToggle');
+        const bgmIcon = document.getElementById('bgmIcon');
+        let isPlaying = false;
+
+        bgmBtn.onclick = () => {
+            if (isPlaying) {
+                bgm.pause();
+                bgmIcon.setAttribute('data-lucide', 'volume-x');
+            } else {
+                bgm.play();
+                bgmIcon.setAttribute('data-lucide', 'volume-2');
+            }
+            isPlaying = !isPlaying;
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
