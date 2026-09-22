@@ -28,26 +28,26 @@ const students = [
     { id: 24, name: "Arya", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 25, name: "Al Mira", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 26, name: "Elang", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 27, name: "Dzaki N.", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 27, name: "Dzaky", fullName: "M. Dzaky Pradana", role: "Siswa XI.B1", quote: "No excuses. Just results", ig: "#" },
     { id: 28, name: "Aisahra", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 29, name: "Satria P", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 30, name: "Putri", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 29, name: "Satria", fullName: "Satria Arjasena M", role: "Siswa XI.B1", quote: "If it's meant for you, it will find it's way to you.", ig: "#" },
+    { id: 30, name: "Putri", fullName: "Putri Aulia", role: "Siswa XI.B1", quote: "calm is power. i choose peace over chaos", ig: "#" },
     { id: 31, name: "Fahri", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 32, name: "Rifqi", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 33, name: "Fadhil", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 34, name: "Yusuf", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 35, name: "Kirana", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 36, name: "Effan", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 36, name: "Effan", fullName: "Effan Zandra A.P", role: "Siswa XI.B1", quote: "You're the most important person in your life", ig: "#" },
     { id: 37, name: "Dzaki", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 38, name: "Aura", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 39, name: "Reva", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 39, name: "Reva", fullName: "Reva Amalia A", role: "Siswa XI.B1", quote: "if a million loved you, I am one of them, and if one loved you, it was me, if no one loved you then know that I am dead", ig: "#" },
     { id: 40, name: "Surya", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 41, name: "Dhirgam", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 42, name: "Yoga", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 42, name: "Yoga", fullName: "Yoga R.R", role: "Siswa XI.B1", quote: "The death of democracy is the death of the people's will.", ig: "#" },
     { id: 43, name: "Dude", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 44, name: "Daffa", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 45, name: "Irfan", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 46, name: "Ara", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 44, name: "Daffa", fullName: "M. Daffa Azalia", role: "Siswa XI.B1", quote: "Be what you wanna be", ig: "#" },
+    { id: 45, name: "Irfan", fullName: "Irfan Asyraf Musyaffa", role: "Siswa XI.B1", quote: "silence is better explaining", ig: "#" },
+    { id: 46, name: "Ara", fullName: "Ara Ananda", role: "Siswa XI.B1", quote: "be your own light", ig: "#" },
     { id: 47, name: "Anissa", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 48, name: "Meli", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 49, name: "Gibran", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
@@ -70,7 +70,7 @@ students.forEach(s => {
 
 function openModal(student) {
     document.getElementById('modalAvatar').innerText = student.name.charAt(0);
-    document.getElementById('modalName').innerText = student.name;
+    document.getElementById('modalName').innerText = student.fullName || student.name;
     document.getElementById('modalRole').innerText = student.role;
     document.getElementById('modalQuote').innerText = `"${student.quote}"`;
     document.getElementById('modalIg').href = student.ig;
