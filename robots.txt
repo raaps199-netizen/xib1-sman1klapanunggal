@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://raaps199-netizen.github.io/xib1-sman1klapanunggal/sitemap.xml
