@@ -9,29 +9,48 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <link rel="stylesheet" href="style.css">
 </head>
-<body class="min-h-screen bg-techDark text-slate-100 font-sans antialiased bg-grid">
-<main class="max-w-6xl mx-auto px-4 py-10">
-<header class="flex items-center justify-between gap-4 mb-8">
-<div><p class="text-xs text-techCyan uppercase tracking-[0.25em] font-mono">XI.B1 Control</p><h1 class="text-3xl font-extrabold mt-1">Super Admin</h1></div>
-<button id="logout" class="px-4 py-2 rounded-xl border border-slate-700 hover:border-red-400/50 hover:text-red-300 transition">Logout</button>
+<body class="bg-techDark text-slate-100 font-sans antialiased bg-grid relative overflow-x-hidden">
+<nav class="fixed top-0 w-full z-50 bg-techDark/80 backdrop-blur-md border-b border-cyan-500/20">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2"><i data-lucide="cpu" class="text-techCyan w-8 h-8 animate-pulse"></i><a href="index.html" class="font-bold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-techCyan to-techBlue">XI.B1</a></div>
+<div class="flex items-center gap-2">
+<span class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-cyan-950/40 border border-cyan-500/20 text-xs text-techCyan"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Super Admin</span>
+<button id="logout" class="px-3 py-2 rounded-lg border border-slate-700 hover:border-red-400/50 hover:text-red-300 transition text-sm">Logout</button>
+</div>
+</div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+<header class="mb-8">
+<p class="text-xs text-techCyan uppercase tracking-[0.25em] font-mono">XI.B1 Control</p>
+<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mt-2">
+<div><h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Control Panel</h1><p class="text-slate-400 mt-2 max-w-2xl">Kelola akses anggota dan pantau database akun Bionest One dari satu tempat.</p></div>
+<a href="index.html" class="inline-flex items-center gap-2 w-fit px-4 py-2.5 rounded-xl border border-cyan-500/25 text-sm text-slate-300 hover:text-techCyan hover:bg-cyan-500/10 transition"><i data-lucide="external-link" class="w-4 h-4"></i> Lihat website</a>
+</div>
 </header>
 
-<section class="p-6 rounded-2xl bg-techCard border border-cyan-500/20 mb-6">
-<div class="flex items-center gap-2 mb-2"><i data-lucide="users-round" class="text-techCyan"></i><h2 class="text-xl font-bold">Student Accounts</h2></div>
-<p class="text-sm text-slate-400 mb-5">Database akun anggota XI.B1 tersimpan sebagai data JSON di repository.</p>
-<button id="seedBtn" class="px-5 py-3 rounded-xl bg-cyan-500 text-slate-950 font-bold hover:bg-cyan-400 transition disabled:opacity-50">
-Buat Semua Akun
-</button>
-<p id="seedStatus" class="text-sm mt-4 min-h-5"></p>
+<section class="grid sm:grid-cols-3 gap-4 mb-6">
+<div class="p-5 rounded-2xl bg-techCard/90 border border-cyan-500/20"><p class="text-xs text-slate-500 uppercase tracking-wider">Database</p><div class="flex items-center gap-2 mt-2"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><p class="font-bold">GitHub JSON</p></div></div>
+<div class="p-5 rounded-2xl bg-techCard/90 border border-cyan-500/20"><p class="text-xs text-slate-500 uppercase tracking-wider">Total akun</p><p id="accountCount" class="text-2xl font-extrabold text-techCyan mt-1">--</p></div>
+<div class="p-5 rounded-2xl bg-techCard/90 border border-cyan-500/20"><p class="text-xs text-slate-500 uppercase tracking-wider">Akses</p><p class="text-2xl font-extrabold mt-1">Super Admin</p></div>
 </section>
 
-<section class="p-6 rounded-2xl bg-techCard border border-cyan-500/20">
-<div class="flex items-center gap-2 mb-5"><i data-lucide="shield-check" class="text-techCyan"></i><h2 class="text-xl font-bold">Student Accounts</h2></div>
-<div id="studentList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"><p class="text-sm text-slate-500">Memuat...</p></div>
+<section class="p-6 rounded-2xl bg-techCard/90 border border-cyan-500/20 mb-6">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div class="flex items-start gap-3"><div class="w-10 h-10 shrink-0 rounded-xl bg-cyan-950/70 border border-techCyan/20 flex items-center justify-center"><i data-lucide="database" class="text-techCyan w-5 h-5"></i></div><div><h2 class="text-lg font-bold">Account Database</h2><p class="text-sm text-slate-400 mt-1">Data akun anggota XI.B1 dibaca dari repository.</p></div></div>
+<button id="seedBtn" class="px-5 py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold tech-glow-hover transition disabled:opacity-50">Refresh Database</button>
+</div>
+<p id="seedStatus" class="text-sm mt-4 min-h-5 text-slate-500"></p>
 </section>
-</main>
 
-<script src="auth.js"></script>
+<section class="rounded-2xl bg-techCard/90 border border-cyan-500/20 overflow-hidden">
+<div class="p-6 border-b border-slate-700/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+<div><div class="flex items-center gap-2"><i data-lucide="users-round" class="text-techCyan"></i><h2 class="text-xl font-bold">Student Accounts</h2></div><p class="text-sm text-slate-500 mt-1">Daftar seluruh anggota yang memiliki akses.</p></div>
+<div class="flex items-center gap-2 text-xs text-slate-500"><i data-lucide="shield" class="w-4 h-4"></i> Protected area</div>
+</div>
+<div id="studentList" class="p-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-3"><p class="text-sm text-slate-500">Memuat...</p></div>
+</section>
+</main><script src="auth.js"></script>
 <script>
 const MEMBERS = [
 ["khafi","Ashabul Khafi"],["arjasena","Satria Arjasena Maulana"],["orlen","Danendra Orlen Wasatha"],
