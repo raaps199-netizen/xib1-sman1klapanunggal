@@ -333,10 +333,29 @@
                     </div>
                 </div>
 
-                <p id="modalQuote" class="text-sm italic text-slate-300 bg-slate-900/50 p-4 rounded-lg border border-slate-800 mb-4"></p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 text-left">
+                    <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase">Hobi</p>
+                        <p id="modalHobby" class="text-sm font-semibold text-slate-200 mt-1">Belum diisi</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase">Mapel Favorit</p>
+                        <p id="modalSubject" class="text-sm font-semibold text-slate-200 mt-1">Belum diisi</p>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-slate-900/50 border border-slate-800 text-left mb-4">
+                    <p class="text-[10px] text-slate-500 uppercase">Bio</p>
+                    <p id="modalQuote" class="text-sm text-slate-300 mt-2 leading-relaxed">Belum ada bio.</p>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-900/50 border border-slate-800 text-left mb-4">
+                    <p class="text-[10px] text-slate-500 uppercase">Instagram</p>
+                    <p id="modalInstagramText" class="text-sm text-slate-300 mt-1 break-all">Belum diisi</p>
+                </div>
 
                 <div class="flex justify-center gap-4">
-                    <a id="modalIg" href="#" target="_blank" class="p-2 bg-slate-800 rounded-full text-techCyan hover:bg-techCyan hover:text-techDark transition">
+                    <a id="modalIg" href="#" target="_blank" rel="noopener noreferrer" class="p-2 bg-slate-800 rounded-full text-techCyan hover:bg-techCyan hover:text-techDark transition" aria-label="Instagram">
                         <i data-lucide="instagram" class="w-5 h-5"></i>
                     </a>
                 </div>
