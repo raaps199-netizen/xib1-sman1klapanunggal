@@ -80,7 +80,13 @@ document.getElementById('seedBtn').onclick=async()=>{
      role: username === 'daffa' ? 'super_admin' : 'student'
    }));
 
-   const {data,error}=await supabaseClient.functions.invoke('create-members',{body:{members}});
+   const {data:{session:currentSession}}=await supabaseClient.auth.getSession();
+   if(!currentSession?.access_token) throw new Error('Sesi login tidak ditemukan. Silakan login ulang.');
+
+   const {data,error}=await supabaseClient.functions.invoke('create-members',{
+     body:{members},
+     headers:{Authorization:'Bearer '+currentSession.access_token}
+   });
    if(error) throw error;
 
    const created=data?.results?.created?.length||0;
