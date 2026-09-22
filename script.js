@@ -82,7 +82,7 @@ async function renderMemberProfile(session) {
     button.id = 'memberProfileButton';
     button.className = 'flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/5 hover:bg-cyan-500/10 transition';
     button.innerHTML = `
-        <span class="w-7 h-7 rounded-full bg-gradient-to-br from-techCyan to-techBlue text-techDark flex items-center justify-center text-[10px] font-black">${getInitials(profile.full_name || profile.username)}</span>
+        <span id="memberTopAvatar" class="w-7 h-7 rounded-full bg-gradient-to-br from-techCyan to-techBlue text-techDark flex items-center justify-center text-[10px] font-black overflow-hidden">${getInitials(profile.full_name || profile.username)}</span>
         <span class="hidden sm:block text-xs font-semibold text-slate-200 max-w-[100px] truncate">${profile.full_name || profile.username}</span>
     `;
     button.addEventListener('click', () => openMemberProfile(profile));
@@ -96,7 +96,13 @@ function renderMemberOverview(profile) {
     const section = document.getElementById('memberOverview');
     if (!section) return;
     section.classList.remove('hidden');
-    document.getElementById('overviewAvatar').textContent = getInitials(profile.full_name || profile.username);
+    const overviewAvatar = document.getElementById('overviewAvatar');
+    if (profile.avatar_url) {
+        overviewAvatar.innerHTML = '<img src="' + profile.avatar_url + '" alt="Foto profil" class="w-full h-full object-cover">';
+        overviewAvatar.classList.add('overflow-hidden');
+    } else {
+        overviewAvatar.textContent = getInitials(profile.full_name || profile.username);
+    }
     document.getElementById('overviewName').textContent = profile.full_name || profile.username || 'Member';
     document.getElementById('overviewUsername').textContent = '@' + (profile.username || '');
     const student = students.find(s => s.username === profile.username);
@@ -134,7 +140,7 @@ function openMemberProfile(profile) {
                 <div class="p-6 sm:p-7">
                     <div class="flex items-start justify-between gap-4">
                         <div class="flex items-center gap-3">
-                            <div id="profileAvatar" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-techCyan to-techBlue text-techDark flex items-center justify-center text-lg font-black"></div>
+                            <div id="profileAvatar" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-techCyan to-techBlue text-techDark flex items-center justify-center text-lg font-black overflow-hidden"></div>
                             <div>
                                 <p class="text-[10px] uppercase tracking-[.25em] text-techCyan">Member Profile</p>
                                 <h2 id="profileDisplayName" class="text-xl font-black mt-1"></h2>
@@ -153,6 +159,21 @@ function openMemberProfile(profile) {
                     </div>
 
                     <form id="profileEditForm" class="mt-5 space-y-4">
+                        <div class="p-4 rounded-2xl bg-slate-950/40 border border-cyan-500/10">
+                            <div class="flex items-center gap-4">
+                                <div id="profileEditAvatar" class="w-20 h-20 rounded-2xl bg-gradient-to-br from-techCyan to-techBlue text-techDark flex items-center justify-center text-xl font-black overflow-hidden shrink-0"></div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-bold text-white">Foto Profil</p>
+                                    <p class="text-xs text-slate-500 mt-1">JPG, PNG, atau WebP · maksimal 2 MB</p>
+                                    <input id="profilePictureInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden">
+                                    <div class="flex flex-wrap gap-2 mt-3">
+                                        <button type="button" id="changeProfilePicture" class="px-3 py-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold hover:bg-cyan-500/15 transition">Ganti Foto</button>
+                                        <button type="button" id="removeProfilePicture" class="hidden px-3 py-2 rounded-lg border border-red-500/20 text-red-300 text-xs font-semibold hover:bg-red-500/10 transition">Hapus Foto</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <p id="profilePictureStatus" class="text-xs min-h-4 mt-3 text-slate-500"></p>
+                        </div>
                         <div>
                             <label class="text-xs text-slate-400">Nama Lengkap <span class="text-slate-600">(tetap)</span></label>
                             <input id="profileFullName" readonly class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-900/70 border border-slate-800 text-slate-400 cursor-not-allowed">
@@ -196,6 +217,64 @@ function openMemberProfile(profile) {
         document.body.appendChild(modal);
 
         document.getElementById('closeProfileModal').onclick = () => closeMemberProfile();
+        document.getElementById('changeProfilePicture').onclick = () => {
+            document.getElementById('profilePictureInput').click();
+        };
+
+        document.getElementById('profilePictureInput').addEventListener('change', async (event) => {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            const status = document.getElementById('profilePictureStatus');
+
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                status.className = 'text-xs min-h-4 mt-3 text-red-400';
+                status.textContent = 'Format foto harus JPG, PNG, atau WebP.';
+                event.target.value = '';
+                return;
+            }
+            if (file.size > 8 * 1024 * 1024) {
+                status.className = 'text-xs min-h-4 mt-3 text-red-400';
+                status.textContent = 'Foto awal maksimal 8 MB.';
+                event.target.value = '';
+                return;
+            }
+
+            status.className = 'text-xs min-h-4 mt-3 text-slate-400';
+            status.textContent = 'Mengompres dan mengunggah foto...';
+
+            try {
+                const dataUrl = await compressProfilePicture(file);
+                const updated = await window.updateProfilePicture(dataUrl);
+                profile = { ...profile, ...updated };
+                renderProfileAvatar(profile);
+                renderMemberOverview(profile);
+                status.className = 'text-xs min-h-4 mt-3 text-emerald-400';
+                status.textContent = 'Foto profil berhasil diperbarui.';
+            } catch (error) {
+                status.className = 'text-xs min-h-4 mt-3 text-red-400';
+                status.textContent = error.message || 'Gagal memperbarui foto profil.';
+            } finally {
+                event.target.value = '';
+            }
+        });
+
+        document.getElementById('removeProfilePicture').onclick = async () => {
+            const status = document.getElementById('profilePictureStatus');
+            status.className = 'text-xs min-h-4 mt-3 text-slate-400';
+            status.textContent = 'Menghapus foto...';
+            try {
+                const updated = await window.updateProfilePicture('');
+                profile = { ...profile, ...updated };
+                renderProfileAvatar(profile);
+                renderMemberOverview(profile);
+                status.className = 'text-xs min-h-4 mt-3 text-emerald-400';
+                status.textContent = 'Foto profil dihapus.';
+            } catch (error) {
+                status.className = 'text-xs min-h-4 mt-3 text-red-400';
+                status.textContent = error.message || 'Gagal menghapus foto profil.';
+            }
+        };
+
         document.getElementById('profileLogout').onclick = async () => {
             await window.supabaseClient.auth.signOut();
             sessionStorage.clear();
@@ -229,7 +308,7 @@ function openMemberProfile(profile) {
         });
     }
 
-    document.getElementById('profileAvatar').textContent = getInitials(profile.full_name || profile.username);
+    renderProfileAvatar(profile);
     document.getElementById('profileDisplayName').textContent = profile.full_name || 'Member';
     document.getElementById('profileDisplayRole').textContent = profile.role === 'super_admin' ? 'SUPER ADMIN · XI.B1' : 'STUDENT · XI.B1';
     document.getElementById('profileUsername').textContent = '@' + profile.username;
@@ -239,6 +318,8 @@ function openMemberProfile(profile) {
     document.getElementById('profileHobby').value = profile.hobby || '';
     document.getElementById('profileSubject').value = profile.favourite_subject || '';
     document.getElementById('profileInstagram').value = profile.instagram || '';
+    const removePicture = document.getElementById('removeProfilePicture');
+    if (removePicture) removePicture.classList.toggle('hidden', !profile.avatar_url);
 
     const adminLink = document.getElementById('adminControlLink');
     adminLink.classList.toggle('hidden', profile.role !== 'super_admin');
@@ -256,6 +337,69 @@ function closeMemberProfile() {
     modal.classList.add('hidden');
     modal.classList.remove('flex');
     document.body.classList.remove('overflow-hidden');
+}
+
+function renderProfileAvatar(profile) {
+    const initials = getInitials(profile.full_name || profile.username);
+    const targets = [
+        document.getElementById('profileAvatar'),
+        document.getElementById('profileEditAvatar'),
+        document.getElementById('memberTopAvatar')
+    ].filter(Boolean);
+
+    targets.forEach(el => {
+        if (profile.avatar_url) {
+            el.innerHTML = '<img src="' + profile.avatar_url + '" alt="Foto profil" class="w-full h-full object-cover">';
+        } else {
+            el.textContent = initials;
+        }
+    });
+}
+
+async function compressProfilePicture(file) {
+    const bitmap = await createImageBitmap(file);
+    const size = 512;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    const sourceSize = Math.min(bitmap.width, bitmap.height);
+    const sx = (bitmap.width - sourceSize) / 2;
+    const sy = (bitmap.height - sourceSize) / 2;
+    ctx.drawImage(bitmap, sx, sy, sourceSize, sourceSize, 0, 0, size, size);
+    bitmap.close();
+
+    return canvas.toDataURL('image/webp', 0.82);
+}
+
+window.updateProfilePicture = async function(image) {
+    const session = window.bionestGetSession ? window.bionestGetSession() : null;
+    const profile = session?.profile || JSON.parse(sessionStorage.getItem('bionestSession') || 'null');
+    const authHash = sessionStorage.getItem('bionestAuthHash');
+
+    if (!profile?.username || !authHash) {
+        throw new Error('Sesi login tidak ditemukan.');
+    }
+
+    const response = await fetch('/api/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action: 'profile_picture',
+            username: profile.username,
+            password_sha256: authHash,
+            image
+        })
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'Gagal menyimpan foto profil.');
+
+    if (data.profile) {
+        sessionStorage.setItem('bionestSession', JSON.stringify(data.profile));
+    }
+    return data.profile;
 }
 
 window.closeMemberProfile = closeMemberProfile;
