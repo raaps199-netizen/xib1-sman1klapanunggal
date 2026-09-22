@@ -199,6 +199,7 @@ function openMemberProfile(profile) {
                 });
 
                 profile = { ...profile, ...updated };
+                renderMemberOverview(profile);
                 status.className = 'text-xs min-h-5 text-center text-emerald-400';
                 status.textContent = 'Profil berhasil disimpan.';
                 document.getElementById('profileDisplayName').textContent = profile.full_name || 'Member';
