@@ -3,7 +3,20 @@ const memberGate = document.getElementById('memberGate');
 const memberYesBtn = document.getElementById('memberYesBtn');
 const visitorBtn = document.getElementById('visitorBtn');
 
-function showMemberGate() {
+async function showMemberGate() {
+    try {
+        if (window.supabaseClient) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                sessionStorage.setItem('bionestAccess', 'member');
+                await renderMemberProfile(session);
+                return;
+            }
+        }
+    } catch (error) {
+        console.warn('Session check failed:', error);
+    }
+
     if (sessionStorage.getItem('bionestAccess')) return;
     memberGate.classList.remove('hidden');
     memberGate.classList.add('flex');
@@ -28,6 +41,178 @@ visitorBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('DOMContentLoaded', showMemberGate);
+
+async function renderMemberProfile(session) {
+    if (!window.supabaseClient) return;
+
+    const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('id, username, full_name, role, quote, bio, hobby, favourite_subject, instagram, avatar_url')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+    if (!profile) return;
+
+    const existing = document.getElementById('memberProfileButton');
+    if (existing) existing.remove();
+
+    const container = document.querySelector('nav .max-w-7xl > div:last-child');
+    if (!container) return;
+
+    const button = document.createElement('button');
+    button.id = 'memberProfileButton';
+    button.className = 'flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/5 hover:bg-cyan-500/10 transition';
+    button.innerHTML = `
+        <span class="w-7 h-7 rounded-full bg-gradient-to-br from-techCyan to-techBlue text-techDark flex items-center justify-center text-[10px] font-black">${getInitials(profile.full_name || profile.username)}</span>
+        <span class="hidden sm:block text-xs font-semibold text-slate-200 max-w-[100px] truncate">${profile.full_name || profile.username}</span>
+    `;
+    button.addEventListener('click', () => openMemberProfile(profile));
+    container.insertBefore(button, container.firstChild);
+
+    lucide.createIcons();
+}
+
+function openMemberProfile(profile) {
+    let modal = document.getElementById('memberProfileModal');
+
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'memberProfileModal';
+        modal.className = 'fixed inset-0 z-[90] hidden items-center justify-center bg-black/80 backdrop-blur-md p-4';
+        modal.innerHTML = `
+            <div class="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-techCard border border-cyan-500/30 shadow-2xl shadow-cyan-950/50">
+                <div class="h-1 bg-gradient-to-r from-techCyan via-techBlue to-techCyan"></div>
+                <div class="p-6 sm:p-7">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div id="profileAvatar" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-techCyan to-techBlue text-techDark flex items-center justify-center text-lg font-black"></div>
+                            <div>
+                                <p class="text-[10px] uppercase tracking-[.25em] text-techCyan">Member Profile</p>
+                                <h2 id="profileDisplayName" class="text-xl font-black mt-1"></h2>
+                                <p id="profileDisplayRole" class="text-xs text-slate-500 mt-1"></p>
+                            </div>
+                        </div>
+                        <button id="closeProfileModal" class="p-2 rounded-xl text-slate-500 hover:text-white hover:bg-white/5 transition">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+
+                    <div class="mt-7 p-4 rounded-2xl bg-slate-950/40 border border-white/5">
+                        <p class="text-[10px] uppercase tracking-widest text-slate-600">Username</p>
+                        <p id="profileUsername" class="font-mono text-sm text-cyan-300 mt-1"></p>
+                    </div>
+
+                    <form id="profileEditForm" class="mt-5 space-y-4">
+                        <div>
+                            <label class="text-xs text-slate-400">Nama</label>
+                            <input id="profileFullName" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-700 text-white outline-none focus:border-techCyan/50">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Quote</label>
+                            <input id="profileQuote" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-700 text-white outline-none focus:border-techCyan/50">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Bio</label>
+                            <textarea id="profileBio" rows="3" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-700 text-white outline-none focus:border-techCyan/50 resize-none"></textarea>
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs text-slate-400">Hobi</label>
+                                <input id="profileHobby" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-700 text-white outline-none focus:border-techCyan/50">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-400">Mata Pelajaran Favorit</label>
+                                <input id="profileSubject" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-700 text-white outline-none focus:border-techCyan/50">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Instagram</label>
+                            <input id="profileInstagram" placeholder="@username atau URL" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-700 text-white outline-none focus:border-techCyan/50">
+                        </div>
+
+                        <p id="profileSaveStatus" class="text-xs min-h-5 text-center"></p>
+
+                        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                            <button type="submit" class="flex-1 py-3 rounded-xl bg-white text-slate-950 font-black hover:bg-cyan-100 transition">Simpan perubahan</button>
+                            <button type="button" id="profileLogout" class="px-5 py-3 rounded-xl border border-red-500/20 text-red-300 hover:bg-red-500/10 transition">Logout</button>
+                        </div>
+
+                        <a id="adminControlLink" href="admin.html" class="hidden items-center justify-center gap-2 w-full py-3 rounded-xl border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10 transition text-sm font-semibold">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i> Buka Control Panel
+                        </a>
+                    </form>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+
+        document.getElementById('closeProfileModal').onclick = () => closeMemberProfile();
+        document.getElementById('profileLogout').onclick = async () => {
+            await supabaseClient.auth.signOut();
+            sessionStorage.clear();
+            location.href = 'index.html';
+        };
+
+        document.getElementById('profileEditForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const status = document.getElementById('profileSaveStatus');
+            status.className = 'text-xs min-h-5 text-center text-slate-400';
+            status.textContent = 'Menyimpan...';
+
+            try {
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .update({
+                        full_name: document.getElementById('profileFullName').value.trim(),
+                        quote: document.getElementById('profileQuote').value.trim(),
+                        bio: document.getElementById('profileBio').value.trim(),
+                        hobby: document.getElementById('profileHobby').value.trim(),
+                        favourite_subject: document.getElementById('profileSubject').value.trim(),
+                        instagram: document.getElementById('profileInstagram').value.trim()
+                    })
+                    .eq('id', profile.id);
+
+                if (error) throw error;
+
+                status.className = 'text-xs min-h-5 text-center text-emerald-400';
+                status.textContent = 'Profil berhasil diperbarui.';
+                document.getElementById('profileDisplayName').textContent = document.getElementById('profileFullName').value.trim();
+            } catch (error) {
+                status.className = 'text-xs min-h-5 text-center text-red-400';
+                status.textContent = error.message || 'Gagal menyimpan profil.';
+            }
+        });
+    }
+
+    document.getElementById('profileAvatar').textContent = getInitials(profile.full_name || profile.username);
+    document.getElementById('profileDisplayName').textContent = profile.full_name || 'Member';
+    document.getElementById('profileDisplayRole').textContent = profile.role === 'super_admin' ? 'SUPER ADMIN · XI.B1' : 'STUDENT · XI.B1';
+    document.getElementById('profileUsername').textContent = '@' + profile.username;
+    document.getElementById('profileFullName').value = profile.full_name || '';
+    document.getElementById('profileQuote').value = profile.quote || '';
+    document.getElementById('profileBio').value = profile.bio || '';
+    document.getElementById('profileHobby').value = profile.hobby || '';
+    document.getElementById('profileSubject').value = profile.favourite_subject || '';
+    document.getElementById('profileInstagram').value = profile.instagram || '';
+
+    const adminLink = document.getElementById('adminControlLink');
+    adminLink.classList.toggle('hidden', profile.role !== 'super_admin');
+    adminLink.classList.toggle('flex', profile.role === 'super_admin');
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.classList.add('overflow-hidden');
+    lucide.createIcons();
+}
+
+function closeMemberProfile() {
+    const modal = document.getElementById('memberProfileModal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.classList.remove('overflow-hidden');
+}
+
+window.closeMemberProfile = closeMemberProfile;
 
 lucide.createIcons();
 
