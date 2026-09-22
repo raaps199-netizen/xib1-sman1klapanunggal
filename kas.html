@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kas Kelas | Bionest One</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: {
+                    techCyan: '#00f2fe',
+                    techBlue: '#4facfe',
+                    techDark: '#0b1120',
+                    techCard: '#1e293b'
+                }
+            }}
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-techDark text-slate-100 font-sans antialiased bg-grid min-h-screen">
+    <main class="max-w-7xl mx-auto px-4 py-10">
+        <div class="flex items-center justify-between gap-4 mb-8">
+            <div>
+                <p class="text-xs text-techCyan uppercase tracking-[0.25em] font-mono">Bionest One · Member Area</p>
+                <h1 class="text-3xl font-black mt-1 flex items-center gap-2">
+                    <i data-lucide="wallet" class="text-techCyan"></i> Kas Kelas
+                </h1>
+                <p id="memberName" class="text-sm text-slate-400 mt-2"></p>
+            </div>
+            <a href="index.html" class="px-4 py-2 rounded-xl border border-cyan-500/30 text-techCyan hover:bg-cyan-500/10 transition text-sm">Kembali</a>
+        </div>
+
+        <div id="loading" class="p-6 rounded-2xl bg-techCard border border-cyan-500/20 text-center text-slate-400">
+            Memuat data kas...
+        </div>
+
+        <div id="dashboard" class="hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div class="p-5 rounded-2xl bg-techCard border border-cyan-500/20">
+                    <p class="text-xs text-slate-500 uppercase">Kas</p>
+                    <p id="totalKas" class="text-2xl font-black text-techCyan mt-2">Rp0</p>
+                </div>
+                <div class="p-5 rounded-2xl bg-techCard border border-cyan-500/20">
+                    <p class="text-xs text-slate-500 uppercase">Poe Ibu</p>
+                    <p id="totalPoe" class="text-2xl font-black text-techBlue mt-2">Rp0</p>
+                </div>
+                <div class="p-5 rounded-2xl bg-techCard border border-cyan-500/20">
+                    <p class="text-xs text-slate-500 uppercase">Total Uang</p>
+                    <p id="totalBalance" class="text-2xl font-black text-white mt-2">Rp0</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <section class="p-5 rounded-2xl bg-techCard border border-cyan-500/20">
+                    <h2 class="font-bold flex items-center gap-2 mb-4">
+                        <i data-lucide="users" class="w-4 h-4 text-techCyan"></i> Rekap Per Member
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left text-xs text-slate-500 border-b border-slate-800">
+                                    <th class="py-3 pr-3">Nama</th>
+                                    <th class="py-3 px-3">Kas</th>
+                                    <th class="py-3 px-3">Poe</th>
+                                    <th class="py-3 pl-3">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="memberRows"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="p-5 rounded-2xl bg-techCard border border-cyan-500/20">
+                    <h2 class="font-bold flex items-center gap-2 mb-4">
+                        <i data-lucide="history" class="w-4 h-4 text-techCyan"></i> Riwayat Transaksi
+                    </h2>
+                    <div id="history" class="space-y-2"></div>
+                </section>
+            </div>
+        </div>
+
+        <div id="error" class="hidden p-6 rounded-2xl bg-red-950/30 border border-red-500/20 text-red-300 text-center"></div>
+    </main>
+
+<script>
+const session = JSON.parse(sessionStorage.getItem('bionestSession') || 'null');
+const password_sha256 = sessionStorage.getItem('bionestAuthHash');
+
+if (!session || !password_sha256 || sessionStorage.getItem('bionestAccess') !== 'member') {
+    window.location.href = 'login.html';
+}
+
+const money = value => new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0
+}).format(Number(value || 0));
+
+const students = [
+    ["rafif","Ahmad Rafif Hidayat"],["aisahra","Aisahra Mayjasti Aulia Putri"],["almira","Al Mira Berlian Handayani"],
+    ["alvian","Alvian Arkan Iniesta"],["andrian","Andrian Pranata Tambunan"],["anissa","Annisa Zahra"],["ara","Ara Ananda Putri"],
+    ["arya","Arya Pratama"],["khafi","Ashabul Khafi"],["fadhil","Askha Fadhil Raihan Adinomo"],["aura","Aura Rizky Triyastuti"],
+    ["avisha","Avisha Fakhiran Anwar"],["brella","Brela Terta Zafina"],["orlen","Danendra Orlen Wasatha"],["dhirgam","Dhirgam Nawi Hasb Dhiya Ul'Haq"],
+    ["dude","Dude Ramadhan"],["dzaki","Dzakii Nizaar Akmal"],["effan","Effan Zandra Arya Putra"],["elang","Elang Bari Dermawan"],
+    ["fathian","Fathian Khairul Akbar"],["fareal","Fareal Julyans Zalfine"],["gibran","Gibran Ayatullah"],["yusuf","Harazaki Yusuf Rahardjo Telaumbanua"],
+    ["irfan","Irfan Asyraf Musyaffa"],["jauharah","Jauharah Tuhfah"],["kevin","Kevin Habiyal Huda"],["keyla","Keyla Ajeng Firmansyah"],
+    ["kirana","Kirana Intan Permata"],["lutfan","Lutfan Attaullah Sultoni"],["daffa","M. Daffa Azalia"],["meli","Meli Anggraeni"],
+    ["mikaela","Mikaela Leona"],["dzaky","Muhammad Dzaky Pradana"],["fahri","Muhammad Fahri Maulana"],["nishar","Nishar Soma Maulana"],
+    ["putri","Putri Aulia"],["reno","Reno Ramzi Nararya"],["reva","Reva Amalia Achmad"],["rifqi","Rifqi Binangkit"],["ridho","Ridho Saputra Ependi"],
+    ["rizky","Rizky Dwi Saputra Hidayat"],["sadam","Sadam Al Fahri"],["salsabila","Salsabil Fajrianita"],["arjasena","Satria Arjasena Maulana"],
+    ["satria","Satria Putra Pratama"],["surya","Surya Melano"],["tania","Tania Fitri Izati"],["wisnu","Wisnu Panji Pratama"],
+    ["yoga","Yoga Rizki Ramadhan"],["zyella","Zyella Almaira Sigit"]
+].map(([username,name]) => ({username,name}));
+
+document.getElementById('memberName').textContent = session ? (session.full_name || session.username) : '';
+
+async function loadCash() {
+    try {
+        const response = await fetch('/api/cash', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({action:'summary', username:session.username, password_sha256})
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Gagal memuat data kas.');
+
+        document.getElementById('totalKas').textContent = money(data.totals.kas);
+        document.getElementById('totalPoe').textContent = money(data.totals.poe);
+        document.getElementById('totalBalance').textContent = money(data.totals.balance);
+
+        document.getElementById('memberRows').innerHTML = students.map(s => {
+            const row = data.byStudent[s.username] || {kas:0,poe:0,total:0};
+            return '<tr class="border-b border-slate-900/80">' +
+                '<td class="py-3 pr-3 text-slate-200 whitespace-nowrap">' + s.name + '</td>' +
+                '<td class="py-3 px-3 text-slate-400 whitespace-nowrap">' + money(row.kas) + '</td>' +
+                '<td class="py-3 px-3 text-slate-400 whitespace-nowrap">' + money(row.poe) + '</td>' +
+                '<td class="py-3 pl-3 text-techCyan font-bold whitespace-nowrap">' + money(row.total) + '</td></tr>';
+        }).join('');
+
+        const latest = (data.transactions || []).slice(0, 20);
+        document.getElementById('history').innerHTML = latest.length ? latest.map(t => {
+            const s = students.find(item => item.username === t.student);
+            return '<div class="p-3 rounded-xl bg-slate-950/40 border border-slate-800">' +
+                '<div class="flex items-center justify-between gap-3">' +
+                '<span class="text-sm font-semibold text-slate-200 truncate">' + (s ? s.name : t.student) + '</span>' +
+                '<span class="text-sm font-black text-techCyan whitespace-nowrap">+' + money(t.amount) + '</span></div>' +
+                '<div class="text-[11px] text-slate-500 mt-1">' + (t.category === 'poe' ? 'Poe Ibu' : 'Kas') + ' · ' + (t.month || '-') + ' · ' + (t.source === 'whatsapp-bot' ? 'WhatsApp' : 'Data awal') + '</div></div>';
+        }).join('') : '<p class="text-sm text-slate-500">Belum ada transaksi.</p>';
+
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        lucide.createIcons();
+    } catch (error) {
+        document.getElementById('loading').classList.add('hidden');
+        const el = document.getElementById('error');
+        el.textContent = error.message || 'Gagal memuat data kas.';
+        el.classList.remove('hidden');
+    }
+}
+lucide.createIcons();
+loadCash();
+</script>
+</body>
+</html>
