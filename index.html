@@ -48,6 +48,28 @@
 </head>
 <body class="bg-techDark text-slate-100 font-sans antialiased bg-grid relative overflow-x-hidden">
 
+
+    <!-- MEMBER / VISITOR GATE -->
+    <div id="memberGate" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="w-full max-w-md rounded-3xl bg-techCard border border-cyan-500/30 p-7 text-center shadow-2xl shadow-cyan-950/40">
+            <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-cyan-950/70 border border-techCyan/30 flex items-center justify-center">
+                <i data-lucide="users-round" class="w-8 h-8 text-techCyan"></i>
+            </div>
+            <p class="text-xs text-techCyan uppercase tracking-[0.25em] font-mono mb-2">Welcome to XI.B1</p>
+            <h2 class="text-2xl font-extrabold mb-3">Lu anggota kelas B1?</h2>
+            <p class="text-sm text-slate-400 mb-7">Pilih sesuai status lu untuk melanjutkan ke website kelas.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button id="memberYesBtn" class="px-5 py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold hover:opacity-90 transition">
+                    Ya, saya anggota
+                </button>
+                <button id="visitorBtn" class="px-5 py-3 rounded-xl border border-slate-700 bg-slate-900/60 text-slate-200 font-semibold hover:border-techCyan/40 hover:text-techCyan transition">
+                    Saya pengunjung
+                </button>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-5">Anggota kelas dapat masuk ke area member untuk mengakses fitur pribadi.</p>
+        </div>
+    </div>
+
     <!-- NAVBAR -->
     <nav class="fixed top-0 w-full z-50 bg-techDark/80 backdrop-blur-md border-b border-cyan-500/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
