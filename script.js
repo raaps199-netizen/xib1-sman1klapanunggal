@@ -9,14 +9,14 @@ const students = [
     { id: 6, name: "Andrian", fullName: "Andrian Pranata Tambunan", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 7, name: "Sadam", fullName: "Sadam Al Fahri", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 8, name: "Wisnu", fullName: "Wisnu Panji Pratama", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 9, name: "Tania", fullName: "Tania Fitri Izati", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 9, name: "Tania", fullName: "Tania Fitri Izati", role: "Siswa XI.B1", quote: "doing what you love is freedom, loving what you do is happiness", ig: "#" },
     { id: 10, name: "Jauharah", fullName: "Jauharah Tuhfah", role: "Siswa XI.B1", quote: "relax diva, you're going to be a engineer", ig: "#" },
     { id: 11, name: "Keyla", fullName: "Keyla Ajeng Firmansyah", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 12, name: "Mikaela", fullName: "Mikaela Leona", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 12, name: "Mikaela", fullName: "Mikaela Leona", role: "Siswa XI.B1", quote: "if you love someone, let them know", ig: "#" },
     { id: 13, name: "Ridho", fullName: "Ridho Saputra Ependi", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 14, name: "Rizky", fullName: "Rizky Dwi Saputra Hidayat", role: "Siswa XI.B1", quote: "1 2 3 letsgow", ig: "#" },
     { id: 15, name: "Zyella", fullName: "Zyella Almaira Sigit", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 16, name: "Nishar", fullName: "Nishar Soma Maulana", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 16, name: "Nishar", fullName: "Nishar Soma Maulana", role: "Siswa XI.B1", quote: "go go go power rangers", ig: "#" },
     { id: 17, name: "Alvian", fullName: "Alvian Arkan Iniesta", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 18, name: "Brella", fullName: "Brela Terta Zafina", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 19, name: "Fathian", fullName: "Fathian Khairul Akbar", role: "Siswa XI.B1", quote: "there's nothing you can't do if you try", ig: "#" },
@@ -24,7 +24,7 @@ const students = [
     { id: 21, name: "Lutfan", fullName: "Lutfan Attaullah Sultoni", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 22, name: "Rafif", fullName: "Ahmad Rafif Hidayat", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 23, name: "Kevin", fullName: "Kevin Habiyal Huda", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 24, name: "Arya", fullName: "Arya Pratama", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 24, name: "Arya", fullName: "Arya Pratama", role: "Siswa XI.B1", quote: "i'm back to come", ig: "#" },
     { id: 25, name: "Al Mira", fullName: "Al Mira Berlian Handayani", role: "Siswa XI.B1", quote: "you never fail until you stop trying", ig: "#" },
     { id: 26, name: "Elang", fullName: "Elang Bari Dermawan", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 27, name: "Dzaky", fullName: "Muhammad Dzaky Pradana", role: "Siswa XI.B1", quote: "No excuses. Just results", ig: "#" },
@@ -48,7 +48,7 @@ const students = [
     { id: 45, name: "Irfan", fullName: "Irfan Asyraf Musyaffa", role: "Siswa XI.B1", quote: "silence is better explaining", ig: "#" },
     { id: 46, name: "Ara", fullName: "Ara Ananda Putri", role: "Siswa XI.B1", quote: "be your own light", ig: "#" },
     { id: 47, name: "Anissa", fullName: "Annisa Zahra", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 48, name: "Meli", fullName: "Meli Anggraeni", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 48, name: "Meli", fullName: "Meli Anggraeni", role: "Siswa XI.B1", quote: "Be careful who you trust; even shadows disappear in the dark", ig: "#" },
     { id: 49, name: "Gibran", fullName: "Gibran Ayatullah", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 50, name: "Salsabila", fullName: "Salsabil Fajrianita", role: "Siswa XI.B1", quote: "Ready or not ready, kudu ready", ig: "#" },
 ];
@@ -216,7 +216,6 @@ bgmBtn.onclick = () => {
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.switchDay = switchDay;
-
 
 const announcements = [
     {
