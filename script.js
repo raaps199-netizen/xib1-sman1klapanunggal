@@ -87,6 +87,7 @@ async function renderMemberProfile(session) {
     `;
     button.addEventListener('click', () => openMemberProfile(profile));
     container.insertBefore(button, container.firstChild);
+    renderProfileAvatar(profile);
 
     renderMemberOverview(profile);
     lucide.createIcons();
