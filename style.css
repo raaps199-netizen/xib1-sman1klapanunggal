@@ -13,10 +13,10 @@
 
 /* Hero class photo */
 .hero-section {
-    min-height: 68vh;
-    height: clamp(520px, 68vh, 760px);
+    min-height: 520px;
+    height: clamp(520px, 64vh, 680px);
     background-image: url("./assets/images/WA_1790037129669.jpeg");
-    background-size: cover;
+    background-size: 100% auto;
     background-position: center center;
     background-repeat: no-repeat;
     isolation: isolate;
@@ -53,8 +53,9 @@
 
 @media (max-width: 640px) {
     .hero-section {
-        min-height: 520px;
-        height: 72vh;
+        min-height: 500px;
+        height: 68vh;
+        background-size: auto 100%;
         background-position: center center;
     }
 
