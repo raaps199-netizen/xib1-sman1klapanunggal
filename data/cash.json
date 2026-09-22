@@ -330,6 +330,17 @@
       "month": "Oktober",
       "description": "Kas Oktober",
       "source": "initial-table"
+    },
+    {
+      "id": "tx-1790091400599",
+      "type": "income",
+      "category": "kas",
+      "student": "yusuf",
+      "amount": 1,
+      "month": "September",
+      "description": "Kas September",
+      "source": "whatsapp-bot",
+      "created_at": "2026-09-22T15:36:40.599Z"
     }
   ]
-}
+}\n
