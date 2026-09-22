@@ -84,7 +84,8 @@ function renderMemberOverview(profile) {
     document.getElementById('overviewDuty').textContent = student ? (dayByStudent[student.name] || 'Tidak bertugas') : 'Tidak bertugas';
     document.getElementById('overviewHobby').textContent = profile.hobby || 'Belum diisi';
     document.getElementById('overviewSubject').textContent = profile.favourite_subject || 'Belum diisi';
-    document.getElementById('overviewBio').textContent = profile.bio || profile.quote || 'Belum ada bio.';
+    document.getElementById('overviewBio').textContent = profile.bio || 'Belum ada bio.';
+    document.getElementById('overviewQuote').textContent = profile.quote || 'Belum ada quote.';
     const instagram = document.getElementById('overviewInstagram');
     const instagramText = document.getElementById('overviewInstagramText');
     if (profile.instagram) {
