@@ -80,7 +80,10 @@ document.getElementById('seedBtn').onclick=async()=>{
      role: username === 'daffa' ? 'super_admin' : 'student'
    }));
 
-   const {data:{session:currentSession}}=await supabaseClient.auth.getSession();
+   const {data:{session:currentSession},error:sessionError}=await supabaseClient.auth.getSession();
+   console.log('SESSION:', currentSession);
+   console.log('ACCESS TOKEN:', currentSession?.access_token);
+   if(sessionError) throw new Error('Gagal membaca sesi: '+sessionError.message);
    if(!currentSession?.access_token) throw new Error('Sesi login tidak ditemukan. Silakan login ulang.');
 
    const functionUrl='https://jszzaqnggaatrgyiksfs.supabase.co/functions/v1/smooth-service';
