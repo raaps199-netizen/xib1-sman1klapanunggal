@@ -166,9 +166,15 @@ function openMemberProfile(profile) {
                                 <div class="min-w-0 flex-1">
                                     <p class="text-sm font-bold text-white">Foto Profil</p>
                                     <p class="text-xs text-slate-500 mt-1">JPG, PNG, atau WebP · maksimal 2 MB</p>
+                                    <div class="grid grid-cols-3 gap-2 mt-3">
+                                        <label class="text-[10px] text-slate-500">Horizontal<input id="cropX" type="range" min="0" max="100" value="50" class="w-full accent-cyan-400"></label>
+                                        <label class="text-[10px] text-slate-500">Vertikal<input id="cropY" type="range" min="0" max="100" value="50" class="w-full accent-cyan-400"></label>
+                                        <label class="text-[10px] text-slate-500">Zoom<input id="cropZoom" type="range" min="100" max="220" value="100" class="w-full accent-cyan-400"></label>
+                                    </div>
                                     <input id="profilePictureInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden">
                                     <div class="flex flex-wrap gap-2 mt-3">
-                                        <button type="button" id="changeProfilePicture" class="px-3 py-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold hover:bg-cyan-500/15 transition">Ganti Foto</button>
+                                        <button type="button" id="changeProfilePicture" class="px-3 py-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold hover:bg-cyan-500/15 transition">Pilih Foto</button>
+                                        <button type="button" id="saveProfilePicture" class="hidden px-3 py-2 rounded-lg bg-gradient-to-r from-techCyan to-techBlue text-slate-950 text-xs font-bold hover:opacity-90 transition">Simpan Foto</button>
                                         <button type="button" id="removeProfilePicture" class="hidden px-3 py-2 rounded-lg border border-red-500/20 text-red-300 text-xs font-semibold hover:bg-red-500/10 transition">Hapus Foto</button>
                                     </div>
                                 </div>
@@ -218,6 +224,12 @@ function openMemberProfile(profile) {
         document.body.appendChild(modal);
 
         document.getElementById('closeProfileModal').onclick = () => closeMemberProfile();
+        let pendingProfileImage = null;
+        let pendingProfileFile = null;
+        let cropX = 50;
+        let cropY = 50;
+        let cropZoom = 100;
+
         document.getElementById('changeProfilePicture').onclick = () => {
             document.getElementById('profilePictureInput').click();
         };
@@ -240,23 +252,52 @@ function openMemberProfile(profile) {
                 return;
             }
 
+            pendingProfileFile = file;
+            cropX = 50;
+            cropY = 50;
+            cropZoom = 100;
+            pendingProfileImage = await loadProfileImage(file);
+            showProfileCropPreview();
+            status.className = 'text-xs min-h-4 mt-3 text-cyan-300';
+            status.textContent = 'Atur posisi foto dulu, lalu tekan Simpan Foto.';
+            document.getElementById('saveProfilePicture').classList.remove('hidden');
+            event.target.value = '';
+        });
+
+        const saveProfilePicture = document.getElementById('saveProfilePicture');
+        saveProfilePicture.onclick = async () => {
+            if (!pendingProfileImage) return;
+            const status = document.getElementById('profilePictureStatus');
             status.className = 'text-xs min-h-4 mt-3 text-slate-400';
             status.textContent = 'Mengompres dan mengunggah foto...';
-
+            saveProfilePicture.disabled = true;
             try {
-                const dataUrl = await compressProfilePicture(file);
+                const dataUrl = await compressProfilePicture(pendingProfileImage, cropX, cropY, cropZoom);
                 const updated = await window.updateProfilePicture(dataUrl);
                 profile = { ...profile, ...updated };
                 renderProfileAvatar(profile);
                 renderMemberOverview(profile);
+                document.getElementById('saveProfilePicture').classList.add('hidden');
+                pendingProfileImage = null;
+                pendingProfileFile = null;
                 status.className = 'text-xs min-h-4 mt-3 text-emerald-400';
                 status.textContent = 'Foto profil berhasil diperbarui.';
             } catch (error) {
                 status.className = 'text-xs min-h-4 mt-3 text-red-400';
                 status.textContent = error.message || 'Gagal memperbarui foto profil.';
             } finally {
-                event.target.value = '';
+                saveProfilePicture.disabled = false;
             }
+        };
+
+        ['cropX', 'cropY', 'cropZoom'].forEach(id => {
+            const input = document.getElementById(id);
+            if (input) input.addEventListener('input', () => {
+                if (id === 'cropX') cropX = Number(input.value);
+                if (id === 'cropY') cropY = Number(input.value);
+                if (id === 'cropZoom') cropZoom = Number(input.value);
+                showProfileCropPreview();
+            });
         });
 
         document.getElementById('removeProfilePicture').onclick = async () => {
@@ -272,7 +313,7 @@ function openMemberProfile(profile) {
                 status.textContent = 'Foto profil dihapus.';
             } catch (error) {
                 status.className = 'text-xs min-h-4 mt-3 text-red-400';
-                status.textContent = error.message || 'Gagal menghapus foto profil.';
+                status.textContent = error.message || 'Gagal memperbarui foto profil.';
             }
         };
 
@@ -357,20 +398,36 @@ function renderProfileAvatar(profile) {
     });
 }
 
-async function compressProfilePicture(file) {
-    const bitmap = await createImageBitmap(file);
-    const size = 512;
+async function loadProfileImage(file) {
+    return await createImageBitmap(file);
+}
+
+function drawProfileCrop(bitmap, x = 50, y = 50, zoom = 100, target = 512) {
     const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
+    canvas.width = target;
+    canvas.height = target;
     const ctx = canvas.getContext('2d');
+    const sourceSize = Math.min(bitmap.width, bitmap.height) / (zoom / 100);
+    const maxX = Math.max(0, bitmap.width - sourceSize);
+    const maxY = Math.max(0, bitmap.height - sourceSize);
+    const sx = maxX * (x / 100);
+    const sy = maxY * (y / 100);
+    ctx.drawImage(bitmap, sx, sy, sourceSize, sourceSize, 0, 0, target, target);
+    return canvas;
+}
 
-    const sourceSize = Math.min(bitmap.width, bitmap.height);
-    const sx = (bitmap.width - sourceSize) / 2;
-    const sy = (bitmap.height - sourceSize) / 2;
-    ctx.drawImage(bitmap, sx, sy, sourceSize, sourceSize, 0, 0, size, size);
+function showProfileCropPreview() {
+    if (!pendingProfileImage) return;
+    const canvas = drawProfileCrop(pendingProfileImage, cropX, cropY, cropZoom, 256);
+    const preview = document.getElementById('profileEditAvatar');
+    if (preview) {
+        preview.innerHTML = '<img src="' + canvas.toDataURL('image/webp', 0.85) + '" alt="Preview foto" class="w-full h-full object-cover">';
+    }
+}
+
+async function compressProfilePicture(bitmap, x = 50, y = 50, zoom = 100) {
+    const canvas = drawProfileCrop(bitmap, x, y, zoom, 512);
     bitmap.close();
-
     return canvas.toDataURL('image/webp', 0.82);
 }
 
@@ -493,6 +550,7 @@ async function syncPublicProfiles() {
                 student.hobby = account.hobby || '';
                 student.favouriteSubject = account.favourite_subject || '';
                 student.instagram = account.instagram || '';
+                student.avatar_url = account.avatar_url || '';
             }
         });
         renderStudents();
@@ -554,7 +612,12 @@ function getInitials(name) {
 }
 
 function openModal(student) {
-    document.getElementById('modalAvatar').innerText = getInitials(student.fullName || student.name);
+    const modalAvatar = document.getElementById('modalAvatar');
+    if (student.avatar_url) {
+        modalAvatar.innerHTML = '<img src="' + student.avatar_url + '?v=' + Date.now() + '" alt="Foto profil" class="w-full h-full object-cover rounded-full">';
+    } else {
+        modalAvatar.innerText = getInitials(student.fullName || student.name);
+    }
     document.getElementById('modalId').innerText = `MEMBER #${String(student.id).padStart(2, '0')}`;
     document.getElementById('modalName').innerText = student.fullName || student.name;
     document.getElementById('modalRole').innerText = student.role;
