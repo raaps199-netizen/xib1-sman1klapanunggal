@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Student | XI.B1</title><meta name="robots" content="noindex,nofollow">
+<script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@latest"></script><link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen bg-techDark text-slate-100 font-sans antialiased bg-grid">
+<main class="max-w-5xl mx-auto px-4 py-10">
+<header class="flex items-center justify-between gap-4 mb-8">
+<div><p class="text-xs text-techCyan uppercase tracking-[0.25em] font-mono">XI.B1 Member Area</p><h1 class="text-3xl font-extrabold mt-1">Student Dashboard</h1></div>
+<button id="logout" class="px-4 py-2 rounded-xl border border-slate-700 hover:border-red-400/50 hover:text-red-300 transition">Logout</button>
+</header>
+<section class="grid md:grid-cols-2 gap-5">
+<div class="p-6 rounded-2xl bg-techCard border border-cyan-500/20">
+<p class="text-xs text-slate-500 uppercase">Profil</p><h2 id="fullName" class="text-xl font-bold mt-2">Memuat...</h2>
+<p id="username" class="text-sm text-techCyan mt-1"></p><p id="role" class="text-xs text-slate-400 mt-2"></p>
+</div>
+<div class="p-6 rounded-2xl bg-techCard border border-cyan-500/20">
+<p class="text-xs text-slate-500 uppercase mb-4">Quote</p>
+<p id="quote" class="text-lg italic text-slate-200">Memuat...</p>
+</div>
+</section>
+<div class="mt-6 p-5 rounded-2xl bg-slate-900/50 border border-slate-800 text-sm text-slate-400">Dashboard ini disiapkan untuk fitur edit profil. Data akan disimpan di Supabase, bukan di JavaScript publik.</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth.js"></script>
+<script>
+(async () => {
+ const {data:{session}} = await supabaseClient.auth.getSession();
+ if (!session) { location.href='login.html'; return; }
+ const {data:profile,error} = await supabaseClient.from('profiles').select('*').eq('id',session.user.id).single();
+ if(error){document.getElementById('fullName').textContent='Gagal memuat profil';return;}
+ if(profile.role !== 'student'){location.href='admin.html';return;}
+ document.getElementById('fullName').textContent=profile.full_name||'Student';
+ document.getElementById('username').textContent='@'+profile.username;
+ document.getElementById('role').textContent='Student';
+ document.getElementById('quote').textContent=profile.quote ? '“'+profile.quote+'”' : 'Belum ada quote.';
+})();
+document.getElementById('logout').onclick=async()=>{await supabaseClient.auth.signOut();sessionStorage.clear();location.href='index.html';};
+lucide.createIcons();
+</script>
+</body></html>
