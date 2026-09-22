@@ -4,7 +4,7 @@ lucide.createIcons();
 const students = [
     { id: 1, name: "Khafi", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 2, name: "Arjasena", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 3, name: "Orlen", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 3, name: "Orlen", fullName: "Danendra Orlen Wasatha", role: "Siswa XI.B1", quote: "Simply lovely", ig: "#" },
     { id: 4, name: "Avisha", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 5, name: "Fareal", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 6, name: "Andrian", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
