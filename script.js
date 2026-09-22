@@ -91,12 +91,7 @@ const positions = {
     "Brella": "Bendahara"
 };
 
-const dayByStudent = {};
-Object.entries(schedules).forEach(([day, data]) => {
-    data.piket.forEach(name => {
-        dayByStudent[name] = day;
-    });
-});
+let dayByStudent = {};
 
 function getInitials(name) {
     return name
@@ -147,6 +142,12 @@ const schedules = {
         piket: ['Dhirgam', 'Yoga', 'Dude', 'Daffa', 'Irfan', 'Ara', 'Anissa', 'Meli', 'Gibran', 'Salsabila']
     }
 };
+
+Object.entries(schedules).forEach(([day, data]) => {
+    data.piket.forEach(name => {
+        dayByStudent[name] = day;
+    });
+});
 
 function switchDay(day) {
     const data = schedules[day];
