@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Member | XI.B1 SMAN 1 Klapanunggal</title>
+    <meta name="robots" content="noindex, nofollow">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen bg-techDark text-slate-100 font-sans antialiased bg-grid flex items-center justify-center px-4">
+    <main class="w-full max-w-md">
+        <a href="index.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-techCyan transition mb-6">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke website
+        </a>
+
+        <section class="rounded-3xl bg-techCard border border-cyan-500/25 p-7 shadow-2xl shadow-cyan-950/30">
+            <div class="w-14 h-14 rounded-2xl bg-cyan-950/70 border border-techCyan/30 flex items-center justify-center mb-5">
+                <i data-lucide="lock-keyhole" class="w-7 h-7 text-techCyan"></i>
+            </div>
+            <p class="text-xs text-techCyan uppercase tracking-[0.25em] font-mono">XI.B1 Member Area</p>
+            <h1 class="text-3xl font-extrabold mt-2">Login</h1>
+            <p class="text-sm text-slate-400 mt-2 mb-7">Masuk sebagai Student atau Super Admin.</p>
+
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-xs text-slate-400 mb-2">Username</label>
+                    <input id="username" required autocomplete="username"
+                        class="w-full px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-700 outline-none focus:border-techCyan/60 transition"
+                        placeholder="contoh: daffa">
+                </div>
+                <div>
+                    <label for="password" class="block text-xs text-slate-400 mb-2">Password</label>
+                    <input id="password" type="password" required autocomplete="current-password"
+                        class="w-full px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-700 outline-none focus:border-techCyan/60 transition"
+                        placeholder="Masukkan password">
+                </div>
+                <button id="loginBtn" type="submit"
+                    class="w-full px-5 py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold hover:opacity-90 transition">
+                    Masuk
+                </button>
+                <p id="loginStatus" class="text-xs text-center min-h-5"></p>
+            </form>
+        </section>
+
+        <p class="text-center text-[11px] text-slate-600 mt-5">Area member dilindungi autentikasi.</p>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+</body>
+</html>
