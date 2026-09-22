@@ -1,3 +1,34 @@
+
+const memberGate = document.getElementById('memberGate');
+const memberYesBtn = document.getElementById('memberYesBtn');
+const visitorBtn = document.getElementById('visitorBtn');
+
+function showMemberGate() {
+    if (sessionStorage.getItem('bionestAccess')) return;
+    memberGate.classList.remove('hidden');
+    memberGate.classList.add('flex');
+    document.body.classList.add('overflow-hidden');
+    lucide.createIcons();
+}
+
+function closeMemberGate() {
+    memberGate.classList.add('hidden');
+    memberGate.classList.remove('flex');
+    document.body.classList.remove('overflow-hidden');
+}
+
+memberYesBtn.addEventListener('click', () => {
+    sessionStorage.setItem('bionestAccess', 'member');
+    window.location.href = 'login.html';
+});
+
+visitorBtn.addEventListener('click', () => {
+    sessionStorage.setItem('bionestAccess', 'visitor');
+    closeMemberGate();
+});
+
+window.addEventListener('DOMContentLoaded', showMemberGate);
+
 lucide.createIcons();
 
 const students = [
