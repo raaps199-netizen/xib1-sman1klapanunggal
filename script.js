@@ -706,8 +706,7 @@ function renderGallery() {
                 <img src="${item.url}" data-raw-src="${item.rawUrl || item.url}" alt="${item.title}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async" onerror="this.onerror=null; this.src=this.dataset.rawSrc;">
                 <span class="gallery-badge">BIONEST MOMENT</span>
                 <div class="gallery-caption">
-                    <p>${item.title}</p>
-                    <p>XI.B1 • SMAN 1 Klapanunggal</p>
+                    <p>MEMORY ARCHIVE</p>
                 </div>
             </article>
         `;
@@ -732,8 +731,8 @@ function openGallery(index) {
 
     galleryLightboxImage.src = item.rawUrl || item.url;
     galleryLightboxImage.alt = item.title;
-    galleryLightboxTitle.textContent = item.title;
-    galleryLightboxMeta.textContent = `${galleryIndex + 1} / ${galleryItems.length} • XI.B1`;
+    galleryLightboxTitle.textContent = 'BIONEST MOMENT';
+    galleryLightboxMeta.textContent = `MEMORY ${galleryIndex + 1} / ${galleryItems.length}`;
 
     galleryLightbox.classList.remove('hidden');
     galleryLightbox.classList.add('flex');
