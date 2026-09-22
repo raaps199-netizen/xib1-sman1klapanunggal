@@ -3,7 +3,17 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Student | XI.B1</title><meta name="robots" content="noindex,nofollow">
-<script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@latest"></script><link rel="stylesheet" href="style.css">
+<script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@latest"></script>
+<script>
+tailwind.config = {
+    theme: { extend: { colors: {
+        techCyan: '#00f2fe',
+        techBlue: '#4facfe',
+        techDark: '#0b1120',
+        techCard: '#1e293b'
+    }}}
+};
+</script><link rel="stylesheet" href="style.css">
 </head>
 <body class="min-h-screen bg-techDark text-slate-100 font-sans antialiased bg-grid">
 <main class="max-w-5xl mx-auto px-4 py-10">
