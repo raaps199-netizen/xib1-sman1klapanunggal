@@ -83,11 +83,22 @@ document.getElementById('seedBtn').onclick=async()=>{
    const {data:{session:currentSession}}=await supabaseClient.auth.getSession();
    if(!currentSession?.access_token) throw new Error('Sesi login tidak ditemukan. Silakan login ulang.');
 
-   const {data,error}=await supabaseClient.functions.invoke('smooth-service',{
-     body:{members},
-     headers:{Authorization:'Bearer '+currentSession.access_token}
+   const functionUrl='https://jszzaqnggaatrgyiksfs.supabase.co/functions/v1/smooth-service';
+   const response=await fetch(functionUrl,{
+     method:'POST',
+     headers:{
+       'Content-Type':'application/json',
+       'apikey':SUPABASE_PUBLISHABLE_KEY,
+       'Authorization':'Bearer '+currentSession.access_token
+     },
+     body:JSON.stringify({members})
    });
-   if(error) throw error;
+   const raw=await response.text();
+   let data;
+   try{data=JSON.parse(raw);}catch{data={error:raw};}
+   if(!response.ok){
+     throw new Error((data?.error||data?.message||('HTTP '+response.status))+(data?.details?' | '+JSON.stringify(data.details):''));
+   }
 
    const created=data?.results?.created?.length||0;
    const updated=data?.results?.updated?.length||0;
