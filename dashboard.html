@@ -21,9 +21,9 @@
 <p id="quote" class="text-lg italic text-slate-200">Memuat...</p>
 </div>
 </section>
-<div class="mt-6 p-5 rounded-2xl bg-slate-900/50 border border-slate-800 text-sm text-slate-400">Dashboard ini disiapkan untuk fitur edit profil. Data akan disimpan di Supabase, bukan di JavaScript publik.</div>
+<div class="mt-6 p-5 rounded-2xl bg-slate-900/50 border border-slate-800 text-sm text-slate-400">Dashboard ini disiapkan untuk fitur edit profil. Data akun utama tersimpan di GitHub.</div>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth.js"></script>
+<script src="auth.js"></script>
 <script>
 (async () => {
  const {data:{session}} = await supabaseClient.auth.getSession();
