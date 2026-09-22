@@ -100,12 +100,13 @@ function openMemberProfile(profile) {
                     <div class="mt-7 p-4 rounded-2xl bg-slate-950/40 border border-white/5">
                         <p class="text-[10px] uppercase tracking-widest text-slate-600">Username</p>
                         <p id="profileUsername" class="font-mono text-sm text-cyan-300 mt-1"></p>
+                        <p class="text-[10px] text-slate-600 mt-2">Username dan nama lengkap ditetapkan oleh admin kelas.</p>
                     </div>
 
                     <form id="profileEditForm" class="mt-5 space-y-4">
                         <div>
-                            <label class="text-xs text-slate-400">Nama</label>
-                            <input id="profileFullName" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-700 text-white outline-none focus:border-techCyan/50">
+                            <label class="text-xs text-slate-400">Nama Lengkap <span class="text-slate-600">(tetap)</span></label>
+                            <input id="profileFullName" readonly class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-900/70 border border-slate-800 text-slate-400 cursor-not-allowed">
                         </div>
                         <div>
                             <label class="text-xs text-slate-400">Quote</label>
@@ -159,23 +160,18 @@ function openMemberProfile(profile) {
             status.textContent = 'Menyimpan...';
 
             try {
-                const { error } = await window.supabaseClient
-                    .from('profiles')
-                    .update({
-                        full_name: document.getElementById('profileFullName').value.trim(),
-                        quote: document.getElementById('profileQuote').value.trim(),
-                        bio: document.getElementById('profileBio').value.trim(),
-                        hobby: document.getElementById('profileHobby').value.trim(),
-                        favourite_subject: document.getElementById('profileSubject').value.trim(),
-                        instagram: document.getElementById('profileInstagram').value.trim()
-                    })
-                    .eq('id', profile.id);
+                const updated = await window.updateProfile({
+                    quote: document.getElementById('profileQuote').value.trim(),
+                    bio: document.getElementById('profileBio').value.trim(),
+                    hobby: document.getElementById('profileHobby').value.trim(),
+                    favourite_subject: document.getElementById('profileSubject').value.trim(),
+                    instagram: document.getElementById('profileInstagram').value.trim()
+                });
 
-                if (error) throw error;
-
+                profile = { ...profile, ...updated };
                 status.className = 'text-xs min-h-5 text-center text-emerald-400';
-                status.textContent = 'Profil berhasil diperbarui.';
-                document.getElementById('profileDisplayName').textContent = document.getElementById('profileFullName').value.trim();
+                status.textContent = 'Profil berhasil disimpan.';
+                document.getElementById('profileDisplayName').textContent = profile.full_name || 'Member';
             } catch (error) {
                 status.className = 'text-xs min-h-5 text-center text-red-400';
                 status.textContent = error.message || 'Gagal menyimpan profil.';
@@ -269,9 +265,46 @@ const students = [
     { id: 50, name: "Salsabila", fullName: "Salsabil Fajrianita", role: "Siswa XI.B1", quote: "Ready or not ready, kudu ready", ig: "#" },
 ];
 
+const usernameByName = {
+    "Khafi":"khafi","Arjasena":"arjasena","Orlen":"orlen","Avisha":"avisha","Fareal":"fareal","Andrian":"andrian",
+    "Sadam":"sadam","Wisnu":"wisnu","Tania":"tania","Jauharah":"jauharah","Keyla":"keyla","Mikaela":"mikaela",
+    "Ridho":"ridho","Rizky":"rizky","Zyella":"zyella","Nishar":"nishar","Alvian":"alvian","Brella":"brella",
+    "Fathian":"fathian","Reno":"reno","Lutfan":"lutfan","Rafif":"rafif","Kevin":"kevin","Arya":"arya","Al Mira":"almira",
+    "Elang":"elang","Dzaky":"dzaky","Aisahra":"aisahra","Satria":"satria","Putri":"putri","Fahri":"fahri","Rifqi":"rifqi",
+    "Fadhil":"fadhil","Yusuf":"yusuf","Kirana":"kirana","Effan":"effan","Dzaki":"dzaki","Aura":"aura","Reva":"reva",
+    "Surya":"surya","Dhirgam":"dhirgam","Yoga":"yoga","Dude":"dude","Daffa":"daffa","Irfan":"irfan","Ara":"ara",
+    "Anissa":"anissa","Meli":"meli","Gibran":"gibran","Salsabila":"salsabila"
+};
+students.forEach(student => { student.username = usernameByName[student.name] || student.username; });
+
 const studentGrid = document.getElementById('studentGrid');
 const studentSearch = document.getElementById('studentSearch');
 const studentSearchInfo = document.getElementById('studentSearchInfo');
+
+async function syncPublicProfiles() {
+    try {
+        const response = await fetch('data/accounts.json?v=' + Date.now(), { cache: 'no-store' });
+        if (!response.ok) return;
+        const data = await response.json();
+        const byUsername = new Map((data.members || []).map(item => [item.username, item]));
+        students.forEach(student => {
+            const username = student.username || student.name.toLowerCase().replace(/\s+/g, '');
+            const account = byUsername.get(username);
+            if (account) {
+                student.username = account.username;
+                student.fullName = account.full_name || student.fullName;
+                student.quote = account.quote || '';
+                student.bio = account.bio || '';
+                student.hobby = account.hobby || '';
+                student.favouriteSubject = account.favourite_subject || '';
+                student.instagram = account.instagram || '';
+            }
+        });
+        renderStudents();
+    } catch (error) {
+        console.warn('Public profile sync failed:', error);
+    }
+}
 
 function renderStudents(query = '') {
     const keyword = query.trim().toLowerCase();
@@ -297,6 +330,7 @@ function renderStudents(query = '') {
 
 renderStudents();
 studentSearch.addEventListener('input', e => renderStudents(e.target.value));
+syncPublicProfiles();
 
 const positions = {
     "Daffa": "Ketua Kelas",
@@ -326,8 +360,11 @@ function openModal(student) {
     document.getElementById('modalRole').innerText = student.role;
     document.getElementById('modalPosition').innerText = positions[student.name] || 'Siswa';
     document.getElementById('modalDuty').innerText = dayByStudent[student.name] || 'Belum ditentukan';
-    document.getElementById('modalQuote').innerText = `"${student.quote}"`;
-    document.getElementById('modalIg').href = student.ig;
+    document.getElementById('modalQuote').innerText = student.bio || student.quote || 'Belum ada bio.';
+    document.getElementById('modalIg').href = student.instagram ? (student.instagram.startsWith('http') ? student.instagram : 'https://instagram.com/' + student.instagram.replace(/^@/, '')) : '#';
+    document.getElementById('modalHobby').innerText = student.hobby || 'Belum diisi';
+    document.getElementById('modalSubject').innerText = student.favouriteSubject || 'Belum diisi';
+    document.getElementById('modalInstagramText').innerText = student.instagram || 'Belum diisi';
     document.getElementById('studentModal').classList.remove('hidden');
     lucide.createIcons();
 }
