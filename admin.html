@@ -81,7 +81,7 @@ async function loadStudents(){
  const json=await response.json();
  const students=json.members||[];
  const list=document.getElementById('studentList');
- list.innerHTML=students.map(s=>'<div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800"><p class="font-semibold">'+(s.full_name||'-')+'</p><p class="text-xs text-techCyan mt-1">@'+s.username+'</p><p class="text-xs text-slate-500 mt-2">'+s.role+'</p></div>').join('')||'<p class="text-sm text-slate-500">Belum ada akun.</p>';
+ document.getElementById('accountCount').textContent=students.length; list.innerHTML=students.map(s=>'<div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800"><p class="font-semibold">'+(s.full_name||'-')+'</p><p class="text-xs text-techCyan mt-1">@'+s.username+'</p><p class="text-xs text-slate-500 mt-2">'+s.role+'</p></div>').join('')||'<p class="text-sm text-slate-500">Belum ada akun.</p>';
 }
 
 document.getElementById('seedBtn').onclick=async()=>{
