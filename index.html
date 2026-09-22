@@ -84,6 +84,7 @@
                 <a href="#home" class="hover:text-techCyan transition">Home</a>
                 <a href="#struktur" class="hover:text-techCyan transition">Struktur</a>
                 <a href="#siswa" class="hover:text-techCyan transition">Anggota</a>
+                <a href="#gallery" class="hover:text-techCyan transition">Gallery</a>
                 <a href="#jadwal" class="hover:text-techCyan transition">Jadwal</a>
                 <a href="#pengumuman" class="hover:text-techCyan transition">Info</a>
                 <a id="cashNavLink" href="kas.html" class="hidden items-center gap-1.5 text-amber-300 hover:text-amber-200 transition">
@@ -107,6 +108,7 @@
                 <a href="#home" class="mobile-nav-link hover:text-techCyan transition">Home</a>
                 <a href="#struktur" class="mobile-nav-link hover:text-techCyan transition">Struktur</a>
                 <a href="#siswa" class="mobile-nav-link hover:text-techCyan transition">Anggota</a>
+                <a href="#gallery" class="mobile-nav-link hover:text-techCyan transition">Gallery</a>
                 <a href="#jadwal" class="mobile-nav-link hover:text-techCyan transition">Jadwal</a>
                 <a href="#pengumuman" class="mobile-nav-link hover:text-techCyan transition">Info</a>
                 <a id="mobileCashNavLink" href="kas.html" class="hidden mobile-nav-link items-center gap-1.5 text-amber-300 hover:text-amber-200 transition">
@@ -368,6 +370,63 @@
         </div>
     </section>
 
+
+
+    <!-- GALLERY -->
+    <section id="gallery" class="py-20 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-10">
+                <div>
+                    <p class="text-xs text-techCyan uppercase tracking-[0.3em] font-mono">BIONEST ARCHIVE</p>
+                    <h2 class="text-3xl md:text-4xl font-black mt-2 flex items-center gap-3">
+                        <i data-lucide="images" class="text-techCyan"></i> Gallery
+                    </h2>
+                    <p class="text-sm text-slate-400 mt-3 max-w-xl">
+                        Kumpulan momen XI.B1. Tambahkan foto baru ke <span class="font-mono text-cyan-300">assets/images/</span> di repo, dan gallery ini akan mendeteksinya otomatis.
+                    </p>
+                </div>
+                <div class="gallery-status inline-flex items-center gap-2 w-fit px-3 py-2 rounded-full bg-slate-950/60 border border-cyan-500/20 text-xs text-slate-400">
+                    <span id="galleryCount" class="text-techCyan font-bold">0</span> foto tersimpan
+                </div>
+            </div>
+
+            <div id="galleryLoading" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="gallery-skeleton h-52 rounded-2xl"></div>
+                <div class="gallery-skeleton h-64 rounded-2xl"></div>
+                <div class="gallery-skeleton h-52 rounded-2xl"></div>
+            </div>
+
+            <div id="galleryGrid" class="hidden gallery-grid"></div>
+
+            <div id="galleryEmpty" class="hidden p-10 rounded-3xl bg-techCard/70 border border-dashed border-cyan-500/20 text-center">
+                <i data-lucide="image-off" class="w-10 h-10 mx-auto text-slate-600 mb-3"></i>
+                <h3 class="font-bold text-slate-300">Belum ada foto</h3>
+                <p class="text-sm text-slate-500 mt-1">Masukkan foto ke folder <span class="font-mono text-slate-400">assets/images/</span> di repository.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY LIGHTBOX -->
+    <div id="galleryLightbox" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4">
+        <button id="galleryClose" class="gallery-control absolute top-5 right-5" aria-label="Tutup gallery">
+            <i data-lucide="x"></i>
+        </button>
+        <button id="galleryPrev" class="gallery-control absolute left-4 md:left-7 top-1/2 -translate-y-1/2" aria-label="Foto sebelumnya">
+            <i data-lucide="chevron-left"></i>
+        </button>
+        <button id="galleryNext" class="gallery-control absolute right-4 md:right-7 top-1/2 -translate-y-1/2" aria-label="Foto berikutnya">
+            <i data-lucide="chevron-right"></i>
+        </button>
+        <div class="max-w-6xl w-full h-full flex flex-col items-center justify-center gap-4">
+            <div class="gallery-lightbox-frame">
+                <img id="galleryLightboxImage" src="" alt="" class="max-h-[76vh] max-w-full object-contain">
+            </div>
+            <div class="text-center max-w-2xl">
+                <p id="galleryLightboxTitle" class="font-bold text-white"></p>
+                <p id="galleryLightboxMeta" class="text-xs text-slate-500 mt-1"></p>
+            </div>
+        </div>
+    </div>
 
     <!-- PAPAN PENGUMUMAN -->
     <section id="pengumuman" class="py-20 max-w-5xl mx-auto px-4">
