@@ -9,3 +9,53 @@
             background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
                               linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
         }
+
+
+/* Hero class photo */
+.hero-section {
+    background-image: url("./assets/images/WA_1790037129669.jpeg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    isolation: isolate;
+}
+
+.hero-overlay {
+    z-index: -1;
+    background:
+        linear-gradient(to bottom, rgba(3, 7, 18, 0.72) 0%, rgba(3, 7, 18, 0.58) 45%, rgba(3, 7, 18, 0.88) 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.30));
+}
+
+.hero-content {
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
+}
+
+.hero-title {
+    color: #fff;
+    background: linear-gradient(90deg, #00f2fe, #ffffff 48%, #4facfe);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 5px 20px rgba(0, 0, 0, 0.45));
+}
+
+.hero-motto {
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 640px) {
+    .hero-section {
+        background-position: center center;
+    }
+
+    .hero-overlay {
+        background:
+            linear-gradient(to bottom, rgba(3, 7, 18, 0.76), rgba(3, 7, 18, 0.64) 50%, rgba(3, 7, 18, 0.92)),
+            rgba(0, 0, 0, 0.12);
+    }
+
+    .hero-slogan {
+        letter-spacing: 0.22em;
+    }
+}
