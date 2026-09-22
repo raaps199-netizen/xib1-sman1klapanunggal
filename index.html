@@ -144,6 +144,61 @@
         </div>
     </section>
 
+    <!-- MEMBER PROFILE OVERVIEW -->
+    <section id="memberOverview" class="hidden py-8 max-w-6xl mx-auto px-4">
+        <div class="rounded-3xl bg-techCard border border-cyan-500/20 overflow-hidden shadow-2xl shadow-cyan-950/20">
+            <div class="h-1 bg-gradient-to-r from-techCyan via-techBlue to-techCyan"></div>
+            <div class="p-5 sm:p-7">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <p class="text-[10px] text-techCyan uppercase tracking-[0.25em] font-mono">Member Area</p>
+                        <h2 class="text-xl sm:text-2xl font-black mt-1">Profil Kamu</h2>
+                    </div>
+                    <span class="inline-flex items-center gap-2 w-fit px-3 py-1.5 rounded-full bg-emerald-950/50 border border-emerald-500/20 text-emerald-300 text-xs font-semibold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Aktif
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-5 items-stretch">
+                    <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-950/40 border border-white/5 lg:min-w-[280px]">
+                        <div id="overviewAvatar" class="w-16 h-16 shrink-0 rounded-2xl bg-gradient-to-br from-techCyan to-techBlue text-techDark flex items-center justify-center text-lg font-black"></div>
+                        <div class="min-w-0">
+                            <h3 id="overviewName" class="font-black text-lg truncate"></h3>
+                            <p id="overviewUsername" class="text-xs text-cyan-300 font-mono mt-1"></p>
+                            <a id="overviewInstagram" href="#" target="_blank" rel="noopener noreferrer" class="hidden items-center gap-1.5 text-xs text-slate-400 hover:text-techCyan transition mt-2 w-fit">
+                                <i data-lucide="instagram" class="w-3.5 h-3.5"></i><span id="overviewInstagramText"></span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="p-4 rounded-2xl bg-slate-950/40 border border-white/5">
+                            <p class="text-[10px] text-slate-500 uppercase">Piket</p>
+                            <p id="overviewDuty" class="text-sm font-bold text-techCyan mt-2">-</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-950/40 border border-white/5">
+                            <p class="text-[10px] text-slate-500 uppercase">Hobi</p>
+                            <p id="overviewHobby" class="text-sm font-bold text-slate-200 mt-2 break-words">-</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-950/40 border border-white/5">
+                            <p class="text-[10px] text-slate-500 uppercase">Mapel Favorit</p>
+                            <p id="overviewSubject" class="text-sm font-bold text-slate-200 mt-2 break-words">-</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-950/40 border border-white/5">
+                            <p class="text-[10px] text-slate-500 uppercase">Status</p>
+                            <p class="text-sm font-bold text-emerald-300 mt-2">Member</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 p-4 rounded-2xl bg-slate-950/40 border border-white/5">
+                    <p class="text-[10px] text-slate-500 uppercase">Bio</p>
+                    <p id="overviewBio" class="text-sm text-slate-300 mt-2 leading-relaxed">Belum ada bio.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- XI.B1 TODAY -->
     <section id="today" class="py-16 max-w-6xl mx-auto px-4">
         <div class="flex items-center justify-between gap-4 mb-6">
