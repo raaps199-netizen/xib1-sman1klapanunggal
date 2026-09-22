@@ -657,3 +657,143 @@ document.querySelectorAll('.mobile-nav-link').forEach(link => {
 });
 
 lucide.createIcons();
+
+
+/* Dynamic Gallery */
+const galleryGrid = document.getElementById('galleryGrid');
+const galleryLoading = document.getElementById('galleryLoading');
+const galleryEmpty = document.getElementById('galleryEmpty');
+const galleryCount = document.getElementById('galleryCount');
+const galleryLightbox = document.getElementById('galleryLightbox');
+const galleryLightboxImage = document.getElementById('galleryLightboxImage');
+const galleryLightboxTitle = document.getElementById('galleryLightboxTitle');
+const galleryLightboxMeta = document.getElementById('galleryLightboxMeta');
+const galleryClose = document.getElementById('galleryClose');
+const galleryPrev = document.getElementById('galleryPrev');
+const galleryNext = document.getElementById('galleryNext');
+
+let galleryItems = [];
+let galleryIndex = 0;
+
+function prettifyGalleryName(filename) {
+    return filename
+        .replace(/.[^/.]+$/, '')
+        .replace(/[_-]+/g, ' ')
+        .replace(/s+/g, ' ')
+        .trim()
+        .replace(/w/g, char => char.toUpperCase());
+}
+
+function renderGallery() {
+    galleryLoading.classList.add('hidden');
+
+    if (!galleryItems.length) {
+        galleryGrid.classList.add('hidden');
+        galleryEmpty.classList.remove('hidden');
+        galleryCount.textContent = '0';
+        lucide.createIcons();
+        return;
+    }
+
+    galleryEmpty.classList.add('hidden');
+    galleryGrid.classList.remove('hidden');
+    galleryCount.textContent = galleryItems.length;
+
+    galleryGrid.innerHTML = galleryItems.map((item, index) => {
+        const featured = index === 0 ? ' featured' : '';
+        return `
+            <article class="gallery-item${featured}" data-gallery-index="${index}" tabindex="0" role="button" aria-label="Buka foto ${item.title}">
+                <img src="${item.url}" alt="${item.title}" loading="${index === 0 ? 'eager' : 'lazy'}">
+                <span class="gallery-badge">BIONEST MOMENT</span>
+                <div class="gallery-caption">
+                    <p>${item.title}</p>
+                    <p>XI.B1 • SMAN 1 Klapanunggal</p>
+                </div>
+            </article>
+        `;
+    }).join('');
+
+    galleryGrid.querySelectorAll('.gallery-item').forEach(card => {
+        const index = Number(card.dataset.galleryIndex);
+        card.addEventListener('click', () => openGallery(index));
+        card.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openGallery(index);
+            }
+        });
+    });
+}
+
+function openGallery(index) {
+    if (!galleryItems.length) return;
+    galleryIndex = (index + galleryItems.length) % galleryItems.length;
+    const item = galleryItems[galleryIndex];
+
+    galleryLightboxImage.src = item.url;
+    galleryLightboxImage.alt = item.title;
+    galleryLightboxTitle.textContent = item.title;
+    galleryLightboxMeta.textContent = `${galleryIndex + 1} / ${galleryItems.length} • XI.B1`;
+
+    galleryLightbox.classList.remove('hidden');
+    galleryLightbox.classList.add('flex');
+    document.body.classList.add('overflow-hidden');
+    lucide.createIcons();
+}
+
+function closeGallery() {
+    galleryLightbox.classList.add('hidden');
+    galleryLightbox.classList.remove('flex');
+    document.body.classList.remove('overflow-hidden');
+    galleryLightboxImage.src = '';
+}
+
+function moveGallery(step) {
+    openGallery(galleryIndex + step);
+}
+
+galleryClose.addEventListener('click', closeGallery);
+galleryPrev.addEventListener('click', () => moveGallery(-1));
+galleryNext.addEventListener('click', () => moveGallery(1));
+
+galleryLightbox.addEventListener('click', event => {
+    if (event.target === galleryLightbox) closeGallery();
+});
+
+document.addEventListener('keydown', event => {
+    if (galleryLightbox.classList.contains('hidden')) return;
+    if (event.key === 'Escape') closeGallery();
+    if (event.key === 'ArrowLeft') moveGallery(-1);
+    if (event.key === 'ArrowRight') moveGallery(1);
+});
+
+async function loadGallery() {
+    try {
+        const response = await fetch('https://api.github.com/repos/raaps199-netizen/xib1-sman1klapanunggal/contents/assets/images?ref=main', {
+            headers: { 'Accept': 'application/vnd.github+json' },
+            cache: 'no-store'
+        });
+
+        if (!response.ok) throw new Error('GitHub image directory unavailable');
+
+        const files = await response.json();
+        galleryItems = files
+            .filter(file => file.type === 'file' && /.(jpe?g|png|webp|gif|avif)$/i.test(file.name))
+            .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+            .map(file => ({
+                url: file.download_url,
+                title: prettifyGalleryName(file.name)
+            }));
+
+        renderGallery();
+    } catch (error) {
+        console.warn('Gallery load failed:', error);
+        galleryItems = [{
+            url: './assets/images/WA_1790037129669.jpeg',
+            title: 'BIONEST One'
+        }];
+        renderGallery();
+    }
+}
+
+loadGallery();
