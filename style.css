@@ -13,6 +13,8 @@
 
 /* Hero class photo */
 .hero-section {
+    min-height: 68vh;
+    height: clamp(520px, 68vh, 760px);
     background-image: url("./assets/images/WA_1790037129669.jpeg");
     background-size: cover;
     background-position: center center;
@@ -31,6 +33,11 @@
     text-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
 }
 
+.hero-title-link {
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
 .hero-title {
     color: #fff;
     background: linear-gradient(90deg, #00f2fe, #ffffff 48%, #4facfe);
@@ -46,6 +53,8 @@
 
 @media (max-width: 640px) {
     .hero-section {
+        min-height: 520px;
+        height: 72vh;
         background-position: center center;
     }
 
@@ -59,7 +68,6 @@
         letter-spacing: 0.22em;
     }
 }
-
 
 /* BIONEST Gallery */
 .gallery-grid {
