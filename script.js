@@ -571,7 +571,11 @@ function renderStudents(query = '') {
         const instagramButton = instagramUrl
             ? '<a href="' + instagramUrl + '" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="p-1.5 rounded-lg text-slate-500 hover:text-techCyan hover:bg-cyan-500/10 transition" aria-label="Instagram ' + s.name + '"><i data-lucide="instagram" class="w-4 h-4"></i></a>'
             : '';
+        const avatarHtml = s.avatar_url
+            ? '<img src="' + s.avatar_url + '?v=' + Date.now() + '" alt="Foto profil ' + s.name + '" class="w-14 h-14 rounded-full object-cover border-2 border-cyan-500/30 mx-auto mb-3">'
+            : '<div class="w-14 h-14 rounded-full bg-gradient-to-br from-techCyan to-techBlue text-techDark flex items-center justify-center text-sm font-black mx-auto mb-3">' + getInitials(s.fullName || s.name) + '</div>';
         return '<div class="student-card p-4 rounded-xl bg-techCard border border-slate-800 hover:border-techCyan/50 cursor-pointer text-center transition transform hover:-translate-y-1 relative">' +
+            avatarHtml +
             '<div class="flex items-center justify-center gap-2">' +
             '<h4 class="text-sm font-semibold text-slate-200 py-4">' + s.name + '</h4>' +
             instagramButton +
