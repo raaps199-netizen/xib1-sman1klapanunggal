@@ -14,7 +14,7 @@ const students = [
     { id: 11, name: "Keyla", fullName: "Keyla Ajeng Firmansyah", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 12, name: "Mikaela", fullName: "Mikaela Leona", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 13, name: "Ridho", fullName: "Ridho Saputra Ependi", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 14, name: "Rizky", fullName: "Rizky Dwi Saputra Hidayat", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 14, name: "Rizky", fullName: "Rizky Dwi Saputra Hidayat", role: "Siswa XI.B1", quote: "1 2 3 letsgow", ig: "#" },
     { id: 15, name: "Zyella", fullName: "Zyella Almaira Sigit", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 16, name: "Nishar", fullName: "Nishar Soma Maulana", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 17, name: "Alvian", fullName: "Alvian Arkan Iniesta", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
