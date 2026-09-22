@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Super Admin | XI.B1</title><meta name="robots" content="noindex,nofollow">
-<script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@latest"></script><link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Admin | XI.B1</title>
+<meta name="robots" content="noindex,nofollow">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="min-h-screen bg-techDark text-slate-100 font-sans antialiased bg-grid">
 <main class="max-w-6xl mx-auto px-4 py-10">
@@ -11,24 +15,92 @@
 <div><p class="text-xs text-techCyan uppercase tracking-[0.25em] font-mono">XI.B1 Control</p><h1 class="text-3xl font-extrabold mt-1">Super Admin</h1></div>
 <button id="logout" class="px-4 py-2 rounded-xl border border-slate-700 hover:border-red-400/50 hover:text-red-300 transition">Logout</button>
 </header>
+
+<section class="p-6 rounded-2xl bg-techCard border border-cyan-500/20 mb-6">
+<div class="flex items-center gap-2 mb-2"><i data-lucide="users-round" class="text-techCyan"></i><h2 class="text-xl font-bold">Student Accounts</h2></div>
+<p class="text-sm text-slate-400 mb-5">Provision akun anggota XI.B1 melalui Edge Function.</p>
+<button id="seedBtn" class="px-5 py-3 rounded-xl bg-cyan-500 text-slate-950 font-bold hover:bg-cyan-400 transition disabled:opacity-50">
+Buat Semua Akun
+</button>
+<p id="seedStatus" class="text-sm mt-4 min-h-5"></p>
+</section>
+
 <section class="p-6 rounded-2xl bg-techCard border border-cyan-500/20">
 <div class="flex items-center gap-2 mb-5"><i data-lucide="shield-check" class="text-techCyan"></i><h2 class="text-xl font-bold">Student Accounts</h2></div>
 <div id="studentList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"><p class="text-sm text-slate-500">Memuat...</p></div>
 </section>
-<p class="text-xs text-slate-600 mt-5">Account creation/reset password sebaiknya dilakukan melalui Supabase Admin/Edge Function, bukan service key di browser.</p>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
 <script>
+const MEMBERS = [
+["khafi","Ashabul Khafi"],["arjasena","Satria Arjasena Maulana"],["orlen","Danendra Orlen Wasatha"],
+["avisha","Avisha Fakhiran Anwar"],["fareal","Fareal Julyans Zalfine"],["andrian","Andrian Pranata Tambunan"],
+["sadam","Sadam Al Fahri"],["wisnu","Wisnu Panji Pratama"],["tania","Tania Fitri Izati"],["jauharah","Jauharah Tuhfah"],
+["keyla","Keyla Ajeng Firmansyah"],["mikaela","Mikaela Leona"],["ridho","Ridho Saputra Ependi"],["rizky","Rizky Dwi Saputra Hidayat"],
+["zyella","Zyella Almaira Sigit"],["nishar","Nishar Soma Maulana"],["alvian","Alvian Arkan Iniesta"],["brella","Brela Terta Zafina"],
+["fathian","Fathian Khairul Akbar"],["reno","Reno Ramzi Nararya"],["lutfan","Lutfan Attaullah Sultoni"],["rafif","Ahmad Rafif Hidayat"],
+["kevin","Kevin Habiyal Huda"],["arya","Arya Pratama"],["almira","Al Mira Berlian Handayani"],["elang","Elang Bari Dermawan"],
+["dzaky","Muhammad Dzaky Pradana"],["aisahra","Aisahra Mayjasti Aulia Putri"],["satria","Satria Putra Pratama"],["putri","Putri Aulia"],
+["fahri","Muhammad Fahri Maulana"],["rifqi","Rifqi Binangkit"],["fadhil","Askha Fadhil Raihan Adinomo"],["yusuf","Harazaki Yusuf Rahardjo Telaumbanua"],
+["kirana","Kirana Intan Permata"],["effan","Effan Zandra Arya Putra"],["dzaki","Dzakii Nizaar Akmal"],["aura","Aura Rizky Triyastuti"],
+["reva","Reva Amalia Achmad"],["surya","Surya Melano"],["dhirgam","Dhirgam Nawi Hasb Dhiya Ul'Haq"],["yoga","Yoga Rizki Ramadhan"],
+["dude","Dude Ramadhan"],["daffa","M. Daffa Azalia"],["irfan","Irfan Asyraf Musyaffa"],["ara","Ara Ananda Putri"],
+["anissa","Annisa Zahra"],["meli","Meli Anggraeni"],["gibran","Gibran Ayatullah"],["salsabila","Salsabil Fajrianita"]
+];
+
 (async()=>{
  const {data:{session}}=await supabaseClient.auth.getSession();
  if(!session){location.href='login.html';return;}
  const {data:me,error:meError}=await supabaseClient.from('profiles').select('role').eq('id',session.user.id).single();
  if(meError||me?.role!=='super_admin'){location.href='dashboard.html';return;}
+ await loadStudents();
+})();
+
+async function loadStudents(){
  const {data:students}=await supabaseClient.from('profiles').select('username,full_name,role,quote').order('full_name');
  const list=document.getElementById('studentList');
  list.innerHTML=(students||[]).map(s=>'<div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800"><p class="font-semibold">'+(s.full_name||'-')+'</p><p class="text-xs text-techCyan mt-1">@'+s.username+'</p><p class="text-xs text-slate-500 mt-2">'+s.role+'</p></div>').join('')||'<p class="text-sm text-slate-500">Belum ada akun.</p>';
-})();
+}
+
+document.getElementById('seedBtn').onclick=async()=>{
+ const btn=document.getElementById('seedBtn');
+ const status=document.getElementById('seedStatus');
+ if(!confirm('Buat/reset semua 50 akun XI.B1?')) return;
+
+ btn.disabled=true;
+ status.className='text-sm mt-4 min-h-5 text-slate-400';
+ status.textContent='Memproses 50 akun...';
+
+ try {
+   const members=MEMBERS.map(([username,full_name])=>({
+     username,
+     full_name,
+     password: username === 'almira' ? 'B1-AlMira26!' : 'B1-'+username.charAt(0).toUpperCase()+username.slice(1)+'26!',
+     role: username === 'daffa' ? 'super_admin' : 'student'
+   }));
+
+   const {data,error}=await supabaseClient.functions.invoke('create-members',{body:{members}});
+   if(error) throw error;
+
+   const created=data?.results?.created?.length||0;
+   const updated=data?.results?.updated?.length||0;
+   const failed=data?.results?.failed?.length||0;
+
+   status.className='text-sm mt-4 min-h-5 '+(failed?'text-yellow-300':'text-emerald-300');
+   status.textContent='Selesai. Dibuat: '+created+' | Diupdate: '+updated+' | Gagal: '+failed;
+   await loadStudents();
+ } catch(error) {
+   status.className='text-sm mt-4 min-h-5 text-red-400';
+   status.textContent='Gagal: '+(error.message||error);
+ } finally {
+   btn.disabled=false;
+ }
+};
+
 document.getElementById('logout').onclick=async()=>{await supabaseClient.auth.signOut();sessionStorage.clear();location.href='index.html';};
 lucide.createIcons();
 </script>
-</body></html>
+</body>
+</html>
