@@ -35,7 +35,7 @@ const students = [
     { id: 31, name: "Fahri", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 32, name: "Rifqi", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 33, name: "Fadhil", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
-    { id: 34, name: "Yusuf", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
+    { id: 34, name: "Yusuf", fullName: "Harazaki Yusuf", role: "Siswa XI.B1", quote: "I'll be myself", ig: "#" },
     { id: 35, name: "Kirana", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
     { id: 36, name: "Effan", fullName: "Effan Zandra A.P", role: "Siswa XI.B1", quote: "You're the most important person in your life", ig: "#" },
     { id: 37, name: "Dzaki", role: "Siswa XI.B1", quote: "XI.B1", ig: "#" },
