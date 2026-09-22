@@ -9,7 +9,7 @@
 const SUPABASE_URL = 'https://jszzaqnggaatrgyiksfs.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_2ZluJ_DxgGzsA2pFZmxrzQ_X9vF897m';
 
-const supabaseClient = window.supabase.createClient(
+window.supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
 );
@@ -70,8 +70,7 @@ if (loginForm) {
 
             sessionStorage.setItem('bionestRole', profile.role);
 
-            window.location.href =
-                profile.role === 'super_admin' ? 'admin.html' : 'dashboard.html';
+            window.location.href = 'index.html';
         } catch (error) {
             status.className = 'text-xs text-center min-h-5 pt-1 text-red-400';
             status.textContent = error.message || 'Login gagal.';
