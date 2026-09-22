@@ -56,6 +56,17 @@ export default async function handler(req, res) {
             const totalByCategory = category =>
                 income.filter(t => t.category === category).reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
+            // Kas kelas: Rp10.000 per bulan, mulai Agustus 2026.
+            const kasStartDate = new Date('2026-08-01T00:00:00+07:00');
+            const monthCursor = new Date(kasStartDate);
+            const currentMonth = new Date(nowJakarta.getFullYear(), nowJakarta.getMonth(), 1);
+            let kasDueMonths = 0;
+            while (monthCursor <= currentMonth) {
+                kasDueMonths++;
+                monthCursor.setMonth(monthCursor.getMonth() + 1);
+            }
+            const kasDueAmount = kasDueMonths * 10000;
+
             const totalKas = totalByCategory('kas');
             const totalPoe = totalByCategory('poe');
             const totalIncome = totalKas + totalPoe;
@@ -75,7 +86,7 @@ export default async function handler(req, res) {
             const byStudent = {};
             for (const t of transactions) {
                 if (!t.student) continue;
-                if (!byStudent[t.student]) byStudent[t.student] = { kas: 0, poe: 0, poeDue: poeDueAmount, poeRemaining: poeDueAmount, total: 0 };
+                if (!byStudent[t.student]) byStudent[t.student] = { kas: 0, kasDue: kasDueAmount, kasRemaining: kasDueAmount, poe: 0, poeDue: poeDueAmount, poeRemaining: poeDueAmount, total: 0 };
                 const amount = Number(t.amount || 0);
                 if (t.type === 'income') {
                     if (t.category === 'kas') byStudent[t.student].kas += amount;
@@ -85,11 +96,18 @@ export default async function handler(req, res) {
             }
 
             for (const row of Object.values(byStudent)) {
+                row.kasRemaining = Math.max(0, row.kasDue - row.kas);
                 row.poeRemaining = Math.max(0, row.poeDue - row.poe);
             }
 
             return res.status(200).json({
                 ok: true,
+                kas: {
+                    startDate: '2026-08-01',
+                    dueMonths: kasDueMonths,
+                    dueAmount: kasDueAmount,
+                    ratePerMonth: 10000
+                },
                 poe: {
                     startDate: '2026-08-03',
                     dueDays: poeDueDays,
