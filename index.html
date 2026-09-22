@@ -312,11 +312,26 @@
 
         // 2. DATA JADWAL & TAB SWITCHING
         const schedules = {
-            'Senin': { mapel: ['Upacara', 'Matematika Lanjut', 'Fisika', 'Bahasa Indonesia'], piket: ['Ahmad', 'Siti', 'Budi'] },
-            'Selasa': { mapel: ['Informatika', 'Bahasa Inggris', 'Pancasila'], piket: ['Anisa', 'Doni', 'Eka'] },
-            'Rabu': { mapel: ['Kimia', 'Biologi', 'Sejarah'], piket: ['Fajar', 'Gita', 'Hadi'] },
-            'Kamis': { mapel: ['Olahraga', 'Seni Budaya', 'PAI'], piket: ['Indah', 'Joko', 'Kiki'] },
-            'Jumat': { mapel: ['Jumat Bersih', 'PKWU', 'B. Sunda'], piket: ['Lani', 'Maman', 'Nia'] }
+            'Senin': {
+                mapel: ['MTK TL', 'Inggris', 'Fisika'],
+                piket: ['Khafi', 'Arjasena', 'Orlen', 'Avisha', 'Fareal', 'Andrian', 'Sadam', 'Wisnu', 'Tania', 'Jauharah']
+            },
+            'Selasa': {
+                mapel: ['Fisika', 'Sunda', 'Informatika', 'PAI'],
+                piket: ['Keyla', 'Mikaela', 'Ridho', 'Rizky', 'Zyella', 'Nishar', 'Alvian', 'Brella', 'Fathian', 'Reno']
+            },
+            'Rabu': {
+                mapel: ['PKN', 'PKWU', 'Kimia', 'B. Indo', 'SBK'],
+                piket: ['Lutfan', 'Rafif', 'Kevin', 'Arya', 'Al Mira', 'Elang', 'Dzaki N.', 'Aisahra', 'Satria P', 'Putri']
+            },
+            'Kamis': {
+                mapel: ['Kimia', 'Penjas', 'Sejarah', 'MTK U'],
+                piket: ['Fahri', 'Rifqi', 'Fadhil', 'Yusuf', 'Kirana', 'Effan', 'Dzaki', 'Aura', 'Reva', 'Surya']
+            },
+            'Jumat': {
+                mapel: ['MTK TL', 'MTK U', 'BK', 'B. Indo', 'Informatika'],
+                piket: ['Dhirgam', 'Yoga', 'Dude', 'Daffa', 'Irfan', 'Ara', 'Anissa', 'Meli', 'Gibran', 'Salsabila']
+            }
         };
 
         function switchDay(day) {
