@@ -1,52 +1,129 @@
 /*
  * XI.B1 AUTH
- * Supabase Auth + public profiles.
- *
- * IMPORTANT: put only the Supabase Publishable Key here.
- * Never put a service_role/secret key in the frontend.
+ * GitHub JSON database + browser session.
  */
 
-const SUPABASE_URL = 'https://jszzaqnggaatrgyiksfs.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_2ZluJ_DxgGzsA2pFZmxrzQ_X9vF897m';
+const ACCOUNTS_URL = 'data/accounts.json';
 
-window.supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-);
+async function loadAccounts() {
+    const response = await fetch(ACCOUNTS_URL + '?v=' + Date.now(), { cache: 'no-store' });
+    if (!response.ok) throw new Error('Database akun tidak dapat dimuat.');
+    const data = await response.json();
+    return Array.isArray(data.members) ? data.members : [];
+}
+
+async function hashPassword(value) {
+    const bytes = new TextEncoder().encode(value);
+    const buffer = await crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(buffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+function getStoredProfile() {
+    try {
+        return JSON.parse(sessionStorage.getItem('bionestSession') || 'null');
+    } catch {
+        return null;
+    }
+}
+
+function saveStoredProfile(profile) {
+    sessionStorage.setItem('bionestSession', JSON.stringify(profile));
+    sessionStorage.setItem('bionestRole', profile.role);
+    sessionStorage.setItem('bionestAccess', 'member');
+}
+
+function buildSession(profile) {
+    return { user: { id: profile.username, email: profile.username + '@bionest.local' } };
+}
 
 async function loginWithUsername(username, password) {
     const cleanUsername = username.trim().toLowerCase();
-
     if (!cleanUsername) throw new Error('Username wajib diisi.');
 
-    // Auth accounts are provisioned with this internal email convention.
-    const authEmail = cleanUsername + '@bionest.local';
+    const accounts = await loadAccounts();
+    const account = accounts.find(item => item.username === cleanUsername);
+    if (!account) throw new Error('Username atau password salah.');
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: authEmail,
-        password
-    });
-
-    if (error) throw new Error('Username atau password salah.');
-
-    const { data: profile, error: profileError } = await supabaseClient
-        .from('profiles')
-        .select('id, username, role, full_name, quote')
-        .eq('id', data.user.id)
-        .single();
-
-    if (profileError || !profile) {
-        await supabaseClient.auth.signOut();
-        throw new Error('Profil akun belum terdaftar.');
+    const passwordHash = await hashPassword(password);
+    if (passwordHash !== account.password_sha256) {
+        throw new Error('Username atau password salah.');
     }
 
-    if (profile.username !== cleanUsername) {
-        await supabaseClient.auth.signOut();
-        throw new Error('Akun tidak valid.');
-    }
-
+    const profile = { ...account };
+    delete profile.password_sha256;
+    saveStoredProfile(profile);
     return profile;
 }
+
+window.supabaseClient = {
+    auth: {
+        async getSession() {
+            const profile = getStoredProfile();
+            return { data: { session: profile ? buildSession(profile) : null }, error: null };
+        },
+        async signOut() {
+            sessionStorage.clear();
+            return { error: null };
+        }
+    },
+    from(table) {
+        if (table !== 'profiles') throw new Error('Table tidak dikenal.');
+
+        let mode = 'select';
+        let updateData = null;
+        let filters = {};
+
+        const query = {
+            select() {
+                mode = 'select';
+                return query;
+            },
+            update(data) {
+                mode = 'update';
+                updateData = data || {};
+                return query;
+            },
+            eq(field, value) {
+                filters[field] = value;
+                return query;
+            },
+            maybeSingle: async () => {
+                const profile = getStoredProfile();
+                if (!profile || (filters.id && filters.id !== profile.username)) return { data: null, error: null };
+                return { data: { ...profile }, error: null };
+            },
+            single: async () => {
+                const profile = getStoredProfile();
+                if (!profile || (filters.id && filters.id !== profile.username)) {
+                    return { data: null, error: new Error('Profil tidak ditemukan.') };
+                }
+                return { data: { ...profile }, error: null };
+            },
+            order: async () => {
+                const accounts = await loadAccounts();
+                return { data: accounts.map(({ password_sha256, ...profile }) => profile), error: null };
+            }
+        };
+
+        if (mode === 'update') {
+            query.eq = (field, value) => {
+                filters[field] = value;
+                return {
+                    then: async resolve => {
+                        const current = getStoredProfile();
+                        if (current && (!filters.id || filters.id === current.username)) {
+                            const updated = { ...current, ...updateData };
+                            saveStoredProfile(updated);
+                        }
+                        return resolve({ data: getStoredProfile(), error: null });
+                    }
+                };
+            };
+        }
+
+        return query;
+    }
+};
 
 const loginForm = document.getElementById('loginForm');
 
@@ -69,7 +146,6 @@ if (loginForm) {
             );
 
             sessionStorage.setItem('bionestRole', profile.role);
-
             window.location.href = 'index.html';
         } catch (error) {
             status.className = 'text-xs text-center min-h-5 pt-1 text-red-400';
