@@ -51,15 +51,23 @@ function signTeacherToken(teacherName, subject) {
     return payload + '.' + signature;
 }
 
+function decodeTeacherToken(token) {
+    try {
+        const [payload, signature] = String(token || '').split('.');
+        if (!payload || !signature || !process.env.TEACHER_SECRET) return null;
+        const expected = crypto.createHmac('sha256', process.env.TEACHER_SECRET).update(payload).digest('base64url');
+        if (signature.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null;
+        const data = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+        if (data.role !== 'teacher' || !data.name || !data.subject || data.exp <= Date.now()) return null;
+        return data;
+    } catch {
+        return null;
+    }
+}
+
 function verifyTeacherToken(token) {
     try {
-        if (!token || !process.env.TEACHER_SECRET) return false;
-        const [payload, signature] = String(token).split('.');
-        if (!payload || !signature) return false;
-        const expected = crypto.createHmac('sha256', process.env.TEACHER_SECRET).update(payload).digest('base64url');
-        if (signature.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return false;
-        const data = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
-        return data.role === 'teacher' && data.name && data.subject && data.exp > Date.now();
+        return !!decodeTeacherToken(token);
     } catch {
         return false;
     }
@@ -116,7 +124,8 @@ export default async function handler(req, res) {
             });
         }
 
-        if (!verifyTeacherToken(body.teacher_token)) {
+        const teacherData = decodeTeacherToken(body.teacher_token);
+        if (!teacherData) {
             return res.status(403).json({ error: 'Akses khusus guru diperlukan.' });
         }
 
@@ -134,8 +143,6 @@ export default async function handler(req, res) {
         const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta', year:'numeric', month:'2-digit', day:'2-digit' }).format(now);
         const time = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).format(now);
 
-        const teacherData = JSON.parse(Buffer.from(String(body.teacher_token).split('.')[0], 'base64url').toString('utf8'));
-
         const record = {
             id: `vio-${Date.now()}`,
             student: account.username,
@@ -151,7 +158,7 @@ export default async function handler(req, res) {
         };
 
         data.push(record);
-        const encoded = Buffer.from(JSON.stringify(data, null, 2) + '\\n').toString('base64');
+        const encoded = Buffer.from(JSON.stringify(data, null, 2) + '\n').toString('base64');
 
         await githubRequest(`${GITHUB_API}/repos/${REPO}/contents/${FILE_PATH}`, {
             method: 'PUT',
@@ -169,7 +176,7 @@ export default async function handler(req, res) {
             violation: record
         });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: 'Gagal memproses laporan.' });
+        console.error('Violation API error:', error);
+        return res.status(500).json({ error: 'Gagal memproses laporan.', detail: process.env.NODE_ENV === 'development' ? error.message : undefined });
     }
 }
