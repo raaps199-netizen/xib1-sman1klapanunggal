@@ -95,4 +95,16 @@ function customViolation(){
   if(violationName.length>200)return msg('Pelanggaran terlalu panjang. Maksimal 200 karakter.','text-red-400');
   send(violationName,'Lainnya');
 }
->
+function msg(t,c){
+  const e=document.getElementById('msg');
+  e.className='text-sm text-center mt-4 '+c;
+  e.textContent=t;
+}
+q.oninput=draw;
+if(teacherToken){
+  login.classList.add('hidden');
+  report.classList.remove('hidden');
+}
+document.getElementById('teacherBadge').textContent=teacherName?('Login sebagai: '+teacherName+(teacherSubject?' · '+teacherSubject)):'';
+draw();
+</script></body></html>
