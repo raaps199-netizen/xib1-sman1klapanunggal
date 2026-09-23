@@ -159,6 +159,17 @@ function openMemberProfile(profile) {
                         <p class="text-[10px] text-slate-600 mt-2">Username dan nama lengkap ditetapkan oleh admin kelas.</p>
                     </div>
 
+                    <div class="mt-5 p-4 rounded-2xl bg-slate-950/40 border border-cyan-500/10">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <p class="text-[10px] uppercase tracking-widest text-slate-500">Riwayat Pelanggaran</p>
+                                <p id="profileViolationTotal" class="text-sm font-bold text-white mt-1">Memuat...</p>
+                            </div>
+                            <div id="profileViolationStats" class="text-right text-[10px] text-slate-500"></div>
+                        </div>
+                        <div id="profileViolationList" class="mt-4 space-y-2"></div>
+                    </div>
+
                     <form id="profileEditForm" class="mt-5 space-y-4">
                         <div class="p-4 rounded-2xl bg-slate-950/40 border border-cyan-500/10">
                             <div class="flex items-center gap-4">
@@ -331,6 +342,7 @@ function openMemberProfile(profile) {
     document.getElementById('profileHobby').value = profile.hobby || '';
     document.getElementById('profileSubject').value = profile.favourite_subject || '';
     document.getElementById('profileInstagram').value = profile.instagram || '';
+    loadMemberViolations(profile);
     const removePicture = document.getElementById('removeProfilePicture');
     if (removePicture) removePicture.classList.toggle('hidden', !profile.avatar_url);
 
@@ -342,6 +354,52 @@ function openMemberProfile(profile) {
     modal.classList.add('flex');
     document.body.classList.add('overflow-hidden');
     lucide.createIcons();
+}
+
+async function loadMemberViolations(profile) {
+    const totalEl = document.getElementById('profileViolationTotal');
+    const statsEl = document.getElementById('profileViolationStats');
+    const listEl = document.getElementById('profileViolationList');
+    if (!totalEl || !listEl || !profile?.username) return;
+
+    totalEl.textContent = 'Memuat...';
+    try {
+        const response = await fetch('/api/violation?student=' + encodeURIComponent(profile.username) + '&v=' + Date.now(), { cache: 'no-store' });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Gagal memuat riwayat.');
+
+        const records = Array.isArray(data.violations) ? data.violations : [];
+        totalEl.textContent = records.length + ' laporan tercatat';
+
+        const counts = {};
+        records.forEach(item => {
+            counts[item.category] = (counts[item.category] || 0) + 1;
+        });
+        statsEl.textContent = Object.entries(counts).map(([key, value]) => key + ': ' + value).join(' · ');
+
+        if (!records.length) {
+            listEl.innerHTML = '<p class="text-xs text-slate-500 py-3">Belum ada pelanggaran tercatat.</p>';
+            return;
+        }
+
+        listEl.innerHTML = records.slice().reverse().map(item => `
+            <div class="p-3 rounded-xl border border-white/5 bg-slate-900/50">
+                <p class="text-sm font-semibold text-white">${escapeHtml(item.violation)}</p>
+                <p class="text-[11px] text-cyan-300 mt-1">${escapeHtml(item.category)}</p>
+                <p class="text-[10px] text-slate-500 mt-1">${escapeHtml(item.date)} · ${escapeHtml(item.time)}</p>
+            </div>
+        `).join('');
+    } catch (error) {
+        totalEl.textContent = 'Gagal memuat riwayat';
+        statsEl.textContent = '';
+        listEl.innerHTML = '<p class="text-xs text-red-400">' + escapeHtml(error.message) + '</p>';
+    }
+}
+
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+    }[char]));
 }
 
 function closeMemberProfile() {
