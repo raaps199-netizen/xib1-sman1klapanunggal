@@ -33,7 +33,8 @@ async function readJsonFile() {
 async function getAccounts() {
     const file = await githubRequest(`${GITHUB_API}/repos/${REPO}/contents/data/accounts.json?ref=${BRANCH}`);
     const raw = Buffer.from(file.content.replace(/\\n/g, '').replace(/\s+$/g, ''), 'base64').toString('utf8');
-    return JSON.parse(raw || '[]');
+    const parsed = JSON.parse(raw || '{}');
+    return Array.isArray(parsed) ? parsed : (Array.isArray(parsed.members) ? parsed.members : []);
 }
 
 function getTeacherMap() {
