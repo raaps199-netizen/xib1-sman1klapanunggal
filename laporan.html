@@ -10,7 +10,37 @@
 </div></main>
 <script>
 const S=[['khafi','Ashabul Khafi'],['arjasena','Satria Arjasena Maulana'],['orlen','Danendra Orlen Wasatha'],['avisha','Avisha Fakhiran Anwar'],['fareal','Fareal Julyans Zalfine'],['andrian','Andrian Pranata Tambunan'],['sadam','Sadam Al Fahri'],['wisnu','Wisnu Panji Pratama'],['tania','Tania Fitri Izati'],['jauharah','Jauharah Tuhfah'],['keyla','Keyla Ajeng Firmansyah'],['mikaela','Mikaela Leona'],['ridho','Ridho Saputra Ependi'],['rizky','Rizky Dwi Saputra Hidayat'],['zyella','Zyella Almaira Sigit'],['nishar','Nishar Soma Maulana'],['alvian','Alvian Arkan Iniesta'],['brella','Brela Terta Zafina'],['fathian','Fathian Khairul Akbar'],['reno','Reno Ramzi Nararya'],['lutfan','Lutfan Attaullah Sultoni'],['rafif','Ahmad Rafif Hidayat'],['kevin','Kevin Habiyal Huda'],['arya','Arya Pratama'],['almira','Al Mira Berlian Handayani'],['elang','Elang Bari Dermawan'],['dzaky','Muhammad Dzaky Pradana'],['aisahra','Aisahra Mayjasti Aulia Putri'],['satria','Satria Putra Pratama'],['putri','Putri Aulia'],['fahri','Muhammad Fahri Maulana'],['rifqi','Rifqi Binangkit'],['fadhil','Askha Fadhil Raihan Adinomo'],['yusuf','Harazaki Yusuf Rahardjo Telaumbanua'],['kirana','Kirana Intan Permata'],['effan','Effan Zandra Arya Putra'],['dzaki','Dzakii Nizaar Akmal'],['aura','Aura Rizky Triyastuti'],['reva','Reva Amalia Achmad'],['surya','Surya Melano'],['dhirgam',"Dhirgam Nawi Hasib Dhiya Ul'Haq"],['yoga','Yoga Rizki Ramadhan'],['dude','Dude Ramadhan'],['daffa','M. Daffa Azalia'],['irfan','Irfan Asyraf Musyaffa'],['ara','Ara Ananda Putri'],['anissa','Annisa Zahra'],['meli','Meli Anggraeni'],['gibran','Gibran Ayatullah'],['salsabila','Salsabil Fajrianita']].map(x=>({username:x[0],name:x[1]})).sort((a,b)=>a.name.localeCompare(b.name));
-const V=['Tidur di kelas','Berisik','Tidak mendengarkan guru','Telat masuk kelas'];
+const V=[
+  {category:'Kedisiplinan & Pembelajaran',items:[
+    'Tidur di kelas',
+    'Berisik / mengganggu kelas',
+    'Tidak mendengarkan guru',
+    'Telat masuk kelas',
+    'Tidak mengerjakan tugas',
+    'Tidak mengumpulkan tugas',
+    'Tidak mengikuti kegiatan pembelajaran',
+    'Mengganggu teman saat belajar',
+    'Keluar kelas tanpa izin',
+    'Bermain HP saat pembelajaran',
+    'Makan / minum saat pembelajaran'
+  ]},
+  {category:'Tata Tertib',items:[
+    'Tidak memakai seragam sesuai ketentuan',
+    'Tidak memakai atribut sekolah lengkap',
+    'Tidak membawa perlengkapan belajar',
+    'Datang terlambat ke sekolah',
+    'Meninggalkan sekolah tanpa izin',
+    'Membawa barang yang tidak diperbolehkan'
+  ]},
+  {category:'Etika & Perilaku',items:[
+    'Berkata tidak sopan',
+    'Tidak menghormati guru',
+    'Mengganggu atau mengejek teman',
+    'Bertengkar dengan teman',
+    'Menyontek / membantu menyontek',
+    'Merusak fasilitas sekolah'
+  ]}
+];
 let chosen=null; const q=document.getElementById('q'); let teacherToken=sessionStorage.getItem('bionestTeacherToken');
 const login=document.getElementById('login'), report=document.getElementById('report'); let teacherName=sessionStorage.getItem('bionestTeacherName')||'';
 let teacherSubject=sessionStorage.getItem('bionestTeacherSubject')||'';
@@ -21,9 +51,48 @@ sessionStorage.setItem('bionestTeacherName',teacherName);
 sessionStorage.setItem('bionestTeacherSubject',teacherSubject);login.classList.add('hidden');report.classList.remove('hidden');m.textContent='';}catch(e){m.textContent=e.message;m.className='text-sm text-center mt-3 text-red-400';}}
 document.getElementById('loginBtn').onclick=teacherLogin;
 function draw(){const x=q.value.toLowerCase();document.getElementById('students').innerHTML=S.filter(s=>s.name.toLowerCase().includes(x)).map(s=>'<button class="text-left p-3 rounded-xl bg-slate-950/40 border border-white/5 hover:border-cyan-400/30" data-u="'+s.username+'">'+s.name+'</button>').join('');document.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>pick(S.find(s=>s.username===b.dataset.u)));}
-function pick(s){chosen=s;document.getElementById('panel').classList.remove('hidden');document.getElementById('name').textContent=s.name;document.getElementById('types').innerHTML='<p class="text-xs text-slate-400">Kedisiplinan & Pembelajaran</p>'+V.map(v=>'<button class="text-left p-3 rounded-xl bg-slate-950/40 border border-white/5 hover:border-cyan-400/30" data-v="'+v+'">'+v+'</button>').join('');document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>send(b.dataset.v));}
-async function send(v){if(!teacherToken)return msg('Sesi guru tidak ditemukan.','text-red-400');if(!confirm('Catat laporan untuk '+chosen.name+' pada pelajaran '+teacherSubject+'?'))return;msg('Menyimpan...','text-slate-400');try{const r=await fetch('/api/violation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({teacher_token:teacherToken,student:chosen.username,category:'Kedisiplinan & Pembelajaran',violation:v})});const d=await r.json();if(!r.ok)throw Error(d.error||'Gagal menyimpan.');
-const v=d.violation;
-msg('✓ Laporan berhasil dicatat. Terima kasih. Mohon maaf atas pelanggaran yang terjadi. · '+v.student_name+' · '+v.violation+' · '+v.subject+' · '+v.date+' '+v.time,'text-emerald-400')}catch(e){msg(e.message,'text-red-400')}}
-function msg(t,c){const e=document.getElementById('msg');e.className='text-sm text-center mt-4 '+c;e.textContent=t}q.oninput=draw;if(teacherToken){login.classList.add('hidden');report.classList.remove('hidden');}document.getElementById('teacherBadge').textContent=teacherName?('Login sebagai: '+teacherName+(teacherSubject?' · '+teacherSubject:'')):'';draw();
-</script></body></html>
+function pick(s){
+  chosen=s;
+  document.getElementById('panel').classList.remove('hidden');
+  document.getElementById('name').textContent=s.name;
+  document.getElementById('types').innerHTML=V.map(group=>
+    '<div class="mt-3"><p class="text-xs font-bold text-slate-400 mb-2">'+group.category+'</p>'+
+    group.items.map(item=>'<button class="text-left w-full p-3 mb-2 rounded-xl bg-slate-950/40 border border-white/5 hover:border-cyan-400/30" data-v="'+item.replace(/"/g,'&quot;')+'" data-c="'+group.category+'">'+item+'</button>').join('')+
+    '</div>'
+  ).join('')+
+  '<div class="mt-4"><p class="text-xs font-bold text-slate-400 mb-2">Lainnya</p><button id="otherBtn" class="text-left w-full p-3 rounded-xl bg-slate-950/40 border border-cyan-400/20 hover:border-cyan-400/40">Tulis pelanggaran lainnya</button></div>';
+  document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>send(b.dataset.v,b.dataset.c));
+  document.getElementById('otherBtn').onclick=()=>customViolation();
+}
+async function send(violationName, category){
+  if(!teacherToken)return msg('Sesi guru tidak ditemukan.','text-red-400');
+  if(!confirm('Catat laporan untuk '+chosen.name+' pada pelajaran '+teacherSubject+'?'))return;
+  msg('Menyimpan...','text-slate-400');
+  try{
+    const r=await fetch('/api/violation',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        teacher_token:teacherToken,
+        student:chosen.username,
+        category:category,
+        violation:violationName
+      })
+    });
+    const d=await r.json();
+    if(!r.ok)throw Error(d.error||'Gagal menyimpan.');
+    const saved=d.violation;
+    msg('✓ Laporan berhasil dicatat. Terima kasih. Mohon maaf atas pelanggaran yang terjadi. · '+saved.student_name+' · '+saved.violation+' · '+saved.subject+' · '+saved.date+' '+saved.time,'text-emerald-400');
+  }catch(e){
+    msg(e.message,'text-red-400');
+  }
+}
+
+function customViolation(){
+  const text=prompt('Tulis pelanggaran yang dilakukan siswa:');
+  if(!text || !text.trim())return;
+  const violationName=text.trim();
+  if(violationName.length>200)return msg('Pelanggaran terlalu panjang. Maksimal 200 karakter.','text-red-400');
+  send(violationName,'Lainnya');
+}
+>
