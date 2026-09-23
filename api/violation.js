@@ -34,7 +34,10 @@ export default async function handler(req, res) {
     try {
         if (req.method === 'GET') {
             const { data } = await readJsonFile();
-            return res.status(200).json({ violations: data });
+            const student = String(req.query?.student || '').trim();
+            return res.status(200).json({
+                violations: student ? data.filter(item => item.student === student) : data
+            });
         }
 
         if (req.method !== 'POST') {
