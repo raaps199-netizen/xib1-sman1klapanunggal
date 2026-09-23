@@ -15,7 +15,12 @@ async function githubRequest(url, options = {}) {
             ...(options.headers || {})
         }
     });
-    if (!response.ok) throw new Error(await response.text());
+    if (!response.ok) {
+        const errorText = await response.text();
+        const error = new Error(errorText);
+        error.status = response.status;
+        throw error;
+    }
     return response.json();
 }
 
@@ -177,6 +182,14 @@ export default async function handler(req, res) {
         });
     } catch (error) {
         console.error('Violation API error:', error);
-        return res.status(500).json({ error: 'Gagal memproses laporan.', detail: process.env.NODE_ENV === 'development' ? error.message : undefined });
+        let detail = error?.message || 'Unknown error';
+        try {
+            const parsed = JSON.parse(detail);
+            detail = parsed.message || parsed.error || detail;
+        } catch {}
+        return res.status(error?.status || 500).json({
+            error: 'Gagal memproses laporan.',
+            detail: String(detail).slice(0, 500)
+        });
     }
 }
