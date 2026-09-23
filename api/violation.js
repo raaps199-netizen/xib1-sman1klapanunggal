@@ -40,10 +40,11 @@ function getTeacherMap() {
     }
 }
 
-function signTeacherToken(teacherName) {
+function signTeacherToken(teacherName, subject) {
     const payload = Buffer.from(JSON.stringify({
         role: 'teacher',
         name: teacherName,
+        subject,
         exp: Date.now() + 8 * 60 * 60 * 1000
     })).toString('base64url');
     const signature = crypto.createHmac('sha256', process.env.TEACHER_SECRET).update(payload).digest('base64url');
@@ -58,7 +59,7 @@ function verifyTeacherToken(token) {
         const expected = crypto.createHmac('sha256', process.env.TEACHER_SECRET).update(payload).digest('base64url');
         if (signature.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return false;
         const data = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
-        return data.role === 'teacher' && data.name && data.exp > Date.now();
+        return data.role === 'teacher' && data.name && data.subject && data.exp > Date.now();
     } catch {
         return false;
     }
@@ -96,11 +97,23 @@ export default async function handler(req, res) {
         if (body.action === 'teacher_login') {
             const pin = String(body.pin || '').trim();
             const teacherMap = getTeacherMap();
-            const teacherName = teacherMap[pin];
-            if (!teacherName) {
+            const teacher = teacherMap[pin];
+            if (!teacher) {
                 return res.status(401).json({ error: 'Kode guru salah.' });
             }
-            return res.status(200).json({ token: signTeacherToken(String(teacherName)) , teacher_name: String(teacherName) });
+
+            const teacherName = typeof teacher === 'string' ? teacher : teacher.name;
+            const subject = typeof teacher === 'string' ? '' : teacher.subject;
+
+            if (!teacherName || !subject) {
+                return res.status(500).json({ error: 'Data guru belum lengkap di konfigurasi.' });
+            }
+
+            return res.status(200).json({
+                token: signTeacherToken(String(teacherName), String(subject)),
+                teacher_name: String(teacherName),
+                subject: String(subject)
+            });
         }
 
         if (!verifyTeacherToken(body.teacher_token)) {
@@ -131,6 +144,7 @@ export default async function handler(req, res) {
             violation,
             reported_by: 'teacher',
             reported_by_name: teacherData.name,
+            subject: teacherData.subject,
             date,
             time,
             created_at: now.toISOString()
@@ -150,7 +164,10 @@ export default async function handler(req, res) {
             })
         });
 
-        return res.status(201).json({ message: 'Pelanggaran berhasil dicatat.', violation: record });
+        return res.status(201).json({
+            message: 'Pelanggaran berhasil dicatat.',
+            violation: record
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Gagal memproses laporan.' });
