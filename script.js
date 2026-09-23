@@ -167,15 +167,15 @@ function openMemberProfile(profile) {
                                     <p class="text-sm font-bold text-white">Foto Profil</p>
                                     <p class="text-xs text-slate-500 mt-1">JPG, PNG, atau WebP · maksimal 2 MB</p>
                                     <div id="profileCropArea" class="hidden mt-3">
-                                        <div class="relative w-full max-w-sm aspect-square mx-auto rounded-2xl overflow-hidden border border-cyan-500/30 bg-black/40">
-                                            <img id="profileCropImage" class="absolute inset-0 w-full h-full object-contain select-none" alt="Atur crop foto">
-                                            <div class="absolute inset-0 pointer-events-none ring-2 ring-techCyan/70 ring-inset rounded-2xl"></div>
+                                        <div id="profileCropViewport" class="relative w-full max-w-sm aspect-[4/3] mx-auto rounded-2xl overflow-hidden bg-black/60 border border-cyan-500/20 touch-none select-none">
+                                            <canvas id="profileCropCanvas" class="absolute inset-0 w-full h-full touch-none"></canvas>
                                         </div>
-                                        <div class="grid grid-cols-3 gap-2 mt-3">
-                                            <label class="text-[10px] text-slate-500">Horizontal<input id="cropX" type="range" min="0" max="100" value="50" class="w-full accent-cyan-400"></label>
-                                            <label class="text-[10px] text-slate-500">Vertikal<input id="cropY" type="range" min="0" max="100" value="50" class="w-full accent-cyan-400"></label>
-                                            <label class="text-[10px] text-slate-500">Zoom<input id="cropZoom" type="range" min="100" max="220" value="100" class="w-full accent-cyan-400"></label>
+                                        <div class="mt-3">
+                                            <label class="text-[10px] text-slate-500">Zoom
+                                                <input id="cropZoom" type="range" min="100" max="300" value="100" class="w-full accent-cyan-400">
+                                            </label>
                                         </div>
+                                        <p class="text-[10px] text-slate-600 mt-2 text-center">Geser foto di dalam kotak untuk mengatur posisi.</p>
                                     </div>
                                     <input id="profilePictureInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden">
                                     <div class="flex flex-wrap gap-2 mt-3">
@@ -264,9 +264,7 @@ function openMemberProfile(profile) {
             cropZoom = 100;
             pendingProfileImage = await loadProfileImage(file);
             const cropArea = document.getElementById('profileCropArea');
-            const cropImage = document.getElementById('profileCropImage');
             if (cropArea) cropArea.classList.remove('hidden');
-            if (cropImage) cropImage.src = URL.createObjectURL(file);
             showProfileCropPreview();
             status.className = 'text-xs min-h-4 mt-3 text-cyan-300';
             status.textContent = 'Atur posisi foto dulu, lalu tekan Simpan Foto.';
@@ -291,9 +289,7 @@ function openMemberProfile(profile) {
                 pendingProfileImage = null;
                 pendingProfileFile = null;
                 const cropArea = document.getElementById('profileCropArea');
-                const cropImage = document.getElementById('profileCropImage');
                 if (cropArea) cropArea.classList.add('hidden');
-                if (cropImage) cropImage.removeAttribute('src');
                 status.className = 'text-xs min-h-4 mt-3 text-emerald-400';
                 status.textContent = 'Foto profil berhasil diperbarui.';
             } catch (error) {
@@ -304,14 +300,48 @@ function openMemberProfile(profile) {
             }
         };
 
-        ['cropX', 'cropY', 'cropZoom'].forEach(id => {
-            const input = document.getElementById(id);
-            if (input) input.addEventListener('input', () => {
-                if (id === 'cropX') cropX = Number(input.value);
-                if (id === 'cropY') cropY = Number(input.value);
-                if (id === 'cropZoom') cropZoom = Number(input.value);
-                showProfileCropPreview();
-            });
+        const cropZoomInput = document.getElementById('cropZoom');
+        if (cropZoomInput) cropZoomInput.addEventListener('input', () => {
+            cropZoom = Number(cropZoomInput.value);
+            showProfileCropPreview();
+        });
+
+        const cropCanvas = document.getElementById('profileCropCanvas');
+        let dragStart = null;
+        let pinchStart = null;
+
+        cropCanvas.addEventListener('pointerdown', event => {
+            if (!pendingProfileImage) return;
+            cropCanvas.setPointerCapture(event.pointerId);
+            if (event.pointerType === 'touch' && !dragStart && !pinchStart) {
+                dragStart = { id: event.pointerId, x: event.clientX, y: event.clientY, cropX, cropY };
+            } else {
+                dragStart = { id: event.pointerId, x: event.clientX, y: event.clientY, cropX, cropY };
+            }
+        });
+
+        cropCanvas.addEventListener('pointermove', event => {
+            if (!pendingProfileImage || !dragStart || dragStart.id !== event.pointerId) return;
+            const rect = cropCanvas.getBoundingClientRect();
+            const sourceSize = Math.min(pendingProfileImage.width, pendingProfileImage.height) / (cropZoom / 100);
+            const cropBox = Math.min(rect.width, rect.height) * 0.78;
+            const pixelsPerSource = cropBox / sourceSize;
+            const dxSource = (event.clientX - dragStart.x) / pixelsPerSource;
+            const dySource = (event.clientY - dragStart.y) / pixelsPerSource;
+            const maxX = Math.max(0, pendingProfileImage.width - sourceSize);
+            const maxY = Math.max(0, pendingProfileImage.height - sourceSize);
+            cropX = Math.max(0, Math.min(100, dragStart.cropX - (dxSource / Math.max(1, maxX)) * 100));
+            cropY = Math.max(0, Math.min(100, dragStart.cropY - (dySource / Math.max(1, maxY)) * 100));
+            showProfileCropPreview();
+        });
+
+        const endCropPointer = event => {
+            if (dragStart?.id === event.pointerId) dragStart = null;
+        };
+        cropCanvas.addEventListener('pointerup', endCropPointer);
+        cropCanvas.addEventListener('pointercancel', endCropPointer);
+        cropCanvas.addEventListener('pointerleave', event => {
+            if (event.pointerType === 'mouse') endCropPointer(event);
         });
 
         document.getElementById('removeProfilePicture').onclick = async () => {
@@ -434,17 +464,92 @@ function drawProfileCrop(bitmap, x = 50, y = 50, zoom = 100, target = 512) {
 
 function showProfileCropPreview() {
     if (!pendingProfileImage) return;
-    const canvas = drawProfileCrop(pendingProfileImage, cropX, cropY, cropZoom, 256);
+
+    const cropCanvas = document.getElementById('profileCropCanvas');
+    if (cropCanvas) {
+        const rect = cropCanvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const width = Math.max(1, Math.round(rect.width * dpr));
+        const height = Math.max(1, Math.round(rect.height * dpr));
+        if (cropCanvas.width !== width || cropCanvas.height !== height) {
+            cropCanvas.width = width;
+            cropCanvas.height = height;
+        }
+
+        const ctx = cropCanvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, rect.width, rect.height);
+
+        const image = pendingProfileImage;
+        const imageRatio = image.width / image.height;
+        const viewportRatio = rect.width / rect.height;
+        let displayW = rect.width;
+        let displayH = rect.height;
+        if (imageRatio > viewportRatio) {
+            displayH = rect.height;
+            displayW = displayH * imageRatio;
+        } else {
+            displayW = rect.width;
+            displayH = displayW / imageRatio;
+        }
+
+        const cropBox = Math.min(rect.width, rect.height) * 0.78;
+        const sourceSize = Math.min(image.width, image.height) / (cropZoom / 100);
+        const maxX = Math.max(0, image.width - sourceSize);
+        const maxY = Math.max(0, image.height - sourceSize);
+        const sx = maxX * (cropX / 100);
+        const sy = maxY * (cropY / 100);
+        const scale = cropBox / sourceSize;
+        const drawW = image.width * scale;
+        const drawH = image.height * scale;
+        const boxLeft = (rect.width - cropBox) / 2;
+        const boxTop = (rect.height - cropBox) / 2;
+
+        ctx.save();
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, rect.width, rect.height);
+        ctx.drawImage(image, boxLeft - sx * scale, boxTop - sy * scale, drawW, drawH);
+        ctx.fillStyle = 'rgba(0,0,0,0.52)';
+        ctx.fillRect(0, 0, rect.width, boxTop);
+        ctx.fillRect(0, boxTop + cropBox, rect.width, rect.height - boxTop - cropBox);
+        ctx.fillRect(0, boxTop, boxLeft, cropBox);
+        ctx.fillRect(boxLeft + cropBox, boxTop, rect.width - boxLeft - cropBox, cropBox);
+        ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(boxLeft + 1, boxTop + 1, cropBox - 2, cropBox - 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(boxLeft + cropBox / 3, boxTop);
+        ctx.lineTo(boxLeft + cropBox / 3, boxTop + cropBox);
+        ctx.moveTo(boxLeft + cropBox * 2 / 3, boxTop);
+        ctx.lineTo(boxLeft + cropBox * 2 / 3, boxTop + cropBox);
+        ctx.moveTo(boxLeft, boxTop + cropBox / 3);
+        ctx.lineTo(boxLeft + cropBox, boxTop + cropBox / 3);
+        ctx.moveTo(boxLeft, boxTop + cropBox * 2 / 3);
+        ctx.lineTo(boxLeft + cropBox, boxTop + cropBox * 2 / 3);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    const previewCanvas = drawProfileCrop(pendingProfileImage, cropX, cropY, cropZoom, 256);
     const preview = document.getElementById('profileEditAvatar');
     if (preview) {
-        preview.innerHTML = '<img src="' + canvas.toDataURL('image/webp', 0.85) + '" alt="Preview foto" class="w-full h-full object-cover">';
+        preview.innerHTML = '<img src="' + previewCanvas.toDataURL('image/webp', 0.85) + '" alt="Preview foto" class="w-full h-full object-cover">';
     }
+
+    const zoomInput = document.getElementById('cropZoom');
+    if (zoomInput && Number(zoomInput.value) !== cropZoom) zoomInput.value = cropZoom;
 }
 
 async function compressProfilePicture(bitmap, x = 50, y = 50, zoom = 100) {
     const canvas = drawProfileCrop(bitmap, x, y, zoom, 512);
     return canvas.toDataURL('image/webp', 0.82);
 }
+
+window.addEventListener('resize', () => {
+    if (pendingProfileImage) showProfileCropPreview();
+});
 
 window.updateProfilePicture = async function(image) {
     const session = window.bionestGetSession ? window.bionestGetSession() : null;
