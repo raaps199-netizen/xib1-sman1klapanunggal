@@ -166,10 +166,16 @@ function openMemberProfile(profile) {
                                 <div class="min-w-0 flex-1">
                                     <p class="text-sm font-bold text-white">Foto Profil</p>
                                     <p class="text-xs text-slate-500 mt-1">JPG, PNG, atau WebP · maksimal 2 MB</p>
-                                    <div class="grid grid-cols-3 gap-2 mt-3">
-                                        <label class="text-[10px] text-slate-500">Horizontal<input id="cropX" type="range" min="0" max="100" value="50" class="w-full accent-cyan-400"></label>
-                                        <label class="text-[10px] text-slate-500">Vertikal<input id="cropY" type="range" min="0" max="100" value="50" class="w-full accent-cyan-400"></label>
-                                        <label class="text-[10px] text-slate-500">Zoom<input id="cropZoom" type="range" min="100" max="220" value="100" class="w-full accent-cyan-400"></label>
+                                    <div id="profileCropArea" class="hidden mt-3">
+                                        <div class="relative w-full max-w-sm aspect-square mx-auto rounded-2xl overflow-hidden border border-cyan-500/30 bg-black/40">
+                                            <img id="profileCropImage" class="absolute inset-0 w-full h-full object-contain select-none" alt="Atur crop foto">
+                                            <div class="absolute inset-0 pointer-events-none ring-2 ring-techCyan/70 ring-inset rounded-2xl"></div>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-2 mt-3">
+                                            <label class="text-[10px] text-slate-500">Horizontal<input id="cropX" type="range" min="0" max="100" value="50" class="w-full accent-cyan-400"></label>
+                                            <label class="text-[10px] text-slate-500">Vertikal<input id="cropY" type="range" min="0" max="100" value="50" class="w-full accent-cyan-400"></label>
+                                            <label class="text-[10px] text-slate-500">Zoom<input id="cropZoom" type="range" min="100" max="220" value="100" class="w-full accent-cyan-400"></label>
+                                        </div>
                                     </div>
                                     <input id="profilePictureInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden">
                                     <div class="flex flex-wrap gap-2 mt-3">
@@ -257,6 +263,10 @@ function openMemberProfile(profile) {
             cropY = 50;
             cropZoom = 100;
             pendingProfileImage = await loadProfileImage(file);
+            const cropArea = document.getElementById('profileCropArea');
+            const cropImage = document.getElementById('profileCropImage');
+            if (cropArea) cropArea.classList.remove('hidden');
+            if (cropImage) cropImage.src = URL.createObjectURL(file);
             showProfileCropPreview();
             status.className = 'text-xs min-h-4 mt-3 text-cyan-300';
             status.textContent = 'Atur posisi foto dulu, lalu tekan Simpan Foto.';
@@ -280,6 +290,10 @@ function openMemberProfile(profile) {
                 document.getElementById('saveProfilePicture').classList.add('hidden');
                 pendingProfileImage = null;
                 pendingProfileFile = null;
+                const cropArea = document.getElementById('profileCropArea');
+                const cropImage = document.getElementById('profileCropImage');
+                if (cropArea) cropArea.classList.add('hidden');
+                if (cropImage) cropImage.removeAttribute('src');
                 status.className = 'text-xs min-h-4 mt-3 text-emerald-400';
                 status.textContent = 'Foto profil berhasil diperbarui.';
             } catch (error) {
@@ -311,6 +325,8 @@ function openMemberProfile(profile) {
                 renderMemberOverview(profile);
                 status.className = 'text-xs min-h-4 mt-3 text-emerald-400';
                 status.textContent = 'Foto profil dihapus.';
+                const cropArea = document.getElementById('profileCropArea');
+                if (cropArea) cropArea.classList.add('hidden');
             } catch (error) {
                 status.className = 'text-xs min-h-4 mt-3 text-red-400';
                 status.textContent = error.message || 'Gagal memperbarui foto profil.';
@@ -427,7 +443,6 @@ function showProfileCropPreview() {
 
 async function compressProfilePicture(bitmap, x = 50, y = 50, zoom = 100) {
     const canvas = drawProfileCrop(bitmap, x, y, zoom, 512);
-    bitmap.close();
     return canvas.toDataURL('image/webp', 0.82);
 }
 
