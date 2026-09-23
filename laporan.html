@@ -190,7 +190,7 @@ async function send(violationName, category) {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Gagal menyimpan.');
+      throw new Error((data.error || 'Gagal menyimpan.') + (data.detail ? ' — ' + data.detail : ''));
     }
 
     const saved = data.violation;
