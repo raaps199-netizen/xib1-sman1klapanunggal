@@ -31,9 +31,19 @@ async function getAccounts() {
     return JSON.parse(raw || '[]');
 }
 
-function signTeacherToken() {
+function getTeacherMap() {
+    try {
+        const parsed = JSON.parse(process.env.TEACHER_PINS || '{}');
+        return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch {
+        return {};
+    }
+}
+
+function signTeacherToken(teacherName) {
     const payload = Buffer.from(JSON.stringify({
         role: 'teacher',
+        name: teacherName,
         exp: Date.now() + 8 * 60 * 60 * 1000
     })).toString('base64url');
     const signature = crypto.createHmac('sha256', process.env.TEACHER_SECRET).update(payload).digest('base64url');
@@ -48,14 +58,14 @@ function verifyTeacherToken(token) {
         const expected = crypto.createHmac('sha256', process.env.TEACHER_SECRET).update(payload).digest('base64url');
         if (signature.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return false;
         const data = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
-        return data.role === 'teacher' && data.exp > Date.now();
+        return data.role === 'teacher' && data.name && data.exp > Date.now();
     } catch {
         return false;
     }
 }
 
 export default async function handler(req, res) {
-    if (!process.env.GITHUB_TOKEN || !process.env.TEACHER_PIN || !process.env.TEACHER_SECRET) {
+    if (!process.env.GITHUB_TOKEN || !process.env.TEACHER_PINS || !process.env.TEACHER_SECRET) {
         return res.status(500).json({ error: 'Sistem guru belum dikonfigurasi.' });
     }
 
@@ -84,10 +94,13 @@ export default async function handler(req, res) {
         const body = req.body || {};
 
         if (body.action === 'teacher_login') {
-            if (String(body.pin || '') !== String(process.env.TEACHER_PIN)) {
-                return res.status(401).json({ error: 'PIN guru salah.' });
+            const pin = String(body.pin || '').trim();
+            const teacherMap = getTeacherMap();
+            const teacherName = teacherMap[pin];
+            if (!teacherName) {
+                return res.status(401).json({ error: 'Kode guru salah.' });
             }
-            return res.status(200).json({ token: signTeacherToken() });
+            return res.status(200).json({ token: signTeacherToken(String(teacherName)) , teacher_name: String(teacherName) });
         }
 
         if (!verifyTeacherToken(body.teacher_token)) {
@@ -108,6 +121,8 @@ export default async function handler(req, res) {
         const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta', year:'numeric', month:'2-digit', day:'2-digit' }).format(now);
         const time = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).format(now);
 
+        const teacherData = JSON.parse(Buffer.from(String(body.teacher_token).split('.')[0], 'base64url').toString('utf8'));
+
         const record = {
             id: `vio-${Date.now()}`,
             student: account.username,
@@ -115,7 +130,7 @@ export default async function handler(req, res) {
             category,
             violation,
             reported_by: 'teacher',
-            reported_by_name: 'Guru',
+            reported_by_name: teacherData.name,
             date,
             time,
             created_at: now.toISOString()
