@@ -218,29 +218,6 @@ function openMemberProfile(profile) {
                 </div>
             </div>`;
         document.body.appendChild(modal);
-        const cropOverlay = document.createElement('div');
-        cropOverlay.id = 'profileCropEditor';
-        cropOverlay.className = 'fixed inset-0 z-[120] hidden bg-black/95 items-center justify-center';
-        cropOverlay.innerHTML = `
-            <div class="w-full h-full flex flex-col">
-                <div class="flex-1 flex items-center justify-center p-4">
-                    <div id="profileCropViewport" class="relative w-full max-w-lg aspect-square overflow-hidden bg-black touch-none select-none">
-                        <canvas id="profileCropCanvas" class="absolute inset-0 w-full h-full touch-none"></canvas>
-                    </div>
-                </div>
-                <div class="px-5 pb-6 max-w-lg w-full mx-auto">
-                    <label class="text-xs text-slate-400 block mb-2">Zoom
-                        <input id="cropZoom" type="range" min="100" max="300" value="100" class="w-full accent-cyan-400">
-                    </label>
-                    <p class="text-[10px] text-slate-500 text-center mt-2">Geser foto di dalam kotak untuk mengatur posisi.</p>
-                    <div class="flex gap-3 mt-4">
-                        <button type="button" id="cropCancel" class="flex-1 py-3 rounded-xl border border-slate-700 text-slate-300">Batal</button>
-                        <button type="button" id="cropDone" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-slate-950 font-bold">Selesai</button>
-                    </div>
-                </div>
-            </div>`;
-        document.body.appendChild(cropOverlay);
-
         document.getElementById('closeProfileModal').onclick = () => closeMemberProfile();
         let pendingProfileImage = null;
         let pendingProfileFile = null;
@@ -275,12 +252,10 @@ function openMemberProfile(profile) {
             cropY = 50;
             cropZoom = 100;
             pendingProfileImage = await loadProfileImage(file);
-            cropOverlay.classList.remove('hidden');
-            cropOverlay.classList.add('flex');
             showProfileCropPreview();
             status.className = 'text-xs min-h-4 mt-3 text-cyan-300';
-            status.textContent = 'Atur posisi foto dulu, lalu tekan Simpan Foto.';
-            document.getElementById('saveProfilePicture').classList.add('hidden');
+            status.textContent = 'Foto siap dipasang. Tekan Simpan Foto.';
+            document.getElementById('saveProfilePicture').classList.remove('hidden');
             event.target.value = '';
         });
 
@@ -300,8 +275,6 @@ function openMemberProfile(profile) {
                 document.getElementById('saveProfilePicture').classList.add('hidden');
                 pendingProfileImage = null;
                 pendingProfileFile = null;
-                cropOverlay.classList.add('hidden');
-                cropOverlay.classList.remove('flex');
                 status.className = 'text-xs min-h-4 mt-3 text-emerald-400';
                 status.textContent = 'Foto profil berhasil diperbarui.';
             } catch (error) {
@@ -311,84 +284,6 @@ function openMemberProfile(profile) {
                 saveProfilePicture.disabled = false;
             }
         };
-
-        const cropZoomInput = document.getElementById('cropZoom');
-        if (cropZoomInput) cropZoomInput.addEventListener('input', () => {
-            cropZoom = Number(cropZoomInput.value);
-            showProfileCropPreview();
-        });
-
-        document.getElementById('cropDone').onclick = () => {
-            const cropArea = document.getElementById('profileCropArea');
-            cropArea.classList.add('hidden');
-            cropArea.classList.remove('flex');
-            document.getElementById('saveProfilePicture').classList.remove('hidden');
-            document.getElementById('profilePictureStatus').textContent = 'Crop selesai. Tekan Simpan Foto untuk mengunggah.';
-            showProfileCropPreview();
-        };
-
-        document.getElementById('cropCancel').onclick = () => {
-            const cropArea = document.getElementById('profileCropArea');
-            cropArea.classList.add('hidden');
-            cropArea.classList.remove('flex');
-            pendingProfileImage = null;
-            pendingProfileFile = null;
-            document.getElementById('profilePictureStatus').textContent = 'Pemilihan foto dibatalkan.';
-        };
-
-        document.getElementById('cropDone').onclick = () => {
-            cropOverlay.classList.add('hidden');
-            cropOverlay.classList.remove('flex');
-            document.getElementById('saveProfilePicture').classList.remove('hidden');
-            document.getElementById('profilePictureStatus').textContent = 'Crop selesai. Tekan Simpan Foto untuk mengunggah.';
-            showProfileCropPreview();
-        };
-
-        document.getElementById('cropCancel').onclick = () => {
-            cropOverlay.classList.add('hidden');
-            cropOverlay.classList.remove('flex');
-            pendingProfileImage = null;
-            pendingProfileFile = null;
-            document.getElementById('profilePictureStatus').textContent = 'Pemilihan foto dibatalkan.';
-        };
-
-        const cropCanvas = document.getElementById('profileCropCanvas');
-        let dragStart = null;
-        let pinchStart = null;
-
-        cropCanvas.addEventListener('pointerdown', event => {
-            if (!pendingProfileImage) return;
-            cropCanvas.setPointerCapture(event.pointerId);
-            if (event.pointerType === 'touch' && !dragStart && !pinchStart) {
-                dragStart = { id: event.pointerId, x: event.clientX, y: event.clientY, cropX, cropY };
-            } else {
-                dragStart = { id: event.pointerId, x: event.clientX, y: event.clientY, cropX, cropY };
-            }
-        });
-
-        cropCanvas.addEventListener('pointermove', event => {
-            if (!pendingProfileImage || !dragStart || dragStart.id !== event.pointerId) return;
-            const rect = cropCanvas.getBoundingClientRect();
-            const sourceSize = Math.min(pendingProfileImage.width, pendingProfileImage.height) / (cropZoom / 100);
-            const cropBox = Math.min(rect.width, rect.height) * 0.78;
-            const pixelsPerSource = cropBox / sourceSize;
-            const dxSource = (event.clientX - dragStart.x) / pixelsPerSource;
-            const dySource = (event.clientY - dragStart.y) / pixelsPerSource;
-            const maxX = Math.max(0, pendingProfileImage.width - sourceSize);
-            const maxY = Math.max(0, pendingProfileImage.height - sourceSize);
-            cropX = Math.max(0, Math.min(100, dragStart.cropX - (dxSource / Math.max(1, maxX)) * 100));
-            cropY = Math.max(0, Math.min(100, dragStart.cropY - (dySource / Math.max(1, maxY)) * 100));
-            showProfileCropPreview();
-        });
-
-        const endCropPointer = event => {
-            if (dragStart?.id === event.pointerId) dragStart = null;
-        };
-        cropCanvas.addEventListener('pointerup', endCropPointer);
-        cropCanvas.addEventListener('pointercancel', endCropPointer);
-        cropCanvas.addEventListener('pointerleave', event => {
-            if (event.pointerType === 'mouse') endCropPointer(event);
-        });
 
         document.getElementById('removeProfilePicture').onclick = async () => {
             const status = document.getElementById('profilePictureStatus');
@@ -510,92 +405,17 @@ function drawProfileCrop(bitmap, x = 50, y = 50, zoom = 100, target = 512) {
 
 function showProfileCropPreview() {
     if (!pendingProfileImage) return;
-
-    const cropCanvas = document.getElementById('profileCropCanvas');
-    if (cropCanvas) {
-        const rect = cropCanvas.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
-        const width = Math.max(1, Math.round(rect.width * dpr));
-        const height = Math.max(1, Math.round(rect.height * dpr));
-        if (cropCanvas.width !== width || cropCanvas.height !== height) {
-            cropCanvas.width = width;
-            cropCanvas.height = height;
-        }
-
-        const ctx = cropCanvas.getContext('2d');
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.clearRect(0, 0, rect.width, rect.height);
-
-        const image = pendingProfileImage;
-        const imageRatio = image.width / image.height;
-        const viewportRatio = rect.width / rect.height;
-        let displayW = rect.width;
-        let displayH = rect.height;
-        if (imageRatio > viewportRatio) {
-            displayH = rect.height;
-            displayW = displayH * imageRatio;
-        } else {
-            displayW = rect.width;
-            displayH = displayW / imageRatio;
-        }
-
-        const cropBox = Math.min(rect.width, rect.height) * 0.78;
-        const sourceSize = Math.min(image.width, image.height) / (cropZoom / 100);
-        const maxX = Math.max(0, image.width - sourceSize);
-        const maxY = Math.max(0, image.height - sourceSize);
-        const sx = maxX * (cropX / 100);
-        const sy = maxY * (cropY / 100);
-        const scale = cropBox / sourceSize;
-        const drawW = image.width * scale;
-        const drawH = image.height * scale;
-        const boxLeft = (rect.width - cropBox) / 2;
-        const boxTop = (rect.height - cropBox) / 2;
-
-        ctx.save();
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, rect.width, rect.height);
-        ctx.drawImage(image, boxLeft - sx * scale, boxTop - sy * scale, drawW, drawH);
-        ctx.fillStyle = 'rgba(0,0,0,0.52)';
-        ctx.fillRect(0, 0, rect.width, boxTop);
-        ctx.fillRect(0, boxTop + cropBox, rect.width, rect.height - boxTop - cropBox);
-        ctx.fillRect(0, boxTop, boxLeft, cropBox);
-        ctx.fillRect(boxLeft + cropBox, boxTop, rect.width - boxLeft - cropBox, cropBox);
-        ctx.strokeStyle = 'rgba(255,255,255,0.95)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(boxLeft + 1, boxTop + 1, cropBox - 2, cropBox - 2);
-        ctx.strokeStyle = 'rgba(255,255,255,0.28)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(boxLeft + cropBox / 3, boxTop);
-        ctx.lineTo(boxLeft + cropBox / 3, boxTop + cropBox);
-        ctx.moveTo(boxLeft + cropBox * 2 / 3, boxTop);
-        ctx.lineTo(boxLeft + cropBox * 2 / 3, boxTop + cropBox);
-        ctx.moveTo(boxLeft, boxTop + cropBox / 3);
-        ctx.lineTo(boxLeft + cropBox, boxTop + cropBox / 3);
-        ctx.moveTo(boxLeft, boxTop + cropBox * 2 / 3);
-        ctx.lineTo(boxLeft + cropBox, boxTop + cropBox * 2 / 3);
-        ctx.stroke();
-        ctx.restore();
-    }
-
-    const previewCanvas = drawProfileCrop(pendingProfileImage, cropX, cropY, cropZoom, 256);
+    const previewCanvas = drawProfileCrop(pendingProfileImage, 50, 50, 100, 256);
     const preview = document.getElementById('profileEditAvatar');
     if (preview) {
         preview.innerHTML = '<img src="' + previewCanvas.toDataURL('image/webp', 0.85) + '" alt="Preview foto" class="w-full h-full object-cover">';
     }
-
-    const zoomInput = document.getElementById('cropZoom');
-    if (zoomInput && Number(zoomInput.value) !== cropZoom) zoomInput.value = cropZoom;
 }
 
 async function compressProfilePicture(bitmap, x = 50, y = 50, zoom = 100) {
     const canvas = drawProfileCrop(bitmap, x, y, zoom, 512);
     return canvas.toDataURL('image/webp', 0.82);
 }
-
-window.addEventListener('resize', () => {
-    if (pendingProfileImage) showProfileCropPreview();
-});
 
 window.updateProfilePicture = async function(image) {
     const session = window.bionestGetSession ? window.bionestGetSession() : null;
