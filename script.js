@@ -166,16 +166,23 @@ function openMemberProfile(profile) {
                                 <div class="min-w-0 flex-1">
                                     <p class="text-sm font-bold text-white">Foto Profil</p>
                                     <p class="text-xs text-slate-500 mt-1">JPG, PNG, atau WebP · maksimal 2 MB</p>
-                                    <div id="profileCropArea" class="hidden mt-3">
-                                        <div id="profileCropViewport" class="relative w-full max-w-sm aspect-[4/3] mx-auto rounded-2xl overflow-hidden bg-black/60 border border-cyan-500/20 touch-none select-none">
-                                            <canvas id="profileCropCanvas" class="absolute inset-0 w-full h-full touch-none"></canvas>
+                                    <div id="profileCropArea" class="hidden fixed inset-0 z-[120] bg-black/95 items-center justify-center">
+                                        <div class="w-full h-full max-w-2xl flex flex-col">
+                                            <div class="flex-1 flex items-center justify-center p-4">
+                                                <div id="profileCropViewport" class="relative w-full max-w-lg aspect-square overflow-hidden bg-black touch-none select-none">
+                                                    <canvas id="profileCropCanvas" class="absolute inset-0 w-full h-full touch-none"></canvas>
+                                                </div>
+                                            </div>
+                                            <div class="px-5 pb-5">
+                                                <label class="text-xs text-slate-400 block mb-2">Zoom
+                                                    <input id="cropZoom" type="range" min="100" max="300" value="100" class="w-full accent-cyan-400">
+                                                </label>
+                                                <div class="flex gap-3 mt-4">
+                                                    <button type="button" id="cropCancel" class="flex-1 py-3 rounded-xl border border-slate-700 text-slate-300">Batal</button>
+                                                    <button type="button" id="cropDone" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-slate-950 font-bold">Selesai</button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="mt-3">
-                                            <label class="text-[10px] text-slate-500">Zoom
-                                                <input id="cropZoom" type="range" min="100" max="300" value="100" class="w-full accent-cyan-400">
-                                            </label>
-                                        </div>
-                                        <p class="text-[10px] text-slate-600 mt-2 text-center">Geser foto di dalam kotak untuk mengatur posisi.</p>
                                     </div>
                                     <input id="profilePictureInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden">
                                     <div class="flex flex-wrap gap-2 mt-3">
@@ -264,11 +271,14 @@ function openMemberProfile(profile) {
             cropZoom = 100;
             pendingProfileImage = await loadProfileImage(file);
             const cropArea = document.getElementById('profileCropArea');
-            if (cropArea) cropArea.classList.remove('hidden');
+            if (cropArea) {
+                cropArea.classList.remove('hidden');
+                cropArea.classList.add('flex');
+            }
             showProfileCropPreview();
             status.className = 'text-xs min-h-4 mt-3 text-cyan-300';
             status.textContent = 'Atur posisi foto dulu, lalu tekan Simpan Foto.';
-            document.getElementById('saveProfilePicture').classList.remove('hidden');
+            document.getElementById('saveProfilePicture').classList.add('hidden');
             event.target.value = '';
         });
 
@@ -289,7 +299,10 @@ function openMemberProfile(profile) {
                 pendingProfileImage = null;
                 pendingProfileFile = null;
                 const cropArea = document.getElementById('profileCropArea');
-                if (cropArea) cropArea.classList.add('hidden');
+                if (cropArea) {
+                    cropArea.classList.add('hidden');
+                    cropArea.classList.remove('flex');
+                }
                 status.className = 'text-xs min-h-4 mt-3 text-emerald-400';
                 status.textContent = 'Foto profil berhasil diperbarui.';
             } catch (error) {
@@ -305,6 +318,24 @@ function openMemberProfile(profile) {
             cropZoom = Number(cropZoomInput.value);
             showProfileCropPreview();
         });
+
+        document.getElementById('cropDone').onclick = () => {
+            const cropArea = document.getElementById('profileCropArea');
+            cropArea.classList.add('hidden');
+            cropArea.classList.remove('flex');
+            document.getElementById('saveProfilePicture').classList.remove('hidden');
+            document.getElementById('profilePictureStatus').textContent = 'Crop selesai. Tekan Simpan Foto untuk mengunggah.';
+            showProfileCropPreview();
+        };
+
+        document.getElementById('cropCancel').onclick = () => {
+            const cropArea = document.getElementById('profileCropArea');
+            cropArea.classList.add('hidden');
+            cropArea.classList.remove('flex');
+            pendingProfileImage = null;
+            pendingProfileFile = null;
+            document.getElementById('profilePictureStatus').textContent = 'Pemilihan foto dibatalkan.';
+        };
 
         const cropCanvas = document.getElementById('profileCropCanvas');
         let dragStart = null;
