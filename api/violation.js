@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 const GITHUB_API = 'https://api.github.com';
 const REPO = 'raaps199-netizen/xib1-sman1klapanunggal';
 const FILE_PATH = 'data/violations.json';
@@ -13,10 +15,7 @@ async function githubRequest(url, options = {}) {
             ...(options.headers || {})
         }
     });
-    if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || `GitHub request failed: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(await response.text());
     return response.json();
 }
 
@@ -26,88 +25,111 @@ async function readJsonFile() {
     return { data: JSON.parse(raw || '[]'), sha: file.sha };
 }
 
+async function getAccounts() {
+    const file = await githubRequest(`${GITHUB_API}/repos/${REPO}/contents/data/accounts.json?ref=${BRANCH}`);
+    const raw = Buffer.from(file.content.replace(/\\n/g, '').replace(/\s+$/g, ''), 'base64').toString('utf8');
+    return JSON.parse(raw || '[]');
+}
+
+function signTeacherToken() {
+    const payload = Buffer.from(JSON.stringify({
+        role: 'teacher',
+        exp: Date.now() + 8 * 60 * 60 * 1000
+    })).toString('base64url');
+    const signature = crypto.createHmac('sha256', process.env.TEACHER_SECRET).update(payload).digest('base64url');
+    return payload + '.' + signature;
+}
+
+function verifyTeacherToken(token) {
+    try {
+        if (!token || !process.env.TEACHER_SECRET) return false;
+        const [payload, signature] = String(token).split('.');
+        if (!payload || !signature) return false;
+        const expected = crypto.createHmac('sha256', process.env.TEACHER_SECRET).update(payload).digest('base64url');
+        if (signature.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return false;
+        const data = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+        return data.role === 'teacher' && data.exp > Date.now();
+    } catch {
+        return false;
+    }
+}
+
 export default async function handler(req, res) {
-    if (!process.env.GITHUB_TOKEN) {
-        return res.status(500).json({ error: 'Server belum dikonfigurasi.' });
+    if (!process.env.GITHUB_TOKEN || !process.env.TEACHER_PIN || !process.env.TEACHER_SECRET) {
+        return res.status(500).json({ error: 'Sistem guru belum dikonfigurasi.' });
     }
 
     try {
         if (req.method === 'GET') {
-            const { data } = await readJsonFile();
             const student = String(req.query?.student || '').trim();
-            return res.status(200).json({
-                violations: student ? data.filter(item => item.student === student) : data
-            });
+            const username = String(req.query?.username || '').trim();
+            const password_sha256 = String(req.query?.password_sha256 || '').trim();
+
+            if (!student || !username || !password_sha256) {
+                return res.status(401).json({ error: 'Akses riwayat membutuhkan sesi login.' });
+            }
+
+            const accounts = await getAccounts();
+            const member = accounts.find(a => a.username === username && a.password_sha256 === password_sha256);
+            if (!member || member.username !== student) {
+                return res.status(403).json({ error: 'Riwayat hanya dapat dilihat oleh pemilik profil.' });
+            }
+
+            const { data } = await readJsonFile();
+            return res.status(200).json({ violations: data.filter(item => item.student === student) });
         }
 
-        if (req.method !== 'POST') {
-            return res.status(405).json({ error: 'Method tidak diizinkan.' });
-        }
+        if (req.method !== 'POST') return res.status(405).json({ error: 'Method tidak diizinkan.' });
 
         const body = req.body || {};
-        const { username, password_sha256, student, category, violation } = body;
 
-        if (!username || !password_sha256 || !student || !category || !violation) {
+        if (body.action === 'teacher_login') {
+            if (String(body.pin || '') !== String(process.env.TEACHER_PIN)) {
+                return res.status(401).json({ error: 'PIN guru salah.' });
+            }
+            return res.status(200).json({ token: signTeacherToken() });
+        }
+
+        if (!verifyTeacherToken(body.teacher_token)) {
+            return res.status(403).json({ error: 'Akses khusus guru diperlukan.' });
+        }
+
+        const { student, category, violation } = body;
+        if (!student || !category || !violation) {
             return res.status(400).json({ error: 'Data laporan belum lengkap.' });
         }
 
-        const accountsFile = await githubRequest(`${GITHUB_API}/repos/${REPO}/contents/data/accounts.json?ref=${BRANCH}`);
-        const accountsRaw = Buffer.from(accountsFile.content.replace(/\\n/g, '').replace(/\s+$/g, ''), 'base64').toString('utf8');
-        const accounts = JSON.parse(accountsRaw || '[]');
-        const reporter = accounts.find(account =>
-            account.username === username &&
-            account.password_sha256 === password_sha256
-        );
-
-        if (!reporter) {
-            return res.status(401).json({ error: 'Sesi tidak valid.' });
-        }
+        const accounts = await getAccounts();
+        const account = accounts.find(item => item.username === student);
+        if (!account) return res.status(404).json({ error: 'Siswa tidak ditemukan.' });
 
         const { data, sha } = await readJsonFile();
-        const account = accounts.find(item => item.username === student);
-
-        if (!account) {
-            return res.status(404).json({ error: 'Siswa tidak ditemukan.' });
-        }
-
         const now = new Date();
-        const jakarta = new Intl.DateTimeFormat('en-CA', {
-            timeZone: 'Asia/Jakarta',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        }).format(now);
-        const time = new Intl.DateTimeFormat('en-GB', {
-            timeZone: 'Asia/Jakarta',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        }).format(now);
+        const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta', year:'numeric', month:'2-digit', day:'2-digit' }).format(now);
+        const time = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).format(now);
 
-        const id = `vio-${Date.now()}`;
         const record = {
-            id,
+            id: `vio-${Date.now()}`,
             student: account.username,
             student_name: account.full_name,
             category,
             violation,
-            reported_by: reporter.username,
-            reported_by_name: reporter.full_name,
-            date: jakarta,
+            reported_by: 'teacher',
+            reported_by_name: 'Guru',
+            date,
             time,
             created_at: now.toISOString()
         };
 
         data.push(record);
+        const encoded = Buffer.from(JSON.stringify(data, null, 2) + '\\n').toString('base64');
 
-        const content = Buffer.from(JSON.stringify(data, null, 2) + '\n').toString('base64');
         await githubRequest(`${GITHUB_API}/repos/${REPO}/contents/${FILE_PATH}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 message: `feat: record violation for ${account.full_name}`,
-                content,
+                content: encoded,
                 sha,
                 branch: BRANCH
             })
@@ -116,6 +138,6 @@ export default async function handler(req, res) {
         return res.status(201).json({ message: 'Pelanggaran berhasil dicatat.', violation: record });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: 'Gagal menyimpan data pelanggaran.' });
+        return res.status(500).json({ error: 'Gagal memproses laporan.' });
     }
 }
