@@ -154,7 +154,7 @@ export default async function handler(req, res) {
                 created_at: new Date().toISOString()
             });
 
-            const newContent = Buffer.from(JSON.stringify(database, null, 2) + '\\n', 'utf8').toString('base64');
+            const newContent = Buffer.from(JSON.stringify(database, null, 2) + '\n', 'utf8').toString('base64');
             const updateResponse = await fetch(apiUrl, {
                 method: 'PUT',
                 headers: { ...headers, 'Content-Type': 'application/json' },
