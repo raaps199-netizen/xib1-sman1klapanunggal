@@ -364,7 +364,17 @@ async function loadMemberViolations(profile) {
 
     totalEl.textContent = 'Memuat...';
     try {
-        const response = await fetch('/api/violation?student=' + encodeURIComponent(profile.username) + '&v=' + Date.now(), { cache: 'no-store' });
+        const sessionData = JSON.parse(sessionStorage.getItem('bionestSession') || 'null');
+        if (!sessionData?.username || !sessionData?.password_sha256 || sessionData.username !== profile.username) {
+            totalEl.textContent = 'Login diperlukan';
+            statsEl.textContent = '';
+            listEl.innerHTML = '';
+            return;
+        }
+        const response = await fetch('/api/violation?student=' + encodeURIComponent(profile.username) +
+            '&username=' + encodeURIComponent(sessionData.username) +
+            '&password_sha256=' + encodeURIComponent(sessionData.password_sha256) +
+            '&v=' + Date.now(), { cache: 'no-store' });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Gagal memuat riwayat.');
 
