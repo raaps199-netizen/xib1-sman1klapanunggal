@@ -87,21 +87,13 @@ export default async function handler(req, res) {
     try {
         if (req.method === 'GET') {
             const student = String(req.query?.student || '').trim();
-            const username = String(req.query?.username || '').trim();
-            const password_sha256 = String(req.query?.password_sha256 || '').trim();
-
-            if (!student || !username || !password_sha256) {
-                return res.status(401).json({ error: 'Akses riwayat membutuhkan sesi login.' });
-            }
-
-            const accounts = await getAccounts();
-            const member = accounts.find(a => a.username === username && a.password_sha256 === password_sha256);
-            if (!member || member.username !== student) {
-                return res.status(403).json({ error: 'Riwayat hanya dapat dilihat oleh pemilik profil.' });
-            }
-
             const { data } = await readJsonFile();
-            return res.status(200).json({ violations: data.filter(item => item.student === student) });
+
+            if (student) {
+                return res.status(200).json({ violations: data.filter(item => item.student === student) });
+            }
+
+            return res.status(200).json({ violations: data });
         }
 
         if (req.method !== 'POST') return res.status(405).json({ error: 'Method tidak diizinkan.' });
