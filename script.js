@@ -219,12 +219,6 @@ function openMemberProfile(profile) {
             </div>`;
         document.body.appendChild(modal);
         document.getElementById('closeProfileModal').onclick = () => closeMemberProfile();
-        let pendingProfileImage = null;
-        let pendingProfileFile = null;
-        let cropX = 50;
-        let cropY = 50;
-        let cropZoom = 100;
-
         document.getElementById('changeProfilePicture').onclick = () => {
             document.getElementById('profilePictureInput').click();
         };
@@ -232,6 +226,7 @@ function openMemberProfile(profile) {
         document.getElementById('profilePictureInput').addEventListener('change', async (event) => {
             const file = event.target.files?.[0];
             if (!file) return;
+
             const status = document.getElementById('profilePictureStatus');
 
             if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
@@ -240,6 +235,7 @@ function openMemberProfile(profile) {
                 event.target.value = '';
                 return;
             }
+
             if (file.size > 8 * 1024 * 1024) {
                 status.className = 'text-xs min-h-4 mt-3 text-red-400';
                 status.textContent = 'Foto awal maksimal 8 MB.';
@@ -247,43 +243,31 @@ function openMemberProfile(profile) {
                 return;
             }
 
-            pendingProfileFile = file;
-            cropX = 50;
-            cropY = 50;
-            cropZoom = 100;
-            pendingProfileImage = await loadProfileImage(file);
-            showProfileCropPreview();
-            status.className = 'text-xs min-h-4 mt-3 text-cyan-300';
-            status.textContent = 'Foto siap dipasang. Tekan Simpan Foto.';
-            document.getElementById('saveProfilePicture').classList.remove('hidden');
-            event.target.value = '';
-        });
-
-        const saveProfilePicture = document.getElementById('saveProfilePicture');
-        saveProfilePicture.onclick = async () => {
-            if (!pendingProfileImage) return;
-            const status = document.getElementById('profilePictureStatus');
+            const saveButton = document.getElementById('saveProfilePicture');
             status.className = 'text-xs min-h-4 mt-3 text-slate-400';
             status.textContent = 'Mengompres dan mengunggah foto...';
-            saveProfilePicture.disabled = true;
+            saveButton.disabled = true;
+
             try {
-                const dataUrl = await compressProfilePicture(pendingProfileImage, cropX, cropY, cropZoom);
+                const bitmap = await loadProfileImage(file);
+                const dataUrl = await compressProfilePicture(bitmap, 50, 50, 100);
                 const updated = await window.updateProfilePicture(dataUrl);
+
                 profile = { ...profile, ...updated };
                 renderProfileAvatar(profile);
                 renderMemberOverview(profile);
-                document.getElementById('saveProfilePicture').classList.add('hidden');
-                pendingProfileImage = null;
-                pendingProfileFile = null;
+
+                saveButton.classList.add('hidden');
                 status.className = 'text-xs min-h-4 mt-3 text-emerald-400';
                 status.textContent = 'Foto profil berhasil diperbarui.';
             } catch (error) {
                 status.className = 'text-xs min-h-4 mt-3 text-red-400';
                 status.textContent = error.message || 'Gagal memperbarui foto profil.';
             } finally {
-                saveProfilePicture.disabled = false;
+                saveButton.disabled = false;
+                event.target.value = '';
             }
-        };
+        });
 
         document.getElementById('removeProfilePicture').onclick = async () => {
             const status = document.getElementById('profilePictureStatus');
