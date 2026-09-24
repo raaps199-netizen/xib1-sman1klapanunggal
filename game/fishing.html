@@ -5,103 +5,68 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Fishing | Bionest One</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
 <style>
 :root{--cyan:#00f2fe;--blue:#4facfe}
-body{background:#050b16;color:#e2e8f0}
+*{box-sizing:border-box}body{background:#050b16;color:#e2e8f0}
 .fish-bg{background:radial-gradient(circle at 50% 0%,rgba(0,242,254,.12),transparent 38%),linear-gradient(180deg,#071525,#020712)}
-.water{position:relative;overflow:hidden;background:linear-gradient(180deg,#0b3850 0%,#08283e 45%,#041726 100%);min-height:330px}
+.water{position:relative;overflow:hidden;background:linear-gradient(180deg,#0b3850 0%,#08283e 45%,#041726 100%);min-height:340px}
 .water:before,.water:after{content:"";position:absolute;inset:-20px -50%;height:120px;background:repeating-radial-gradient(ellipse at center,rgba(110,231,255,.18) 0 2px,transparent 3px 24px);animation:wave 7s linear infinite}
-.water:after{top:95px;opacity:.35;animation-duration:11s;animation-direction:reverse}
-@keyframes wave{to{transform:translateX(180px)}}
-.bobber{animation:bob 1.1s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(8px)}}
-.float{animation:float 4s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-8px) rotate(2deg)}}
-.cast{animation:cast .7s ease-out}
-@keyframes cast{from{transform:translateY(-25px) rotate(-12deg);opacity:.2}to{transform:none;opacity:1}}
-.result{animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
-@keyframes pop{from{transform:scale(.75);opacity:0}to{transform:none;opacity:1}}
-.glow{box-shadow:0 0 35px rgba(0,242,254,.14)}
+.water:after{top:100px;opacity:.35;animation-duration:11s;animation-direction:reverse}
+@keyframes wave{to{transform:translateX(180px)}}@keyframes bob{50%{transform:translateY(8px)}}
+@keyframes float{50%{transform:translateY(-8px) rotate(2deg)}}@keyframes pop{from{transform:scale(.72);opacity:0}to{transform:none;opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.bobber{animation:bob 1.1s ease-in-out infinite}.float{animation:float 4s ease-in-out infinite}.result{animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+.glow{box-shadow:0 0 35px rgba(0,242,254,.14)}.shake{animation:shake .2s linear 3}
+.mutation-Golden{filter:drop-shadow(0 0 14px #ffd54a)}.mutation-Shiny{filter:drop-shadow(0 0 14px #fff)}.mutation-Shadow{filter:drop-shadow(0 0 18px #7c3aed)}.mutation-Rainbow{filter:drop-shadow(0 0 18px #22d3ee)}
+.tab-active{background:rgba(34,211,238,.12);color:#67e8f9;border-color:rgba(34,211,238,.25)}
 </style>
 </head>
 <body class="min-h-screen fish-bg">
 <nav class="sticky top-0 z-50 border-b border-cyan-500/20 bg-[#050b16]/85 backdrop-blur-xl">
 <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
 <a href="index.html" class="font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">XI.B1</a>
-<div class="flex items-center gap-3">
-<a href="index.html" class="text-xs text-slate-400 hover:text-cyan-300 transition">← Kembali</a>
-<span class="text-xs px-3 py-1.5 rounded-full border border-cyan-400/20 bg-cyan-400/5 text-cyan-300">GAME DIVISION</span>
-</div>
-</div>
-</nav>
+<div class="flex items-center gap-3"><a href="index.html" class="text-xs text-slate-400 hover:text-cyan-300">← Kembali</a><span class="hidden sm:inline text-xs px-3 py-1.5 rounded-full border border-cyan-400/20 bg-cyan-400/5 text-cyan-300">GAME DIVISION</span></div>
+</div></nav>
 
-<main class="max-w-6xl mx-auto px-4 py-8">
-<header class="mb-7">
+<main class="max-w-6xl mx-auto px-4 py-7">
+<header class="mb-6">
 <p class="text-[11px] tracking-[.35em] uppercase text-cyan-300 font-mono">Bionest Game Division</p>
-<h1 class="text-3xl md:text-5xl font-black mt-2">🎣 Fishing Bay</h1>
-<p class="text-slate-400 mt-2">Mancing santai, kejar ikan langka, dan jangan berharap laut punya belas kasihan.</p>
+<div class="flex flex-wrap items-end justify-between gap-3"><div><h1 class="text-3xl md:text-5xl font-black mt-2">🎣 Fishing Bay</h1><p class="text-slate-400 mt-2">Tangkap, ukur, koleksi, lalu kejar ikan yang makin absurd.</p></div><div class="rounded-2xl border border-emerald-400/15 bg-emerald-400/5 px-4 py-3"><p class="text-[10px] text-slate-500">SALDO</p><b id="balance" class="text-emerald-300">Rp0</b></div></div>
 </header>
 
-<div class="grid lg:grid-cols-[1.5fr_.8fr] gap-5">
+<div class="grid lg:grid-cols-[1.45fr_.85fr] gap-5">
 <section class="rounded-3xl border border-cyan-500/20 overflow-hidden bg-slate-950/50 glow">
-<div class="water">
-<div class="absolute top-5 left-5 z-10 px-3 py-1.5 rounded-full bg-black/30 backdrop-blur border border-white/10 text-xs text-cyan-100">🌊 FISHING SPOT • BIONEST BAY</div>
-<div id="fishVisual" class="absolute inset-0 z-10 flex items-center justify-center">
-<div class="float text-7xl md:text-8xl">🐟</div>
-</div>
-<div id="line" class="absolute z-10 left-1/2 top-[45%] w-px h-24 bg-slate-200/60 origin-top rotate-12 hidden"></div>
+<div id="water" class="water">
+<div class="absolute top-5 left-5 z-20 px-3 py-1.5 rounded-full bg-black/30 backdrop-blur border border-white/10 text-xs text-cyan-100">🌊 <span id="eventName">BIONEST BAY</span></div>
+<div id="weather" class="absolute top-5 right-5 z-20 text-[10px] text-cyan-100 px-3 py-1.5 rounded-full bg-black/30 border border-white/10"></div>
+<div id="fishVisual" class="absolute inset-0 z-10 flex items-center justify-center"><div class="float text-7xl md:text-8xl">🐟</div></div>
+<div id="line" class="absolute z-10 left-1/2 top-[43%] w-px h-28 bg-slate-200/60 origin-top rotate-12 hidden"></div>
 <div id="bobber" class="bobber absolute z-10 left-[52%] top-[72%] text-3xl hidden">🔴</div>
 <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#020712] to-transparent z-10"></div>
 </div>
 <div class="p-5 md:p-6 bg-slate-950/80">
-<div class="flex flex-wrap items-end justify-between gap-4">
-<div>
-<p id="status" class="text-cyan-300 font-bold">Siap memancing</p>
-<p id="timer" class="text-xs text-slate-500 mt-1">Pilih umpan lalu lempar kail.</p>
-</div>
-<button id="fishBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-300 to-blue-400 text-slate-950 font-black hover:scale-[1.02] active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed">🎣 MANCING</button>
-</div>
+<div class="flex flex-wrap items-end justify-between gap-4"><div><p id="status" class="text-cyan-300 font-bold">Siap memancing</p><p id="timer" class="text-xs text-slate-500 mt-1">Umpan akan dipilih otomatis dari stok.</p></div><button id="fishBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-300 to-blue-400 text-slate-950 font-black hover:scale-[1.02] active:scale-95 transition disabled:opacity-40">🎣 MANCING</button></div>
 <div id="result" class="hidden mt-5 rounded-2xl border p-5 result"></div>
-<div class="mt-4 grid grid-cols-2 gap-2">
-<button id="shopBtn" class="py-3 rounded-xl bg-cyan-400/10 border border-cyan-400/20 text-cyan-300 font-bold text-xs">🛒 SHOP</button>
-<button id="sellAll" class="py-3 rounded-xl bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 font-bold text-xs">💰 JUAL SEMUA</button>
-</div>
-</div>
-</section>
+<div class="mt-4 grid grid-cols-3 gap-2"><button id="shopBtn" class="py-3 rounded-xl bg-cyan-400/10 border border-cyan-400/20 text-cyan-300 font-bold text-xs">🛒 SHOP</button><button id="collectionBtn" class="py-3 rounded-xl bg-purple-400/10 border border-purple-400/20 text-purple-300 font-bold text-xs">📖 KOLEKSI</button><button id="sellAll" class="py-3 rounded-xl bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 font-bold text-xs">💰 JUAL</button></div>
+</div></section>
 
 <aside class="space-y-5">
-<div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5">
-<div class="flex justify-between items-center"><h2 class="font-bold">🪱 Umpan</h2><span id="baitCount" class="text-xs text-slate-500">5 jenis</span></div>
-<div id="baits" class="space-y-2 mt-4"></div>
-</div>
-<div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5">
-<h2 class="font-bold">🎒 Tas</h2>
-<div class="grid grid-cols-2 gap-3 mt-4">
-<div class="rounded-xl bg-slate-950/70 p-3"><p class="text-[10px] text-slate-500 uppercase">Ikan</p><b id="totalFish">0</b></div>
-<div class="rounded-xl bg-slate-950/70 p-3"><p class="text-[10px] text-slate-500 uppercase">Nilai</p><b id="totalValue">Rp0</b></div>
-</div>
-<div id="inventory" class="mt-4 space-y-2 max-h-64 overflow-auto"></div><p class="text-[11px] text-slate-600 mt-3">Umpan dipakai otomatis dari stok.</p>
-</div>
+<div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5"><div class="flex justify-between items-center"><h2 class="font-bold">🪱 Umpan</h2><span class="text-xs text-slate-500">AUTO</span></div><div id="baits" class="space-y-2 mt-4"></div><p class="text-[11px] text-slate-600 mt-3">Bait tidak dipilih manual. Stok digunakan otomatis.</p></div>
+<div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5"><h2 class="font-bold">🎒 Tas</h2><div class="grid grid-cols-2 gap-3 mt-4"><div class="rounded-xl bg-slate-950/70 p-3"><p class="text-[10px] text-slate-500 uppercase">Ikan</p><b id="totalFish">0</b></div><div class="rounded-xl bg-slate-950/70 p-3"><p class="text-[10px] text-slate-500 uppercase">Nilai</p><b id="totalValue">Rp0</b></div></div><div id="inventory" class="mt-4 space-y-2 max-h-64 overflow-auto"></div></div>
+<div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5"><div class="flex justify-between"><h2 class="font-bold">🔥 Streak</h2><b id="streak" class="text-orange-300">0</b></div><p class="text-xs text-slate-500 mt-2">Tangkap berturut-turut untuk bonus nilai kecil.</p><div class="mt-3 h-2 bg-slate-800 rounded-full overflow-hidden"><div id="streakBar" class="h-full bg-gradient-to-r from-orange-400 to-yellow-300" style="width:0%"></div></div></div>
 </aside>
 </div>
 
-<section class="mt-5 grid md:grid-cols-2 gap-5">
-<div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5">
-<h2 class="font-bold">🔱 Joran</h2>
-<div class="mt-3 flex items-center justify-between"><span id="rodName">🎣 Training Rod</span><span id="rodLuck" class="text-cyan-300 text-sm">Luck 1x</span></div>
-<div class="mt-3 h-2 rounded-full bg-slate-800 overflow-hidden"><div id="luckBar" class="h-full bg-gradient-to-r from-cyan-300 to-blue-400" style="width:7%"></div></div>
-<p class="text-xs text-slate-500 mt-2">Timer tangkapan: <span id="rodTimer">10</span> detik</p>
-</div>
-<div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5">
-<h2 class="font-bold">🏆 Rarity</h2>
-<div class="grid grid-cols-4 gap-2 mt-3 text-center text-[10px]">
-<span>⚪ Common</span><span>🟢 Uncommon</span><span>🔵 Rare</span><span>🟣 Epic</span>
-<span>🟡 Legendary</span><span>🔴 Mythic</span><span>✨ Secret</span>
-</div>
-</div>
+<section class="mt-5 grid md:grid-cols-3 gap-5">
+<div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5"><h2 class="font-bold">🔱 Joran</h2><div class="mt-3 flex justify-between"><span id="rodName">Training Rod</span><span id="rodLuck" class="text-cyan-300">Luck 1x</span></div><div class="mt-3 h-2 rounded-full bg-slate-800 overflow-hidden"><div id="luckBar" class="h-full bg-gradient-to-r from-cyan-300 to-blue-400" style="width:3%"></div></div><p class="text-xs text-slate-500 mt-2">Timer: <span id="rodTimer">10</span>s</p></div>
+<div class="rounded-2xl border border-purple-500/15 bg-slate-900/60 p-5"><h2 class="font-bold">🧪 Potion</h2><p id="potionText" class="text-xs text-slate-400 mt-2">Tidak aktif.</p><button id="usePotion" class="w-full mt-3 py-2 rounded-lg bg-purple-400/10 text-purple-300 text-xs font-bold disabled:opacity-30">GUNAKAN POTION</button></div>
+<div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5"><h2 class="font-bold">📜 Quest Hari Ini</h2><p id="questText" class="text-xs text-slate-400 mt-2"></p><div class="mt-2 h-2 rounded-full bg-slate-800 overflow-hidden"><div id="questBar" class="h-full bg-gradient-to-r from-cyan-300 to-blue-400" style="width:0%"></div></div><button id="claimQuest" class="w-full mt-3 py-2 rounded-lg bg-emerald-400/10 text-emerald-300 text-xs font-bold disabled:opacity-30">AMBIL HADIAH</button></div>
 </section>
-</main><div id="shop" class="fixed inset-0 z-[90] hidden bg-black/75 backdrop-blur-sm p-4 overflow-auto"><div class="max-w-5xl mx-auto my-6 rounded-3xl border border-cyan-500/20 bg-[#08111f]"><div class="p-5 border-b border-white/5 flex justify-between"><div><p class="text-[10px] tracking-[.3em] text-cyan-300">BIONEST MARKET</p><h2 class="text-2xl font-black">🛒 Fishing Shop</h2></div><button id="closeShop" class="text-2xl text-slate-400">×</button></div><div class="p-5"><p class="text-sm text-slate-400 mb-4">Saldo: <b id="balance" class="text-emerald-300">Rp0</b></p><div id="shopItems" class="grid md:grid-cols-2 lg:grid-cols-3 gap-3"></div></div></div></div>
+
+<section class="mt-5 rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5"><div class="flex flex-wrap justify-between gap-3"><h2 class="font-bold">🏆 Statistik</h2><span id="bestText" class="text-xs text-slate-500"></span></div><div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4" id="stats"></div></section>
+</main>
+
+<div id="modal" class="fixed inset-0 z-[90] hidden bg-black/75 backdrop-blur-sm p-4 overflow-auto"><div class="max-w-5xl mx-auto my-6 rounded-3xl border border-cyan-500/20 bg-[#08111f]"><div class="p-5 border-b border-white/5 flex justify-between"><div><p id="modalKicker" class="text-[10px] tracking-[.3em] text-cyan-300">BIONEST MARKET</p><h2 id="modalTitle" class="text-2xl font-black">🛒 Fishing Shop</h2></div><button id="closeModal" class="text-2xl text-slate-400">×</button></div><div id="modalBody" class="p-5"></div></div></div>
 
 <script>
 const BAITS=[['roti','🍞 Roti',100,1],['cacing','🪱 Cacing',250,1.2],['pelet','🟢 Pelet Super',500,1.5],['udang','🦐 Udang Segar',1000,2],['cumi','🦑 Cumi Impor',2500,4]];
@@ -109,36 +74,62 @@ const POTIONS=[['minor','🧪 Minor Luck Potion',5000,1.25,15],['major','🧪 Ma
 const RODS=[['training','🎣 Training Rod',0,1,10],['bamboo','🎣 Bamboo Rod',2000,1.2,9],['fiber','🎣 Fiberglass Rod',5000,1.4,8],['iron','🎣 Iron Reinforced Rod',12000,1.6,7],['carbon','🎣 Carbon Rod',25000,1.9,6],['magical','🎣 Mystic Wand Rod',60000,2.5,5],['crystal','🔱 Destiny Crystal Rod',150000,4,3],['plasma','⚡ Plasma Core Rod',350000,7,2],['abyssal','🌊 Abyssal Titan Rod',800000,14,1],['quantum','🌌 Quantum Singularity Rod',2000000,35,1]];
 const POOLS={COMMON:[['Ikan Lele',20],['Ikan Mujair',25],['Ikan Nila',30],['Ikan Mas',35],['Ikan Sepat',15]],UNCOMMON:[['Ikan Gurame',45],['Ikan Bawal',55],['Ikan Patin',70],['Ikan Gabus',90]],RARE:[['Ikan Salmon',120],['Ikan Tuna',250],['Ikan Kakap Merah',160],['Ikan Tenggiri',200]],EPIC:[['Ikan Hiu Martil',400],['Ikan Pari Manta',550],['Ikan Swordfish',700],['Ikan Marlin Biru',900]],LEGENDARY:[['Ikan Hiu Putih',1500],['Ikan Paus Biru',2500],['Ikan Coelacanth Purba',4000]],MYTHIC:[['Kraken Junior',7500],['Naga Laut Dalam',12000],['Leviathan Samudra',18000]],SECRET:[['The Celestial Leviathan',40000],['The Void Sovereign',75000],['The Eternal Neptune',120000]]};
 const EM={COMMON:'⚪',UNCOMMON:'🟢',RARE:'🔵',EPIC:'🟣',LEGENDARY:'🟡',MYTHIC:'🔴',SECRET:'✨'}, MUT=[['Golden',2],['Shiny',1.5],['Shadow',2.5],['Rainbow',3]];
+const EVENTS=[['☀️','Clear Tide',1,1],['🌙','Moonlit Tide',1.35,1.1],['🌌','Aurora Sea',2,1.2],['☄️','Meteor Tide',2.5,1.35]];
 const money=n=>'Rp'+Math.floor(n).toLocaleString('id-ID'),$=id=>document.getElementById(id);
-const profile=JSON.parse(sessionStorage.getItem('bionestProfile')||'null'), key='bionestFishing_'+(profile?.username||'guest');
-let st=JSON.parse(localStorage.getItem(key)||'null')||{balance:5000,baits:{roti:5,cacing:0,pelet:0,udang:0,cumi:0},inventory:[],owned:['training'],rod:'training',potions:{},activePotion:null,until:0},busy=false;
+const profile=JSON.parse(sessionStorage.getItem('bionestProfile')||'null'),key='bionestFishing_'+(profile?.username||'guest'),today=new Date().toISOString().slice(0,10);
+let st=JSON.parse(localStorage.getItem(key)||'null')||{balance:5000,baits:{roti:5,cacing:0,pelet:0,udang:0,cumi:0},inventory:[],owned:['training'],rod:'training',potions:{},activePotion:null,until:0,collection:{},stats:{casts:0,caught:0,sold:0,earned:0,best:0,bestName:''},streak:0,questDate:today,questProgress:0,questClaimed:false};
+if(st.questDate!==today){st.questDate=today;st.questProgress=0;st.questClaimed=false}
+let event=EVENTS[Math.floor(Math.random()*EVENTS.length)],busy=false,minigame=null;
 function save(){localStorage.setItem(key,JSON.stringify(st))}
+function rarityName(r){return r[0]+r.slice(1).toLowerCase()}
+function baitPick(){const a=BAITS.filter(b=>(st.baits[b[0]]||0)>0);return a.length?a[Math.floor(Math.random()*a.length)]:null}
+function rarity(l){const r=Math.random()*100;if(r<.02*l)return'SECRET';if(r<.5*l)return'MYTHIC';if(r<2.5*l)return'LEGENDARY';if(r<8*l)return'EPIC';if(r<22*l)return'RARE';if(r<50*l)return'UNCOMMON';return'COMMON'}
+function weightFor(r){const ranges={COMMON:[0.4,2.2],UNCOMMON:[1,4],RARE:[2,9],EPIC:[6,25],LEGENDARY:[15,80],MYTHIC:[35,180],SECRET:[80,500]};const [a,b]=ranges[r];return +(a+Math.random()*(b-a)).toFixed(2)}
+function iconFor(r){return r==='SECRET'?'🌌':r==='MYTHIC'?'🐉':r==='LEGENDARY'?'🦈':r==='EPIC'?'🐠':'🐟'}
+function makeFish(b){const rod=RODS.find(r=>r[0]===st.rod)||RODS[0],pot=POTIONS.find(x=>x[0]===st.activePotion);let luck=rod[3]*b[3]*event[2];if(pot&&st.potions[pot[0]]>0&&st.until>Date.now())luck*=pot[3];const rar=rarity(luck),base=POOLS[rar][Math.floor(Math.random()*POOLS[rar].length)],weight=weightFor(rar);let name=base[0],mult=1,mutation='';if(Math.random()<.15){const x=MUT[Math.floor(Math.random()*MUT.length)];mutation=x[0];mult=x[1];name=mutation+' '+name}let price=Math.floor(base[1]*mult*(.65+weight/10)*(1+Math.min(st.streak,20)*.015)*event[3]);return{name,baseName:base[0],price,rarity:rar,mutation,weight,icon:iconFor(rar),time:Date.now()}}
 function render(){
- $('balance').textContent=money(st.balance);
+ $('balance').textContent=money(st.balance);$('eventName').textContent=event[1];$('weather').textContent=event[0]+' '+event[1]+' • x'+event[2]+' luck';
  $('baits').innerHTML=BAITS.map(b=>'<div class="flex justify-between p-3 rounded-xl bg-slate-950/60 border border-white/5"><span><b>'+b[1]+'</b><small class="block text-slate-500">Luck '+b[3]+'x</small></span><b class="text-cyan-300">'+(st.baits[b[0]]||0)+'×</b></div>').join('');
  $('totalFish').textContent=st.inventory.length;$('totalValue').textContent=money(st.inventory.reduce((a,x)=>a+x.price,0));
- $('inventory').innerHTML=st.inventory.length?st.inventory.slice().reverse().map(x=>'<div class="flex justify-between p-3 rounded-xl bg-slate-950/60 border border-white/5 text-sm"><span>'+EM[x.rarity]+' '+x.name+'</span><b class="text-emerald-300">'+money(x.price)+'</b></div>').join(''):'<p class="text-xs text-slate-600">Tas masih kosong.</p>';
- const r=RODS.find(x=>x[0]===st.rod)||RODS[0];$('rodName').textContent=r[1];$('rodLuck').textContent='Luck '+r[3]+'x';$('rodTimer').textContent=r[4];$('luckBar').style.width=Math.min(100,r[3]/35*100)+'%';shop();
+ $('inventory').innerHTML=st.inventory.length?st.inventory.slice().reverse().slice(0,30).map(x=>'<div class="flex justify-between gap-2 p-3 rounded-xl bg-slate-950/60 border border-white/5 text-xs"><span>'+EM[x.rarity]+' '+x.name+' <small class="text-slate-500">'+x.weight+'kg</small></span><b class="text-emerald-300 whitespace-nowrap">'+money(x.price)+'</b></div>').join(''):'<p class="text-xs text-slate-600">Tas masih kosong.</p>';
+ const r=RODS.find(x=>x[0]===st.rod)||RODS[0];$('rodName').textContent=r[1];$('rodLuck').textContent='Luck '+r[3]+'x';$('rodTimer').textContent=r[4];$('luckBar').style.width=Math.min(100,r[3]/35*100)+'%';
+ const pot=POTIONS.find(x=>x[0]===st.activePotion);if(pot&&st.until>Date.now()){$('potionText').textContent=pot[1]+' aktif • '+Math.ceil((st.until-Date.now())/60000)+'m';$('usePotion').disabled=true}else{$('potionText').textContent=Object.values(st.potions).reduce((a,b)=>a+b,0)?'Pilih potion dari Shop untuk digunakan.':'Belum punya potion.';$('usePotion').disabled=!Object.values(st.potions).some(Boolean)}
+ $('streak').textContent=st.streak;$('streakBar').style.width=Math.min(100,st.streak/20*100)+'%';
+ const q=Math.min(st.questProgress,10);$('questText').textContent='Tangkap 10 ikan • '+q+'/10 • Hadiah Rp5.000';$('questBar').style.width=(q*10)+'%';$('claimQuest').disabled=q<10||st.questClaimed;$('claimQuest').textContent=st.questClaimed?'SUDAH DIAMBIL':'AMBIL HADIAH';
+ $('stats').innerHTML=[['🎣','Cast',st.stats.casts],['🐟','Caught',st.stats.caught],['💰','Earned',money(st.stats.earned)],['🏆','Best',st.stats.best?st.stats.best+'kg':'-'],['📖','Discovered',Object.keys(st.collection).length+'/'+Object.values(POOLS).flat().length]].map(x=>'<div class="rounded-xl bg-slate-950/70 p-3"><p class="text-lg">'+x[0]+'</p><p class="text-[10px] text-slate-500">'+x[1]+'</p><b class="text-sm">'+x[2]+'</b></div>').join('');
+ $('bestText').textContent=st.stats.bestName?('Rekor: '+st.stats.bestName):'Belum ada rekor';save();
 }
+function openModal(title,kicker,body){$('modalTitle').textContent=title;$('modalKicker').textContent=kicker;$('modalBody').innerHTML=body;$('modal').classList.remove('hidden')}
+function closeModal(){$('modal').classList.add('hidden')}
 function shop(){
- $('shopItems').innerHTML='<div class="col-span-full"><h3 class="font-bold mb-2">🪱 Umpan</h3><div class="grid md:grid-cols-2 gap-3">'+BAITS.map(b=>'<div class="p-4 rounded-2xl border border-cyan-500/10 bg-slate-950/50"><b>'+b[1]+'</b><p class="text-xs text-slate-500 mt-1">Luck '+b[3]+'x • '+money(b[2])+'</p><button onclick="buyBait(\''+b[0]+'\')" class="w-full mt-3 py-2 rounded-lg bg-cyan-400/10 text-cyan-300 text-xs font-bold">BELI</button></div>').join('')+'</div></div><div class="col-span-full mt-3"><h3 class="font-bold mb-2">🧪 Potion</h3><div class="grid md:grid-cols-3 gap-3">'+POTIONS.map(p=>'<div class="p-4 rounded-2xl border border-purple-500/10 bg-slate-950/50"><b>'+p[1]+'</b><p class="text-xs text-slate-500 mt-1">'+money(p[2])+' • '+p[4]+' menit</p><button onclick="buyPotion(\''+p[0]+'\')" class="w-full mt-3 py-2 rounded-lg bg-purple-400/10 text-purple-300 text-xs font-bold">BELI</button></div>').join('')+'</div></div><div class="col-span-full mt-3"><h3 class="font-bold mb-2">🎣 Joran</h3><div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">'+RODS.map(r=>'<div class="p-4 rounded-2xl border border-white/5 bg-slate-950/50"><b>'+r[1]+'</b><p class="text-xs text-slate-500 mt-1">Luck '+r[3]+'x • '+r[4]+'s</p><button onclick="buyRod(\''+r[0]+'\')" class="w-full mt-3 py-2 rounded-lg bg-blue-400/10 text-blue-300 text-xs font-bold">'+(st.owned.includes(r[0])?(st.rod===r[0]?'AKTIF':'PAKAI'):'BELI '+money(r[2]))+'</button></div>').join('')+'</div></div>';
+ const bait=BAITS.map(b=>'<div class="p-4 rounded-2xl border border-cyan-500/10 bg-slate-950/50"><b>'+b[1]+'</b><p class="text-xs text-slate-500 mt-1">Luck '+b[3]+'x • '+money(b[2])+'</p><button onclick="buyBait(\''+b[0]+'\')" class="w-full mt-3 py-2 rounded-lg bg-cyan-400/10 text-cyan-300 text-xs font-bold">BELI</button></div>').join('');
+ const pots=POTIONS.map(p=>'<div class="p-4 rounded-2xl border border-purple-500/10 bg-slate-950/50"><b>'+p[1]+'</b><p class="text-xs text-slate-500 mt-1">'+money(p[2])+' • '+p[4]+' menit • '+p[3]+'x luck</p><div class="grid grid-cols-2 gap-2 mt-3"><button onclick="buyPotion(\''+p[0]+'\')" class="py-2 rounded-lg bg-purple-400/10 text-purple-300 text-xs font-bold">BELI</button><button onclick="usePotion(\''+p[0]+'\')" class="py-2 rounded-lg bg-white/5 text-slate-300 text-xs font-bold">PAKAI</button></div></div>').join('');
+ const rods=RODS.map(r=>'<div class="p-4 rounded-2xl border border-white/5 bg-slate-950/50"><b>'+r[1]+'</b><p class="text-xs text-slate-500 mt-1">Luck '+r[3]+'x • '+r[4]+'s</p><button onclick="buyRod(\''+r[0]+'\')" class="w-full mt-3 py-2 rounded-lg bg-blue-400/10 text-blue-300 text-xs font-bold">'+(st.owned.includes(r[0])?(st.rod===r[0]?'AKTIF':'PAKAI'):'BELI '+money(r[2]))+'</button></div>').join('');
+ openModal('🛒 Fishing Shop','BIONEST MARKET','<p class="text-sm text-slate-400 mb-4">Saldo: <b class="text-emerald-300">'+money(st.balance)+'</b></p><h3 class="font-bold mb-2">🪱 Umpan</h3><div class="grid md:grid-cols-2 gap-3">'+bait+'</div><h3 class="font-bold mt-6 mb-2">🧪 Potion</h3><div class="grid md:grid-cols-3 gap-3">'+pots+'</div><h3 class="font-bold mt-6 mb-2">🎣 Joran</h3><div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">'+rods+'</div>');
 }
-function buyBait(id){const b=BAITS.find(x=>x[0]===id);if(st.balance<b[2])return msg('Saldo tidak cukup.');st.balance-=b[2];st.baits[id]=(st.baits[id]||0)+1;save();render()}
-function buyPotion(id){const p=POTIONS.find(x=>x[0]===id);if(st.balance<p[2])return msg('Saldo tidak cukup.');st.balance-=p[2];st.potions[id]=(st.potions[id]||0)+1;save();render()}
-function buyRod(id){const r=RODS.find(x=>x[0]===id);if(st.owned.includes(id)){st.rod=id;save();render();return}if(st.balance<r[2])return msg('Saldo tidak cukup.');st.balance-=r[2];st.owned.push(id);st.rod=id;save();render()}
-function msg(t){$('status').textContent='✓ '+t}
-function baitPick(){const a=BAITS.filter(b=>(st.baits[b[0]]||0)>0);if(!a.length)return null;return a[Math.floor(Math.random()*a.length)]}
-function getRarity(l){const r=Math.random()*100;if(r<.02*l)return'SECRET';if(r<.5*l)return'MYTHIC';if(r<2.5*l)return'LEGENDARY';if(r<8*l)return'EPIC';if(r<22*l)return'RARE';if(r<50*l)return'UNCOMMON';return'COMMON'}
-function makeFish(b){const rod=RODS.find(r=>r[0]===st.rod),p=POTIONS.find(x=>x[0]===st.activePotion);let l=rod[3]*b[3];if(p&&st.potions[p[0]]>0&&st.until>Date.now())l*=p[3];const rar=getRarity(l),base=POOLS[rar][Math.floor(Math.random()*POOLS[rar].length)];let n=base[0],v=base[1],m='';if(Math.random()<.15){const x=MUT[Math.floor(Math.random()*MUT.length)];m=x[0];n=m+' '+n;v=Math.floor(v*x[1])}return{name:n,price:v,rarity:rar,mutation:m}}
+function collection(){
+ const all=Object.entries(POOLS).flatMap(([rar,arr])=>arr.map(x=>({rar,name:x[0],base:x[1]})));
+ openModal('📖 Fish Collection','BESTIARY','<div class="flex justify-between mb-4"><span class="text-sm text-slate-400">Ditemukan '+Object.keys(st.collection).length+' / '+all.length+'</span><span class="text-xs text-slate-500">Siluet terbuka setelah tertangkap</span></div><div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">'+all.map(f=>{const c=st.collection[f.name];return '<div class="rounded-2xl border border-white/5 bg-slate-950/50 p-4 '+(c?'':'opacity-60')+'"><div class="text-4xl mb-2">'+(c?iconFor(f.rar):'❔')+'</div><b>'+EM[f.rar]+' '+(c?f.name:'Unknown Fish')+'</b><p class="text-xs text-slate-500 mt-1">'+(c?('Caught '+c.count+'× • Best '+c.best+'kg • Base '+money(f.base)):'Belum ditemukan')+'</p></div>'}).join('')+'</div>');
+}
+function buyBait(id){const b=BAITS.find(x=>x[0]===id);if(st.balance<b[2])return toast('Saldo tidak cukup.');st.balance-=b[2];st.baits[id]=(st.baits[id]||0)+1;save();render();shop()}
+function buyPotion(id){const p=POTIONS.find(x=>x[0]===id);if(st.balance<p[2])return toast('Saldo tidak cukup.');st.balance-=p[2];st.potions[id]=(st.potions[id]||0)+1;save();render();shop()}
+function usePotion(id){const p=POTIONS.find(x=>x[0]===id);if(!p||!(st.potions[id]>0))return toast('Potion itu belum ada.');st.potions[id]--;st.activePotion=id;st.until=Date.now()+p[4]*60000;save();render();shop();toast(p[1]+' aktif.')}
+function buyRod(id){const r=RODS.find(x=>x[0]===id);if(st.owned.includes(id)){st.rod=id;save();render();shop();return}if(st.balance<r[2])return toast('Saldo tidak cukup.');st.balance-=r[2];st.owned.push(id);st.rod=id;save();render();shop()}
+function toast(t){$('status').textContent='✓ '+t}
+function startMinigame(f,b){minigame={f,b,progress:45,expires:Date.now()+2500};$('status').textContent='⚡ TARIK! Tekan tombol saat zona hijau.';$('timer').textContent='Timing menentukan bonus harga.';$('fishBtn').textContent='🎯 TARIK!';$('fishBtn').disabled=false;const tick=()=>{if(!minigame)return;if(Date.now()>minigame.expires){finishMinigame(0);return}minigame.progress+=Math.random()*18-9;minigame.progress=Math.max(5,Math.min(95,minigame.progress));$('fishBtn').style.transform='translateX('+((minigame.progress-50)/12)+'px)';requestAnimationFrame(tick)};requestAnimationFrame(tick)}
+function finishMinigame(score){if(!minigame)return;const f=minigame.f;f.price=Math.floor(f.price*(score>=80?1.3:score>=55?1.15:score>=30?1:0.8));if(score<30)st.streak=0;else st.streak++;st.inventory.push(f);st.stats.caught++;st.stats.casts++;st.stats.earned+=f.price;if(f.weight>st.stats.best){st.stats.best=f.weight;st.stats.bestName=f.name}const c=st.collection[f.baseName]||{count:0,best:0};c.count++;c.best=Math.max(c.best,f.weight);st.collection[f.baseName]=c;st.questProgress=Math.min(10,st.questProgress+1);minigame=null;$('fishBtn').style.transform='';$('fishBtn').textContent='🎣 MANCING';render();showResult(f,score)}
+function showResult(f,score){$('fishVisual').innerHTML='<div class="result text-8xl '+(f.mutation?'mutation-'+f.mutation:'')+'">'+f.icon+'</div>';$('result').innerHTML='<p class="text-xs text-slate-500 uppercase">Fishing Success • Timing '+score+'%</p><h3 class="text-2xl font-black mt-1">'+EM[f.rarity]+' '+f.rarity+'</h3><p class="text-lg font-bold mt-3">'+f.name+'</p><p class="text-xs text-slate-400 mt-1">⚖️ '+f.weight+' kg'+(f.mutation?' • ✨ '+f.mutation+' Mutation':'')+'</p><p class="text-emerald-300 font-bold mt-3">'+money(f.price)+'</p>';$('result').classList.remove('hidden');setTimeout(()=>{$('fishVisual').innerHTML='<div class="float text-7xl md:text-8xl">🐟</div>'},1800)}
 async function fish(){
- if(busy)return;const b=baitPick();if(!b)return msg('Umpan habis. Buka Shop untuk membeli.');busy=true;$('fishBtn').disabled=true;st.baits[b[0]]--;save();
- const rod=RODS.find(r=>r[0]===st.rod),sec=Math.max(1,rod[4]-(b[3]-1)*1.5);$('line').classList.remove('hidden');$('bobber').classList.remove('hidden');
- for(let i=Math.ceil(sec);i>0;i--){$('status').textContent='🎣 Kail menunggu...';$('timer').textContent=b[1]+' • '+i+' detik';await new Promise(r=>setTimeout(r,1000))}
- $('status').textContent='⚡ IKAN MENYAMBAR!';await new Promise(r=>setTimeout(r,400));const f=makeFish(b);st.inventory.push(f);render();
- $('fishVisual').innerHTML='<div class="result text-8xl">'+(f.rarity==='SECRET'?'🌌':f.rarity==='MYTHIC'?'🐉':'🐟')+'</div>';$('result').innerHTML='<p class="text-xs text-slate-500 uppercase">Fishing Success</p><h3 class="text-2xl font-black mt-1">'+EM[f.rarity]+' '+f.rarity+'</h3><p class="text-lg font-bold mt-3">'+f.name+'</p>'+(f.mutation?'<p class="text-xs text-cyan-300 mt-1">✨ '+f.mutation+' Mutation</p>':'')+'<p class="text-emerald-300 font-bold mt-3">'+money(f.price)+'</p>';$('result').classList.remove('hidden');
- $('line').classList.add('hidden');$('bobber').classList.add('hidden');$('fishVisual').innerHTML='<div class="float text-7xl md:text-8xl">🐟</div>';$('timer').textContent='Umpan dipakai otomatis dari stok.';busy=false;$('fishBtn').disabled=false
+ if(busy||minigame)return;const b=baitPick();if(!b)return toast('Umpan habis. Buka Shop untuk membeli.');busy=true;$('fishBtn').disabled=true;st.baits[b[0]]--;st.stats.casts++;save();const rod=RODS.find(r=>r[0]===st.rod)||RODS[0],sec=Math.max(1,rod[4]-(b[3]-1)*1.5);
+ $('line').classList.remove('hidden');$('bobber').classList.remove('hidden');for(let i=Math.ceil(sec);i>0;i--){$('status').textContent='🎣 Kail menunggu...';$('timer').textContent=b[1]+' • '+i+' detik';await new Promise(r=>setTimeout(r,1000))}
+ $('status').textContent='⚡ IKAN MENYAMBAR!';$('water').classList.add('shake');await new Promise(r=>setTimeout(r,300));$('water').classList.remove('shake');const f=makeFish(b);$('line').classList.add('hidden');$('bobber').classList.add('hidden');busy=false;startMinigame(f,b)
 }
-window.buyBait=buyBait;window.buyPotion=buyPotion;window.buyRod=buyRod;
-$('fishBtn').onclick=fish;$('shopBtn').onclick=()=>$('shop').classList.remove('hidden');$('closeShop').onclick=()=>$('shop').classList.add('hidden');$('sellAll').onclick=()=>{if(!st.inventory.length)return msg('Tas masih kosong.');const n=st.inventory.reduce((a,x)=>a+x.price,0);st.balance+=n;st.inventory=[];save();render();msg('Semua ikan terjual: '+money(n))};render();</script>
-</body>
-</html>
+$('fishBtn').onclick=()=>{if(minigame){const p=minigame.progress,score=Math.max(0,100-Math.abs(p-70)*2);finishMinigame(Math.round(score))}else fish()};
+$('shopBtn').onclick=shop;$('collectionBtn').onclick=collection;$('closeModal').onclick=closeModal;$('modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
+$('sellAll').onclick=()=>{if(!st.inventory.length)return toast('Tas masih kosong.');const n=st.inventory.reduce((a,x)=>a+x.price,0);st.balance+=n;st.stats.sold+=st.inventory.length;st.stats.earned+=n;st.inventory=[];save();render();toast('Semua ikan terjual: '+money(n))};
+$('usePotion').onclick=()=>{const id=Object.keys(st.potions).find(k=>st.potions[k]>0);if(id)usePotion(id)};
+$('claimQuest').onclick=()=>{if(st.questProgress>=10&&!st.questClaimed){st.balance+=5000;st.questClaimed=true;save();render();toast('Quest selesai. +Rp5.000')}}
+render();
+setInterval(()=>{if(st.activePotion&&st.until<=Date.now()){st.activePotion=null;st.until=0;save();render()}},1000);
+</script>
+</body></html>
