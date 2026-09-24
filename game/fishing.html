@@ -63,13 +63,17 @@ body{background:#050b16;color:#e2e8f0}
 <button id="fishBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-300 to-blue-400 text-slate-950 font-black hover:scale-[1.02] active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed">🎣 MANCING</button>
 </div>
 <div id="result" class="hidden mt-5 rounded-2xl border p-5 result"></div>
+<div class="mt-4 grid grid-cols-2 gap-2">
+<button id="shopBtn" class="py-3 rounded-xl bg-cyan-400/10 border border-cyan-400/20 text-cyan-300 font-bold text-xs">🛒 SHOP</button>
+<button id="sellAll" class="py-3 rounded-xl bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 font-bold text-xs">💰 JUAL SEMUA</button>
+</div>
 </div>
 </section>
 
 <aside class="space-y-5">
 <div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5">
 <div class="flex justify-between items-center"><h2 class="font-bold">🪱 Umpan</h2><span id="baitCount" class="text-xs text-slate-500">5 jenis</span></div>
-<div id="baits" class="grid grid-cols-2 gap-2 mt-4"></div>
+<div id="baits" class="space-y-2 mt-4"></div>
 </div>
 <div class="rounded-2xl border border-cyan-500/15 bg-slate-900/60 p-5">
 <h2 class="font-bold">🎒 Tas</h2>
@@ -77,7 +81,7 @@ body{background:#050b16;color:#e2e8f0}
 <div class="rounded-xl bg-slate-950/70 p-3"><p class="text-[10px] text-slate-500 uppercase">Ikan</p><b id="totalFish">0</b></div>
 <div class="rounded-xl bg-slate-950/70 p-3"><p class="text-[10px] text-slate-500 uppercase">Nilai</p><b id="totalValue">Rp0</b></div>
 </div>
-<div id="inventory" class="mt-4 space-y-2 max-h-64 overflow-auto"></div>
+<div id="inventory" class="mt-4 space-y-2 max-h-64 overflow-auto"></div><p class="text-[11px] text-slate-600 mt-3">Umpan dipakai otomatis dari stok.</p>
 </div>
 </aside>
 </div>
@@ -97,66 +101,44 @@ body{background:#050b16;color:#e2e8f0}
 </div>
 </div>
 </section>
-</main>
+</main><div id="shop" class="fixed inset-0 z-[90] hidden bg-black/75 backdrop-blur-sm p-4 overflow-auto"><div class="max-w-5xl mx-auto my-6 rounded-3xl border border-cyan-500/20 bg-[#08111f]"><div class="p-5 border-b border-white/5 flex justify-between"><div><p class="text-[10px] tracking-[.3em] text-cyan-300">BIONEST MARKET</p><h2 class="text-2xl font-black">🛒 Fishing Shop</h2></div><button id="closeShop" class="text-2xl text-slate-400">×</button></div><div class="p-5"><p class="text-sm text-slate-400 mb-4">Saldo: <b id="balance" class="text-emerald-300">Rp0</b></p><div id="shopItems" class="grid md:grid-cols-2 lg:grid-cols-3 gap-3"></div></div></div></div>
 
 <script>
-const baits=[
-{id:'roti',name:'🍞 Roti',luck:1},
-{id:'cacing',name:'🪱 Cacing',luck:1.2},
-{id:'pelet',name:'🟢 Pelet',luck:1.5},
-{id:'udang',name:'🦐 Udang',luck:2},
-{id:'cumi',name:'🦑 Cumi',luck:4}
-];
-const pools={
-COMMON:[['Ikan Lele',20],['Ikan Mujair',25],['Ikan Nila',30],['Ikan Mas',35],['Ikan Sepat',15]],
-UNCOMMON:[['Ikan Gurame',45],['Ikan Bawal',55],['Ikan Patin',70],['Ikan Gabus',90]],
-RARE:[['Ikan Salmon',120],['Ikan Tuna',250],['Ikan Kakap Merah',160],['Ikan Tenggiri',200]],
-EPIC:[['Ikan Hiu Martil',400],['Ikan Pari Manta',550],['Ikan Swordfish',700],['Ikan Marlin Biru',900]],
-LEGENDARY:[['Ikan Hiu Putih',1500],['Ikan Paus Biru',2500],['Ikan Coelacanth Purba',4000]],
-MYTHIC:[['Kraken Junior',7500],['Naga Laut Dalam',12000],['Leviathan Samudra',18000]],
-SECRET:[['The Celestial Leviathan',40000],['The Void Sovereign',75000],['The Eternal Neptune',120000]]
-};
-const rarityEmoji={COMMON:'⚪',UNCOMMON:'🟢',RARE:'🔵',EPIC:'🟣',LEGENDARY:'🟡',MYTHIC:'🔴',SECRET:'✨'};
-const mutations=[['Golden',2],['Shiny',1.5],['Shadow',2.5],['Rainbow',3]];
-let bait='roti', busy=false, inventory=[];
-const money=n=>'Rp'+n.toLocaleString('id-ID');
-const $=id=>document.getElementById(id);
-function renderBaits(){
- $('baits').innerHTML=baits.map(x=>'<button data-bait="'+x.id+'" class="bait px-3 py-3 rounded-xl border text-left transition '+(x.id===bait?'border-cyan-300 bg-cyan-400/10':'border-slate-800 bg-slate-950/50 hover:border-cyan-500/40')+'"><span class="text-sm font-bold">'+x.name+'</span><small class="block text-slate-500 mt-1">Luck '+x.luck+'x</small></button>').join('');
- document.querySelectorAll('.bait').forEach(b=>b.onclick=()=>{if(busy)return;bait=b.dataset.bait;renderBaits()});
+const BAITS=[['roti','🍞 Roti',100,1],['cacing','🪱 Cacing',250,1.2],['pelet','🟢 Pelet Super',500,1.5],['udang','🦐 Udang Segar',1000,2],['cumi','🦑 Cumi Impor',2500,4]];
+const POTIONS=[['minor','🧪 Minor Luck Potion',5000,1.25,15],['major','🧪 Major Luck Potion',15000,1.5,30],['divine','🧪 Divine Luck Potion',40000,3,60]];
+const RODS=[['training','🎣 Training Rod',0,1,10],['bamboo','🎣 Bamboo Rod',2000,1.2,9],['fiber','🎣 Fiberglass Rod',5000,1.4,8],['iron','🎣 Iron Reinforced Rod',12000,1.6,7],['carbon','🎣 Carbon Rod',25000,1.9,6],['magical','🎣 Mystic Wand Rod',60000,2.5,5],['crystal','🔱 Destiny Crystal Rod',150000,4,3],['plasma','⚡ Plasma Core Rod',350000,7,2],['abyssal','🌊 Abyssal Titan Rod',800000,14,1],['quantum','🌌 Quantum Singularity Rod',2000000,35,1]];
+const POOLS={COMMON:[['Ikan Lele',20],['Ikan Mujair',25],['Ikan Nila',30],['Ikan Mas',35],['Ikan Sepat',15]],UNCOMMON:[['Ikan Gurame',45],['Ikan Bawal',55],['Ikan Patin',70],['Ikan Gabus',90]],RARE:[['Ikan Salmon',120],['Ikan Tuna',250],['Ikan Kakap Merah',160],['Ikan Tenggiri',200]],EPIC:[['Ikan Hiu Martil',400],['Ikan Pari Manta',550],['Ikan Swordfish',700],['Ikan Marlin Biru',900]],LEGENDARY:[['Ikan Hiu Putih',1500],['Ikan Paus Biru',2500],['Ikan Coelacanth Purba',4000]],MYTHIC:[['Kraken Junior',7500],['Naga Laut Dalam',12000],['Leviathan Samudra',18000]],SECRET:[['The Celestial Leviathan',40000],['The Void Sovereign',75000],['The Eternal Neptune',120000]]};
+const EM={COMMON:'⚪',UNCOMMON:'🟢',RARE:'🔵',EPIC:'🟣',LEGENDARY:'🟡',MYTHIC:'🔴',SECRET:'✨'}, MUT=[['Golden',2],['Shiny',1.5],['Shadow',2.5],['Rainbow',3]];
+const money=n=>'Rp'+Math.floor(n).toLocaleString('id-ID'),$=id=>document.getElementById(id);
+const profile=JSON.parse(sessionStorage.getItem('bionestProfile')||'null'), key='bionestFishing_'+(profile?.username||'guest');
+let st=JSON.parse(localStorage.getItem(key)||'null')||{balance:5000,baits:{roti:5,cacing:0,pelet:0,udang:0,cumi:0},inventory:[],owned:['training'],rod:'training',potions:{},activePotion:null,until:0},busy=false;
+function save(){localStorage.setItem(key,JSON.stringify(st))}
+function render(){
+ $('balance').textContent=money(st.balance);
+ $('baits').innerHTML=BAITS.map(b=>'<div class="flex justify-between p-3 rounded-xl bg-slate-950/60 border border-white/5"><span><b>'+b[1]+'</b><small class="block text-slate-500">Luck '+b[3]+'x</small></span><b class="text-cyan-300">'+(st.baits[b[0]]||0)+'×</b></div>').join('');
+ $('totalFish').textContent=st.inventory.length;$('totalValue').textContent=money(st.inventory.reduce((a,x)=>a+x.price,0));
+ $('inventory').innerHTML=st.inventory.length?st.inventory.slice().reverse().map(x=>'<div class="flex justify-between p-3 rounded-xl bg-slate-950/60 border border-white/5 text-sm"><span>'+EM[x.rarity]+' '+x.name+'</span><b class="text-emerald-300">'+money(x.price)+'</b></div>').join(''):'<p class="text-xs text-slate-600">Tas masih kosong.</p>';
+ const r=RODS.find(x=>x[0]===st.rod)||RODS[0];$('rodName').textContent=r[1];$('rodLuck').textContent='Luck '+r[3]+'x';$('rodTimer').textContent=r[4];$('luckBar').style.width=Math.min(100,r[3]/35*100)+'%';shop();
 }
-function rarity(luck){
- const r=Math.random()*100;
- if(r<.02*luck)return'SECRET';if(r<.5*luck)return'MYTHIC';if(r<2.5*luck)return'LEGENDARY';if(r<8*luck)return'EPIC';if(r<22*luck)return'RARE';if(r<50*luck)return'UNCOMMON';return'COMMON';
+function shop(){
+ $('shopItems').innerHTML='<div class="col-span-full"><h3 class="font-bold mb-2">🪱 Umpan</h3><div class="grid md:grid-cols-2 gap-3">'+BAITS.map(b=>'<div class="p-4 rounded-2xl border border-cyan-500/10 bg-slate-950/50"><b>'+b[1]+'</b><p class="text-xs text-slate-500 mt-1">Luck '+b[3]+'x • '+money(b[2])+'</p><button onclick="buyBait(\''+b[0]+'\')" class="w-full mt-3 py-2 rounded-lg bg-cyan-400/10 text-cyan-300 text-xs font-bold">BELI</button></div>').join('')+'</div></div><div class="col-span-full mt-3"><h3 class="font-bold mb-2">🧪 Potion</h3><div class="grid md:grid-cols-3 gap-3">'+POTIONS.map(p=>'<div class="p-4 rounded-2xl border border-purple-500/10 bg-slate-950/50"><b>'+p[1]+'</b><p class="text-xs text-slate-500 mt-1">'+money(p[2])+' • '+p[4]+' menit</p><button onclick="buyPotion(\''+p[0]+'\')" class="w-full mt-3 py-2 rounded-lg bg-purple-400/10 text-purple-300 text-xs font-bold">BELI</button></div>').join('')+'</div></div><div class="col-span-full mt-3"><h3 class="font-bold mb-2">🎣 Joran</h3><div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">'+RODS.map(r=>'<div class="p-4 rounded-2xl border border-white/5 bg-slate-950/50"><b>'+r[1]+'</b><p class="text-xs text-slate-500 mt-1">Luck '+r[3]+'x • '+r[4]+'s</p><button onclick="buyRod(\''+r[0]+'\')" class="w-full mt-3 py-2 rounded-lg bg-blue-400/10 text-blue-300 text-xs font-bold">'+(st.owned.includes(r[0])?(st.rod===r[0]?'AKTIF':'PAKAI'):'BELI '+money(r[2]))+'</button></div>').join('')+'</div></div>';
 }
-function catchFish(){
- const luck=baits.find(x=>x.id===bait).luck;
- const r=rarity(luck), base=pools[r][Math.floor(Math.random()*pools[r].length)];
- let name=base[0], price=base[1], mutation='';
- if(Math.random()<.15){const m=mutations[Math.floor(Math.random()*mutations.length)];mutation=m[0];name=m[0]+' '+name;price=Math.floor(price*m[1])}
- return {name,price,rarity:r,mutation};
-}
-function renderInventory(){
- $('totalFish').textContent=inventory.length;
- $('totalValue').textContent=money(inventory.reduce((a,x)=>a+x.price,0));
- $('inventory').innerHTML=inventory.length?inventory.slice().reverse().map(x=>'<div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-950/60 border border-white/5"><span class="text-sm">'+rarityEmoji[x.rarity]+' '+x.name+(x.mutation?' ✨':'')+'</span><b class="text-xs text-emerald-300">'+money(x.price)+'</b></div>').join(''):'<p class="text-xs text-slate-600">Belum ada ikan. Laut sedang menunggu korban.</p>';
-}
+function buyBait(id){const b=BAITS.find(x=>x[0]===id);if(st.balance<b[2])return msg('Saldo tidak cukup.');st.balance-=b[2];st.baits[id]=(st.baits[id]||0)+1;save();render()}
+function buyPotion(id){const p=POTIONS.find(x=>x[0]===id);if(st.balance<p[2])return msg('Saldo tidak cukup.');st.balance-=p[2];st.potions[id]=(st.potions[id]||0)+1;save();render()}
+function buyRod(id){const r=RODS.find(x=>x[0]===id);if(st.owned.includes(id)){st.rod=id;save();render();return}if(st.balance<r[2])return msg('Saldo tidak cukup.');st.balance-=r[2];st.owned.push(id);st.rod=id;save();render()}
+function msg(t){$('status').textContent='✓ '+t}
+function baitPick(){const a=BAITS.filter(b=>(st.baits[b[0]]||0)>0);if(!a.length)return null;return a[Math.floor(Math.random()*a.length)]}
+function getRarity(l){const r=Math.random()*100;if(r<.02*l)return'SECRET';if(r<.5*l)return'MYTHIC';if(r<2.5*l)return'LEGENDARY';if(r<8*l)return'EPIC';if(r<22*l)return'RARE';if(r<50*l)return'UNCOMMON';return'COMMON'}
+function makeFish(b){const rod=RODS.find(r=>r[0]===st.rod),p=POTIONS.find(x=>x[0]===st.activePotion);let l=rod[3]*b[3];if(p&&st.potions[p[0]]>0&&st.until>Date.now())l*=p[3];const rar=getRarity(l),base=POOLS[rar][Math.floor(Math.random()*POOLS[rar].length)];let n=base[0],v=base[1],m='';if(Math.random()<.15){const x=MUT[Math.floor(Math.random()*MUT.length)];m=x[0];n=m+' '+n;v=Math.floor(v*x[1])}return{name:n,price:v,rarity:rar,mutation:m}}
 async function fish(){
- if(busy)return;
- busy=true;$('fishBtn').disabled=true;$('result').classList.add('hidden');
- $('line').classList.remove('hidden');$('bobber').classList.remove('hidden');$('fishVisual').classList.add('cast');
- const seconds=6+baits.find(x=>x.id===bait).luck*-0.7;
- for(let i=Math.ceil(seconds);i>0;i--){$('status').textContent='🎣 Kail sedang menunggu...';$('timer').textContent='Ikan menyambar dalam sekitar '+i+' detik';await new Promise(r=>setTimeout(r,1000))}
- $('status').textContent='⚡ IKAN MENYAMBAR!';
- $('timer').textContent='Tarik kail...';$('bobber').classList.add('scale-125');await new Promise(r=>setTimeout(r,450));
- const fish=catchFish();inventory.push(fish);renderInventory();
- $('fishVisual').innerHTML='<div class="result text-8xl">'+(fish.rarity==='SECRET'?'🌌':fish.rarity==='MYTHIC'?'🐉':'🐟')+'</div>';
- const border={COMMON:'border-slate-700',UNCOMMON:'border-emerald-500/30',RARE:'border-blue-500/40',EPIC:'border-purple-500/40',LEGENDARY:'border-yellow-500/50',MYTHIC:'border-red-500/50',SECRET:'border-cyan-300/70'}[fish.rarity];
- $('result').className='mt-5 rounded-2xl border p-5 result '+border+' bg-slate-950/60';
- $('result').innerHTML='<p class="text-xs text-slate-500 uppercase tracking-widest">Fishing Success</p><h3 class="text-2xl font-black mt-1">'+rarityEmoji[fish.rarity]+' '+fish.rarity+'</h3><p class="text-lg font-bold mt-3">'+fish.name+'</p>'+(fish.mutation?'<p class="text-xs text-cyan-300 mt-1">✨ Mutation: '+fish.mutation+'</p>':'')+'<p class="text-emerald-300 font-bold mt-3">'+money(fish.price)+'</p>';
- $('result').classList.remove('hidden');$('line').classList.add('hidden');$('bobber').classList.add('hidden');$('status').textContent='🎣 Siap untuk tangkapan berikutnya';$('timer').textContent='Umpan '+baits.find(x=>x.id===bait).name+' siap digunakan lagi.';$('fishVisual').innerHTML='<div class="float text-7xl md:text-8xl">🐟</div>';busy=false;$('fishBtn').disabled=false;
+ if(busy)return;const b=baitPick();if(!b)return msg('Umpan habis. Buka Shop untuk membeli.');busy=true;$('fishBtn').disabled=true;st.baits[b[0]]--;save();
+ const rod=RODS.find(r=>r[0]===st.rod),sec=Math.max(1,rod[4]-(b[3]-1)*1.5);$('line').classList.remove('hidden');$('bobber').classList.remove('hidden');
+ for(let i=Math.ceil(sec);i>0;i--){$('status').textContent='🎣 Kail menunggu...';$('timer').textContent=b[1]+' • '+i+' detik';await new Promise(r=>setTimeout(r,1000))}
+ $('status').textContent='⚡ IKAN MENYAMBAR!';await new Promise(r=>setTimeout(r,400));const f=makeFish(b);st.inventory.push(f);render();
+ $('fishVisual').innerHTML='<div class="result text-8xl">'+(f.rarity==='SECRET'?'🌌':f.rarity==='MYTHIC'?'🐉':'🐟')+'</div>';$('result').innerHTML='<p class="text-xs text-slate-500 uppercase">Fishing Success</p><h3 class="text-2xl font-black mt-1">'+EM[f.rarity]+' '+f.rarity+'</h3><p class="text-lg font-bold mt-3">'+f.name+'</p>'+(f.mutation?'<p class="text-xs text-cyan-300 mt-1">✨ '+f.mutation+' Mutation</p>':'')+'<p class="text-emerald-300 font-bold mt-3">'+money(f.price)+'</p>';$('result').classList.remove('hidden');
+ $('line').classList.add('hidden');$('bobber').classList.add('hidden');$('fishVisual').innerHTML='<div class="float text-7xl md:text-8xl">🐟</div>';$('timer').textContent='Umpan dipakai otomatis dari stok.';busy=false;$('fishBtn').disabled=false
 }
-renderBaits();renderInventory();$('fishBtn').onclick=fish;
-</script>
+window.buyBait=buyBait;window.buyPotion=buyPotion;window.buyRod=buyRod;
+$('fishBtn').onclick=fish;$('shopBtn').onclick=()=>$('shop').classList.remove('hidden');$('closeShop').onclick=()=>$('shop').classList.add('hidden');$('sellAll').onclick=()=>{if(!st.inventory.length)return msg('Tas masih kosong.');const n=st.inventory.reduce((a,x)=>a+x.price,0);st.balance+=n;st.inventory=[];save();render();msg('Semua ikan terjual: '+money(n))};render();</script>
 </body>
 </html>
