@@ -24,5 +24,18 @@
     "date": "2026-09-24",
     "time": "15:26:49",
     "created_at": "2026-09-24T08:26:49.251Z"
+  },
+  {
+    "id": "vio-1790238747892",
+    "student": "orlen",
+    "student_name": "Danendra Orlen Wasatha",
+    "category": "Lainnya",
+    "violation": "tes",
+    "reported_by": "teacher",
+    "reported_by_name": "Bu Assyifa",
+    "subject": "Fisika",
+    "date": "2026-09-24",
+    "time": "15:32:27",
+    "created_at": "2026-09-24T08:32:27.860Z"
   }
 ]
