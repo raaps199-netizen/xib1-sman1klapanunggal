@@ -52,7 +52,7 @@
                 <div class="p-5 rounded-2xl bg-techCard border border-cyan-500/20">
                     <p class="text-xs text-slate-500 uppercase">Kas</p>
                     <p id="totalKas" class="text-2xl font-black text-techCyan mt-2">Rp0</p>
-                    <p class="text-[11px] text-slate-500 mt-1"></p>
+                    <p class="text-[11px] text-slate-500 mt-1">Rp10.000 per bulan</p>
                 </div>
                 <div class="p-5 rounded-2xl bg-techCard border border-cyan-500/20">
                     <p class="text-xs text-slate-500 uppercase">Poe Ibu</p>
@@ -67,22 +67,16 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <section class="p-5 rounded-2xl bg-techCard border border-cyan-500/20">
-                    <h2 class="font-bold flex items-center gap-2 mb-4">
-                        <i data-lucide="users" class="w-4 h-4 text-techCyan"></i> Rekap Per Member
-                    </h2>
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <h2 class="font-bold flex items-center gap-2"><i data-lucide="check-square" class="w-4 h-4 text-techCyan"></i> Checklist Kas</h2>
+                        <span class="text-xs text-slate-500">Rp10.000 / bulan</span>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
-                            <thead>
-                                <tr class="text-left text-xs text-slate-500 border-b border-slate-800">
-                                    <th class="py-3 pr-3">Nama</th>
-                                    <th class="py-3 px-3">Kas Dibayar</th>
-                                    <th class="py-3 px-3">Kas Kurang</th>
-                                    <th class="py-3 px-3">Poe Dibayar</th>
-                                    <th class="py-3 px-3">Poe Kurang</th>
-                                    <th class="py-3 pl-3">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="memberRows"></tbody>
+                            <thead><tr class="text-left text-xs text-slate-500 border-b border-slate-800">
+                                <th class="py-3 pr-3">Nama</th><th class="py-3 px-3 text-center">Agustus</th><th class="py-3 px-3 text-center">September</th><th class="py-3 px-3 text-center">Oktober</th><th class="py-3 pl-3 text-right">Total</th>
+                            </tr></thead>
+                            <tbody id="kasRows"></tbody>
                         </table>
                     </div>
                 </section>
@@ -144,29 +138,37 @@ async function loadCash() {
         document.getElementById('totalKas').textContent = money(data.totals.kas);
         document.getElementById('totalPoe').textContent = money(data.totals.poe);
         document.getElementById('poeDue').textContent = data.poe ? 'Wajib saat ini: ' + money(data.poe.dueAmount) + ' (' + data.poe.dueDays + ' hari)' : '';
-        const kasDue = document.getElementById('totalKas').parentElement.querySelector('p:last-child');
-        if (kasDue && data.kas) kasDue.textContent = 'Wajib saat ini: ' + money(data.kas.dueAmount) + ' (' + data.kas.dueMonths + ' bulan)';
         document.getElementById('totalBalance').textContent = money(data.totals.balance);
 
-        document.getElementById('memberRows').innerHTML = students.map(s => {
-            const row = data.byStudent[s.username] || {kas:0,kasRemaining:data.kas ? data.kas.dueAmount : 0,poe:0,poeRemaining:data.poe ? data.poe.dueAmount : 0,total:0};
+        const paid = {};
+        for (const t of (data.transactions || [])) {
+            if (t.category !== 'kas' || t.type !== 'income') continue;
+            const month = String(t.month || '').toLowerCase();
+            if (!paid[t.student]) paid[t.student] = {};
+            if (month.includes('agustus')) paid[t.student].Agustus = true;
+            if (month.includes('september')) paid[t.student].September = true;
+            if (month.includes('oktober')) paid[t.student].Oktober = true;
+        }
+
+        document.getElementById('kasRows').innerHTML = students.map(s => {
+            const p = paid[s.username] || {};
+            const months = ['Agustus','September','Oktober'];
+            const count = months.filter(m => p[m]).length;
+            const cell = month => p[month]
+                ? '<span class="inline-flex w-8 h-8 items-center justify-center rounded-lg bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 font-black">✓</span>'
+                : '<span class="inline-flex w-8 h-8 items-center justify-center rounded-lg bg-slate-950 border border-slate-800 text-slate-600">□</span>';
             return '<tr class="border-b border-slate-900/80">' +
                 '<td class="py-3 pr-3 text-slate-200 whitespace-nowrap">' + s.name + '</td>' +
-                '<td class="py-3 px-3 text-slate-400 whitespace-nowrap">' + money(row.kas) + '</td>' +
-                '<td class="py-3 px-3 whitespace-nowrap font-bold ' + (row.kasRemaining > 0 ? 'text-amber-300' : 'text-emerald-300') + '">' + money(row.kasRemaining) + '</td>' +
-                '<td class="py-3 px-3 text-slate-400 whitespace-nowrap">' + money(row.poe) + '</td>' +
-                '<td class="py-3 px-3 whitespace-nowrap font-bold ' + (row.poeRemaining > 0 ? 'text-amber-300' : 'text-emerald-300') + '">' + money(row.poeRemaining) + '</td>' +
-                '<td class="py-3 pl-3 text-techCyan font-bold whitespace-nowrap">' + money(row.total) + '</td></tr>';
+                '<td class="py-3 px-3 text-center">' + cell('Agustus') + '</td>' +
+                '<td class="py-3 px-3 text-center">' + cell('September') + '</td>' +
+                '<td class="py-3 px-3 text-center">' + cell('Oktober') + '</td>' +
+                '<td class="py-3 pl-3 text-right font-bold ' + (count === 3 ? 'text-emerald-300' : 'text-techCyan') + '">' + count + '/3</td></tr>';
         }).join('');
 
-        const latest = (data.transactions || []).slice(0, 20);
+        const latest = (data.transactions || []).filter(t => t.category === 'poe').slice(0, 20);
         document.getElementById('history').innerHTML = latest.length ? latest.map(t => {
             const s = students.find(item => item.username === t.student);
-            return '<div class="p-3 rounded-xl bg-slate-950/40 border border-slate-800">' +
-                '<div class="flex items-center justify-between gap-3">' +
-                '<span class="text-sm font-semibold text-slate-200 truncate">' + (s ? s.name : t.student) + '</span>' +
-                '<span class="text-sm font-black text-techCyan whitespace-nowrap">+' + money(t.amount) + '</span></div>' +
-                '<div class="text-[11px] text-slate-500 mt-1">' + (t.category === 'poe' ? 'Poe Ibu' : 'Kas') + ' · ' + (t.month || '-') + ' · ' + (t.source === 'whatsapp-bot' ? 'WhatsApp' : 'Data awal') + '</div></div>';
+            return '<div class="p-3 rounded-xl bg-slate-950/40 border border-slate-800"><div class="flex items-center justify-between gap-3"><span class="text-sm font-semibold text-slate-200 truncate">' + (s ? s.name : t.student) + '</span><span class="text-sm font-black text-techCyan whitespace-nowrap">+' + money(t.amount) + '</span></div><div class="text-[11px] text-slate-500 mt-1">Poe Ibu · ' + (t.month || '-') + ' · ' + (t.source === 'whatsapp-bot' ? 'WhatsApp' : 'Data awal') + '</div></div>';
         }).join('') : '<p class="text-sm text-slate-500">Belum ada transaksi.</p>';
 
         document.getElementById('loading').classList.add('hidden');
