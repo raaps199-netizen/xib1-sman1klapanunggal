@@ -142,6 +142,18 @@ export default async function handler(req, res) {
             const { file, database } = await readCash();
             if (!Array.isArray(database.transactions)) database.transactions = [];
 
+            if (category === 'kas') {
+                const duplicate = database.transactions.some(t =>
+                    t.type === 'income' &&
+                    t.category === 'kas' &&
+                    String(t.student || '').toLowerCase() === student &&
+                    String(t.month || '').toLowerCase() === month.toLowerCase()
+                );
+                if (duplicate) {
+                    return res.status(409).json({ error: `Kas ${month} untuk siswa tersebut sudah tercatat.` });
+                }
+            }
+
             database.transactions.push({
                 id: `tx-${Date.now()}`,
                 type: 'income',
