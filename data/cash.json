@@ -2,345 +2,374 @@
   "version": 1,
   "transactions": [
     {
-      "id": "initial-001",
+      "id": "kas-agustus-almira",
       "type": "income",
       "category": "kas",
-      "student": "aisahra",
+      "student": "almira",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-002",
+      "id": "kas-agustus-alvian",
+      "type": "income",
+      "category": "kas",
+      "student": "alvian",
+      "amount": 10000,
+      "month": "Agustus",
+      "description": "Kas Agustus",
+      "source": "class-checklist"
+    },
+    {
+      "id": "kas-agustus-ara",
       "type": "income",
       "category": "kas",
       "student": "ara",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-003",
+      "id": "kas-agustus-arya",
       "type": "income",
       "category": "kas",
       "student": "arya",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-004",
+      "id": "kas-agustus-fadhil",
       "type": "income",
       "category": "kas",
       "student": "fadhil",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-005",
+      "id": "kas-agustus-avisha",
       "type": "income",
       "category": "kas",
       "student": "avisha",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-006",
+      "id": "kas-agustus-brella",
       "type": "income",
       "category": "kas",
       "student": "brella",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-007",
+      "id": "kas-agustus-orlen",
       "type": "income",
       "category": "kas",
       "student": "orlen",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-008",
+      "id": "kas-agustus-effan",
       "type": "income",
       "category": "kas",
       "student": "effan",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-009",
-      "type": "income",
-      "category": "kas",
-      "student": "elang",
-      "amount": 10000,
-      "month": "Agustus",
-      "description": "Kas Agustus",
-      "source": "initial-table"
-    },
-    {
-      "id": "initial-010",
+      "id": "kas-agustus-fareal",
       "type": "income",
       "category": "kas",
       "student": "fareal",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-011",
+      "id": "kas-agustus-fathian",
       "type": "income",
       "category": "kas",
       "student": "fathian",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-012",
+      "id": "kas-agustus-gibran",
       "type": "income",
       "category": "kas",
       "student": "gibran",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-013",
+      "id": "kas-agustus-yusuf",
       "type": "income",
       "category": "kas",
       "student": "yusuf",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-014",
+      "id": "kas-agustus-irfan",
       "type": "income",
       "category": "kas",
       "student": "irfan",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-015",
+      "id": "kas-agustus-keyla",
       "type": "income",
       "category": "kas",
       "student": "keyla",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-016",
+      "id": "kas-agustus-kirana",
       "type": "income",
       "category": "kas",
       "student": "kirana",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-017",
+      "id": "kas-agustus-lutfan",
       "type": "income",
       "category": "kas",
       "student": "lutfan",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-018",
+      "id": "kas-agustus-daffa",
       "type": "income",
       "category": "kas",
       "student": "daffa",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-019",
+      "id": "kas-agustus-dzaky",
       "type": "income",
       "category": "kas",
       "student": "dzaky",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-020",
+      "id": "kas-agustus-fahri",
       "type": "income",
       "category": "kas",
       "student": "fahri",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-021",
+      "id": "kas-agustus-putri",
       "type": "income",
       "category": "kas",
       "student": "putri",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-022",
+      "id": "kas-agustus-reva",
       "type": "income",
       "category": "kas",
       "student": "reva",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-023",
+      "id": "kas-agustus-sadam",
       "type": "income",
       "category": "kas",
       "student": "sadam",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-024",
+      "id": "kas-agustus-salsabila",
       "type": "income",
       "category": "kas",
       "student": "salsabila",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-025",
+      "id": "kas-agustus-arjasena",
       "type": "income",
       "category": "kas",
-      "student": "satria",
+      "student": "arjasena",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-026",
+      "id": "kas-agustus-surya",
       "type": "income",
       "category": "kas",
       "student": "surya",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-027",
+      "id": "kas-agustus-tania",
       "type": "income",
       "category": "kas",
-      "student": "wisnu",
+      "student": "tania",
       "amount": 10000,
       "month": "Agustus",
       "description": "Kas Agustus",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-028",
+      "id": "kas-agustus-yoga",
       "type": "income",
       "category": "kas",
-      "student": "alvian",
+      "student": "yoga",
       "amount": 10000,
-      "month": "September",
-      "description": "Kas September",
-      "source": "initial-table"
+      "month": "Agustus",
+      "description": "Kas Agustus",
+      "source": "class-checklist"
     },
     {
-      "id": "initial-029",
-      "type": "income",
-      "category": "kas",
-      "student": "avisha",
-      "amount": 10000,
-      "month": "September",
-      "description": "Kas September",
-      "source": "initial-table"
-    },
-    {
-      "id": "initial-030",
-      "type": "income",
-      "category": "kas",
-      "student": "effan",
-      "amount": 10000,
-      "month": "September",
-      "description": "Kas September",
-      "source": "initial-table"
-    },
-    {
-      "id": "initial-031",
-      "type": "income",
-      "category": "kas",
-      "student": "fathian",
-      "amount": 10000,
-      "month": "September",
-      "description": "Kas September",
-      "source": "initial-table"
-    },
-    {
-      "id": "initial-032",
+      "id": "kas-september-sadam",
       "type": "income",
       "category": "kas",
       "student": "sadam",
       "amount": 10000,
       "month": "September",
       "description": "Kas September",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "initial-033",
+      "id": "kas-september-almira",
       "type": "income",
       "category": "kas",
-      "student": "brella",
+      "student": "almira",
+      "amount": 10000,
+      "month": "September",
+      "description": "Kas September",
+      "source": "class-checklist"
+    },
+    {
+      "id": "kas-september-alvian",
+      "type": "income",
+      "category": "kas",
+      "student": "alvian",
+      "amount": 10000,
+      "month": "September",
+      "description": "Kas September",
+      "source": "class-checklist"
+    },
+    {
+      "id": "kas-september-avisha",
+      "type": "income",
+      "category": "kas",
+      "student": "avisha",
+      "amount": 10000,
+      "month": "September",
+      "description": "Kas September",
+      "source": "class-checklist"
+    },
+    {
+      "id": "kas-september-orlen",
+      "type": "income",
+      "category": "kas",
+      "student": "orlen",
+      "amount": 10000,
+      "month": "September",
+      "description": "Kas September",
+      "source": "class-checklist"
+    },
+    {
+      "id": "kas-september-effan",
+      "type": "income",
+      "category": "kas",
+      "student": "effan",
+      "amount": 10000,
+      "month": "September",
+      "description": "Kas September",
+      "source": "class-checklist"
+    },
+    {
+      "id": "kas-september-fathian",
+      "type": "income",
+      "category": "kas",
+      "student": "fathian",
+      "amount": 10000,
+      "month": "September",
+      "description": "Kas September",
+      "source": "class-checklist"
+    },
+    {
+      "id": "kas-oktober-almira",
+      "type": "income",
+      "category": "kas",
+      "student": "almira",
       "amount": 10000,
       "month": "Oktober",
       "description": "Kas Oktober",
-      "source": "initial-table"
+      "source": "class-checklist"
     },
     {
-      "id": "tx-1790091400599",
+      "id": "kas-oktober-orlen",
       "type": "income",
       "category": "kas",
-      "student": "yusuf",
-      "amount": 1,
-      "month": "September",
-      "description": "Kas September",
-      "source": "whatsapp-bot",
-      "created_at": "2026-09-22T15:36:40.599Z"
+      "student": "orlen",
+      "amount": 10000,
+      "month": "Oktober",
+      "description": "Kas Oktober",
+      "source": "class-checklist"
     },
     {
       "id": "initial-poe-aisahra",
