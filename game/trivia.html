@@ -17,7 +17,7 @@ async function start(cat,level){
   if(active)return;
   $('game').innerHTML='<div class="text-center py-12"><div class="text-3xl animate-pulse">🧠</div><p class="text-sm text-slate-400 mt-3">Membuat soal...</p></div>';
   try{
-    const res=await fetch('../api/trivia.js',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kategori:cat,level})});
+    const res=await fetch('/api/trivia',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kategori:cat,level})});
     const data=await res.json();
     if(!res.ok||!data.ok)throw new Error(data.error||'Gagal membuat soal.');
     active={cat,level,answer:data.options.findIndex(x=>x.correct),answerText:data.options.find(x=>x.correct).text,reward:data.reward,left:60};
