@@ -80,12 +80,33 @@ function verifyTeacherToken(token) {
 }
 
 export default async function handler(req, res) {
-    if (!process.env.GITHUB_TOKEN || !process.env.TEACHER_PINS || !process.env.TEACHER_SECRET) {
+    if (!process.env.GITHUB_TOKEN || !process.env.TEACHER_PINS || !process.env.TEACHER_SECRET || !process.env.BOT_API_SECRET) {
         return res.status(500).json({ error: 'Sistem guru belum dikonfigurasi.' });
     }
 
     try {
         if (req.method === 'GET') {
+            const notify = String(req.query?.notify || '').trim();
+
+            // Jalur khusus bot: data pelanggaran baru tidak dibuka ke publik.
+            if (notify === '1') {
+                const auth = String(req.headers.authorization || '');
+                const expected = process.env.BOT_API_SECRET;
+
+                if (!expected || auth !== 'Bearer ' + expected) {
+                    return res.status(401).json({ error: 'Bot authentication required.' });
+                }
+
+                const after = String(req.query?.after || '').trim();
+                const { data } = await readJsonFile();
+
+                const violations = after
+                    ? data.filter(item => String(item.created_at || '') > after)
+                    : data;
+
+                return res.status(200).json({ violations });
+            }
+
             const student = String(req.query?.student || '').trim();
             const { data } = await readJsonFile();
 
