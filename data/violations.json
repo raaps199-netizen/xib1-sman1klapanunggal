@@ -37,5 +37,18 @@
     "date": "2026-09-24",
     "time": "15:32:27",
     "created_at": "2026-09-24T08:32:27.860Z"
+  },
+  {
+    "id": "vio-1790321824469",
+    "student": "rafif",
+    "student_name": "Ahmad Rafif Hidayat",
+    "category": "Kedisiplinan & Pembelajaran",
+    "violation": "Keluar kelas tanpa izin",
+    "reported_by": "teacher",
+    "reported_by_name": "Bu Assyifa",
+    "subject": "Fisika",
+    "date": "2026-09-25",
+    "time": "14:37:04",
+    "created_at": "2026-09-25T07:37:04.441Z"
   }
 ]
