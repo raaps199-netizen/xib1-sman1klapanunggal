@@ -50,5 +50,18 @@
     "date": "2026-09-25",
     "time": "14:37:04",
     "created_at": "2026-09-25T07:37:04.441Z"
+  },
+  {
+    "id": "vio-1790323075066",
+    "student": "rafif",
+    "student_name": "Ahmad Rafif Hidayat",
+    "category": "Lainnya",
+    "violation": "test",
+    "reported_by": "teacher",
+    "reported_by_name": "Bu Assyifa",
+    "subject": "Fisika",
+    "date": "2026-09-25",
+    "time": "14:57:55",
+    "created_at": "2026-09-25T07:57:55.036Z"
   }
 ]
