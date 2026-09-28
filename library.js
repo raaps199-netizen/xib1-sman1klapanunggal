@@ -1,6 +1,6 @@
 const Library=(()=>{
 const API='/api/library';
-const session=()=>{try{const p=JSON.parse(sessionStorage.getItem('bionestSession')||'null');return{profile:p,username:p?.username||'',password_sha256:sessionStorage.getItem('bionestAuthHash')||''};}catch{return{profile:null,username:'',password_sha256:''}}};
+const session=()=>{try{const p=JSON.parse(sessionStorage.getItem('bionestSession')||localStorage.getItem('bionestSession')||'null');return{profile:p,username:p?.username||'',password_sha256:sessionStorage.getItem('bionestAuthHash')||localStorage.getItem('bionestAuthHash')||''};}catch{return{profile:null,username:'',password_sha256:''}}};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const formatDate=v=>new Intl.DateTimeFormat('id-ID',{dateStyle:'medium'}).format(new Date(v));
 const size=b=>{if(!b)return'0 B';const u=['B','KB','MB'];let n=b,i=0;while(n>=1024&&i<u.length-1){n/=1024;i++;}return n.toFixed(i?1:0)+' '+u[i]};
