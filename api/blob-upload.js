@@ -22,7 +22,10 @@ export default async function handler(req,res){
   if(!process.env.GITHUB_TOKEN) return res.status(500).json({error:'GITHUB_TOKEN belum dipasang.'});
   try{
     const body=typeof req.body==='string'?JSON.parse(req.body):(req.body||{});
+    if(!body || !body.type || !body.payload) throw new Error('Payload upload Blob tidak valid.');
+    if(!process.env.BLOB_READ_WRITE_TOKEN) throw new Error('BLOB_READ_WRITE_TOKEN belum tersedia di deployment.');
     const jsonResponse=await handleUpload({
+      token:process.env.BLOB_READ_WRITE_TOKEN,
       body,
       request:req,
       onBeforeGenerateToken:async(pathname,clientPayload)=>{
