@@ -537,7 +537,7 @@
 
     let loggedIn = false;
     try {
-        loggedIn = !!JSON.parse(sessionStorage.getItem('bionestSession') || 'null');
+        loggedIn = !!JSON.parse(sessionStorage.getItem('bionestSession') || localStorage.getItem('bionestSession') || 'null');
     } catch {}
 
     const accessChoice = localStorage.getItem('bionestEntryChoice');
