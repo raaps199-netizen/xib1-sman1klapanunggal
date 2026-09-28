@@ -20,7 +20,7 @@ async function hashPassword(value) {
 
 function getStoredProfile() {
     try {
-        return JSON.parse(sessionStorage.getItem('bionestSession') || 'null');
+        return JSON.parse(sessionStorage.getItem('bionestSession') || localStorage.getItem('bionestSession') || 'null');
     } catch {
         return null;
     }
@@ -30,6 +30,9 @@ function saveStoredProfile(profile) {
     sessionStorage.setItem('bionestSession', JSON.stringify(profile));
     sessionStorage.setItem('bionestRole', profile.role);
     sessionStorage.setItem('bionestAccess', 'member');
+    localStorage.setItem('bionestSession', JSON.stringify(profile));
+    localStorage.setItem('bionestRole', profile.role);
+    localStorage.setItem('bionestAccess', 'member');
 }
 
 function buildSession(profile) {
@@ -51,6 +54,7 @@ async function loginWithUsername(username, password) {
 
     const profile = { ...account };
     sessionStorage.setItem('bionestAuthHash', account.password_sha256);
+    localStorage.setItem('bionestAuthHash', account.password_sha256);
     delete profile.password_sha256;
     saveStoredProfile(profile);
     return profile;
@@ -64,6 +68,10 @@ window.supabaseClient = {
         },
         async signOut() {
             sessionStorage.clear();
+            localStorage.removeItem('bionestSession');
+            localStorage.removeItem('bionestRole');
+            localStorage.removeItem('bionestAccess');
+            localStorage.removeItem('bionestAuthHash');
             return { error: null };
         }
     },
@@ -128,7 +136,7 @@ window.supabaseClient = {
 
 async function updateProfile(updates) {
     const profile = getStoredProfile();
-    const password_sha256 = sessionStorage.getItem('bionestAuthHash');
+    const password_sha256 = sessionStorage.getItem('bionestAuthHash') || localStorage.getItem('bionestAuthHash');
     if (!profile || !password_sha256) throw new Error('Sesi login sudah tidak valid.');
 
     const response = await fetch('/api/profile', {
