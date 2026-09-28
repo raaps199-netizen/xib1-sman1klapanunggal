@@ -46,7 +46,7 @@ export default async function handler(req, res) {
             if (!title || !content) return res.status(400).json({ error: 'Judul dan isi tulisan wajib diisi.' });
             if (content.length > 500000) return res.status(400).json({ error: 'Tulisan terlalu besar.' });
             const id = 'article-' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
-            const item = { id, type:'article', title, category, excerpt, author:account.full_name || account.username, author_username:account.username, content, status:'published', created_at:new Date().toISOString() };
+            const item = { id, type:'article', title, category, excerpt, author:account.full_name || account.username, author_username:account.username, content, status:'pending', created_at:new Date().toISOString() };
             const data = await readLibrary(); data.items.unshift(item); await writeLibrary(data.items, data.sha, 'library: publish article ' + id); return res.status(200).json({ ok:true, item });
         }
         if (action === 'upload_file') {
