@@ -529,5 +529,37 @@
     <!-- JAVASCRIPT LOGIC -->
     <script src="auth.js"></script>
     <script src="script.js"></script>
+<script>
+(() => {
+    const gate = document.getElementById('memberGate');
+    const memberBtn = document.getElementById('memberYesBtn');
+    const visitorBtn = document.getElementById('visitorBtn');
+
+    let loggedIn = false;
+    try {
+        loggedIn = !!JSON.parse(sessionStorage.getItem('bionestSession') || 'null');
+    } catch {}
+
+    const accessChoice = localStorage.getItem('bionestEntryChoice');
+
+    if (!loggedIn && !accessChoice) {
+        gate.classList.remove('hidden');
+        gate.classList.add('flex');
+    }
+
+    memberBtn?.addEventListener('click', () => {
+        localStorage.setItem('bionestEntryChoice', 'member');
+        window.location.href = 'login.html';
+    });
+
+    visitorBtn?.addEventListener('click', () => {
+        localStorage.setItem('bionestEntryChoice', 'visitor');
+        gate.classList.add('hidden');
+        gate.classList.remove('flex');
+    });
+
+    if (window.lucide) lucide.createIcons();
+})();
+</script>
 </body>
 </html>
