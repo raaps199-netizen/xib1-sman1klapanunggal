@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
     if (!['GET','POST'].includes(req.method)) return res.status(405).json({ error: 'Method tidak diizinkan.' });
     const token = process.env.GITHUB_TOKEN;
-    if (!token) return res.status(500).json({ error: 'Server belum dikonfigurasi untuk Library.' });
+    if (!token) return res.status(500).json({ error: 'GITHUB_TOKEN belum dipasang di Vercel. Tambahkan token repository ke Environment Variables.' });
     const ROOT = 'https://api.github.com/repos/raaps199-netizen/xib1-sman1klapanunggal/contents/';
     const headers = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'Bionest-One-Library' };
     const jsonPath = 'data/library.json';
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
             const title=String(body.title||'').trim(), category=String(body.category||'Dokumen').trim(), description=String(body.description||'').trim(), filename=String(body.filename||'').trim().replace(/[^a-zA-Z0-9._-]/g,'-'), mime=String(body.mime||''), base64=String(body.file_base64||'').replace(/^data:[^;]+;base64,/,'');
             if (!title || !filename || !base64) return res.status(400).json({ error:'Judul dan file wajib diisi.' });
             if (!['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(mime)) return res.status(400).json({ error:'Format hanya PDF, DOC, atau DOCX.' });
-            const bytes=Buffer.byteLength(base64,'base64'); if(bytes>3*1024*1024) return res.status(400).json({error:'Ukuran file maksimal 3 MB.'});
+            const bytes=Buffer.byteLength(base64,'base64'); if(bytes>2.5*1024*1024) return res.status(400).json({error:'Ukuran file maksimal 2.5 MB untuk upload lewat serverless.'});
             const id='file-'+Date.now()+'-'+Math.random().toString(36).slice(2,8), path='assets/library/files/'+id+'-'+filename;
             const upload=await fetch(ROOT+path,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({message:'library: upload '+filename,content:base64,branch:'main'})});
             if(!upload.ok){const d=await upload.json().catch(()=>({}));throw new Error(d.message||'Gagal mengunggah file ke GitHub.');}
