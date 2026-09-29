@@ -1,6 +1,21 @@
 {
-  "updated_at": "2026-09-29T08:52:36.553Z",
+  "updated_at": "2026-09-29T10:23:41.871Z",
   "items": [
+    {
+      "id": "file-1790677421753-jm3m0z",
+      "type": "file",
+      "title": "Bab 3 B Indonesia Cerita Pendek",
+      "category": "Materi",
+      "description": "",
+      "author": "M. Daffa Azalia",
+      "author_username": "daffa",
+      "filename": "Bab-3-Cerita-Pendek-Kelas-XI.pdf",
+      "mime": "application/pdf",
+      "size": 299342,
+      "blob_url": "https://8j8dqwggxj1nxhbo.public.blob.vercel-storage.com/library/1790677419077-Bab-3-Cerita-Pendek-Kelas-XI-BbvKHFmJKR1akOD7UVLk7BEkorj4hc.pdf",
+      "status": "pending",
+      "created_at": "2026-09-29T10:23:41.871Z"
+    },
     {
       "id": "article-1790671893076-jehk1q",
       "type": "article",
