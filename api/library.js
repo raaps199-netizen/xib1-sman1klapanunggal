@@ -2,16 +2,21 @@ import { del } from '@vercel/blob';
 export default async function handler(req, res) {
     if (!['GET','POST'].includes(req.method)) return res.status(405).json({ error: 'Method tidak diizinkan.' });
     const token = process.env.GITHUB_TOKEN;
-    if (!token) return res.status(500).json({ error: 'GITHUB_TOKEN belum dipasang di Vercel. Tambahkan token repository ke Environment Variables.' });
     const ROOT = 'https://api.github.com/repos/raaps199-netizen/xib1-sman1klapanunggal/contents/';
     const headers = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'Bionest-One-Library' };
     const jsonPath = 'data/library.json';
+    async function readPublicLibrary() {
+        const r = await fetch('https://raw.githubusercontent.com/raaps199-netizen/xib1-sman1klapanunggal/main/data/library.json', { headers: { 'Cache-Control': 'max-age=60' } });
+        if (!r.ok) throw new Error('Database Library tidak dapat dibaca.');
+        const data = await r.json();
+        return data.items || [];
+    }
     async function githubFile(path) { const r = await fetch(ROOT + path, { headers }); if (r.status === 404) return null; if (!r.ok) throw new Error('Database Library GitHub tidak dapat dibaca.'); return r.json(); }
     async function readLibrary() { const file = await githubFile(jsonPath); if (!file) return { items: [], sha: null }; const raw = Buffer.from(file.content.replace(/\n/g, ''), 'base64').toString('utf8'); return { items: JSON.parse(raw).items || [], sha: file.sha }; }
     async function writeLibrary(items, sha, message) { const content = Buffer.from(JSON.stringify({ updated_at: new Date().toISOString(), items }, null, 2) + '\n').toString('base64'); const body = { message, content, branch: 'main' }; if (sha) body.sha = sha; const r = await fetch(ROOT + jsonPath, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.message || 'Gagal menyimpan database Library.'); } }
     async function authenticate(body) { const username = String(body.username || '').trim().toLowerCase(); const passwordHash = String(body.password_sha256 || ''); if (!username || !passwordHash) throw new Error('Sesi login tidak valid.'); const accountsFile = await githubFile('data/accounts.json'); const accounts = JSON.parse(Buffer.from(accountsFile.content.replace(/\n/g, ''), 'base64').toString('utf8')); const account = (accounts.members || []).find(item => item.username === username); if (!account || account.password_sha256 !== passwordHash) throw new Error('Sesi login tidak valid.'); return account; }
     try {
-        if (req.method === 'GET') { const data = await readLibrary(); const botKey = String(req.headers['x-library-bot-key'] || req.query?.key || ''); if (req.query?.pending === '1') { if (!process.env.LIBRARY_BOT_KEY || botKey !== process.env.LIBRARY_BOT_KEY) return res.status(403).json({ error: 'Akses bot ditolak.' }); return res.status(200).json({ items: data.items.filter(item => item.status === 'pending') }); } return res.status(200).json({ items: data.items.filter(item => item.status === 'published') }); }
+        if (req.method === 'GET') { const botKey = String(req.headers['x-library-bot-key'] || req.query?.key || ''); const items = (req.query?.pending === '1' ? (await readLibrary()).items : await readPublicLibrary()); const data = { items }; if (req.query?.pending === '1') { if (!process.env.LIBRARY_BOT_KEY || botKey !== process.env.LIBRARY_BOT_KEY) return res.status(403).json({ error: 'Akses bot ditolak.' }); return res.status(200).json({ items: data.items.filter(item => item.status === 'pending') }); } return res.status(200).json({ items: data.items.filter(item => item.status === 'published') }); }
         const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
         const action = String(body.action || '').trim();
         if (action === 'moderate') {
