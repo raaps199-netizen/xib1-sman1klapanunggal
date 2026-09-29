@@ -1,7 +1,7 @@
 import { handleUpload } from '@vercel/blob/client';
 
 const ROOT='https://api.github.com/repos/raaps199-netizen/xib1-sman1klapanunggal/contents/';
-const headers=()=>({Authorization:'Bearer '+process.env.GITHUB_TOKEN,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'Bionest-One-Library'});
+const headers=()=>{const h={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'Bionest-One-Library'};if(process.env.GITHUB_TOKEN)h.Authorization='Bearer '+process.env.GITHUB_TOKEN;return h;};
 
 async function accountFromPayload(clientPayload){
   const payload=JSON.parse(clientPayload||'{}');
@@ -19,7 +19,6 @@ async function accountFromPayload(clientPayload){
 
 export default async function handler(req,res){
   if(req.method!=='POST') return res.status(405).json({error:'Method tidak diizinkan.'});
-  if(!process.env.GITHUB_TOKEN) return res.status(500).json({error:'GITHUB_TOKEN belum dipasang.'});
   try{
     const body=typeof req.body==='string'?JSON.parse(req.body):(req.body||{});
     if(!body || !body.type || !body.payload) throw new Error('Payload upload Blob tidak valid.');
@@ -48,6 +47,6 @@ export default async function handler(req,res){
     const jsonResponse=await handleUpload(uploadOptions);
     return res.status(200).json(jsonResponse);
   }catch(error){
-    return res.status(400).json({error:error.message||'Gagal menyiapkan upload.'});
+    console.error('Library Blob token error:',error);return res.status(400).json({error:error.message||'Gagal menyiapkan upload.'});
   }
 }
