@@ -1,4 +1,17 @@
 {
-  "updated_at": null,
-  "items": []
+  "updated_at": "2026-09-29T08:51:33.186Z",
+  "items": [
+    {
+      "id": "article-1790671893076-jehk1q",
+      "type": "article",
+      "title": "Test 123",
+      "category": "Artikel",
+      "excerpt": "Test",
+      "author": "M. Daffa Azalia",
+      "author_username": "daffa",
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vehicula lacus sed turpis rhoncus efficitur. Ut posuere sem accumsan, rhoncus felis vel, iaculis ante. Etiam vel enim tempor, rhoncus diam nec, pharetra neque. Cras hendrerit lacus nec tempor facilisis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed aliquet dolor ut nisi feugiat fermentum eget ac lacus. Suspendisse lorem ex, dapibus et ante ut, mollis aliquam eros. Pellentesque vulputate, mauris vel elementum posuere, risus enim lobortis tellus, id pellentesque quam erat eget nisi. Maecenas et est vitae lacus finibus commodo sed in nunc. Nam sit amet lorem mauris.<div><br></div><blockquote>Phasellus vel magna neque. Mauris venenatis ex semper libero ullamcorper posuere. Mauris ac neque nec ex suscipit finibus. Morbi in finibus ex. Sed tempus sollicitudin ex, quis vestibulum urna dictum ut. Sed vehicula nisl eget pulvinar ullamcorper. Nulla facilisi. Morbi viverra massa non ipsum fermentum, at rutrum eros iaculis. Ut id ligula purus. Sed sed maximus mauris. Sed risus est, malesuada in pretium sit amet, lacinia nec enim. Mauris egestas, orci at rutrum dapibus, risus lectus bibendum augue, in pharetra mi sapien eget velit. Vivamus consectetur mauris quis augue sagittis, eu venenatis purus commodo. Sed ac justo lacinia, consectetur ex quis, bibendum urna. Sed vel arcu nec tellus maximus pellentesque.</blockquote>",
+      "status": "pending",
+      "created_at": "2026-09-29T08:51:33.076Z"
+    }
+  ]
 }
