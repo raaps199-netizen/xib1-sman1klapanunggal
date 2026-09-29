@@ -5,11 +5,21 @@ export default async function handler(req, res) {
     const ROOT = 'https://api.github.com/repos/raaps199-netizen/xib1-sman1klapanunggal/contents/';
     const headers = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'Bionest-One-Library' };
     const jsonPath = 'data/library.json';
+    const publicJsonPath = 'data/library-public.json';
     async function readPublicLibrary() {
-        const r = await fetch('https://raw.githubusercontent.com/raaps199-netizen/xib1-sman1klapanunggal/main/data/library.json', { headers: { 'Cache-Control': 'max-age=60' } });
-        if (!r.ok) throw new Error('Database Library tidak dapat dibaca.');
+        const r = await fetch('https://raw.githubusercontent.com/raaps199-netizen/xib1-sman1klapanunggal/main/data/library-public.json', { headers: { 'Cache-Control': 'max-age=60' } });
+        if (!r.ok) throw new Error('Database Library publik tidak dapat dibaca.');
         const data = await r.json();
         return data.items || [];
+    }
+    async function writePublicLibrary(items, message) {
+        const file = await githubFile(publicJsonPath);
+        const publicItems = items.filter(item => item.status === 'published');
+        const content = Buffer.from(JSON.stringify({ updated_at: new Date().toISOString(), items: publicItems }, null, 2) + '\\n').toString('base64');
+        const body = { message, content, branch: 'main' };
+        if (file) body.sha = file.sha;
+        const r = await fetch(ROOT + publicJsonPath, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.message || 'Gagal memperbarui index publik Library.'); }
     }
     async function githubFile(path) { const r = await fetch(ROOT + path, { headers }); if (r.status === 404) return null; if (!r.ok) throw new Error('Database Library GitHub tidak dapat dibaca.'); return r.json(); }
     async function readLibrary() { const file = await githubFile(jsonPath); if (!file) return { items: [], sha: null }; const raw = Buffer.from(file.content.replace(/\n/g, ''), 'base64').toString('utf8'); return { items: JSON.parse(raw).items || [], sha: file.sha }; }
@@ -36,6 +46,7 @@ export default async function handler(req, res) {
             }
             item.status='published'; item.published_at=new Date().toISOString();
             await writeLibrary(data.items,data.sha,'library: approve '+id);
+            await writePublicLibrary(data.items,'library: refresh public index '+id);
             try{
                 const annPath='data/announcements.json'; const annFile=await githubFile(annPath);
                 const announcements=JSON.parse(Buffer.from(annFile.content.replace(/\\n/g,''),'base64').toString('utf8'));
@@ -63,7 +74,7 @@ export default async function handler(req, res) {
             const id='file-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
             const data=await readLibrary(); const item={id,type:'file',title,category,description,author:account.full_name||account.username,author_username:account.username,filename,mime,size:bytes,blob_url:blobUrl,status:'pending',created_at:new Date().toISOString()}; data.items.unshift(item); await writeLibrary(data.items,data.sha,'library: register file '+id); return res.status(200).json({ok:true,item});
         }
-        if(action==='delete'){const id=String(body.id||'').trim();const data=await readLibrary();const item=data.items.find(x=>x.id===id);if(!item)return res.status(404).json({error:'Item tidak ditemukan.'});if(item.author_username!==account.username&&account.role!=='super_admin')return res.status(403).json({error:'Lu tidak punya akses menghapus item ini.'});if(item.blob_url){try{await del(item.blob_url);}catch(e){console.error('Blob delete failed:',e);}} else if(item.path){const file=await githubFile(item.path);if(file){const r=await fetch(ROOT+item.path,{method:'DELETE',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({message:'library: delete '+id,sha:file.sha,branch:'main'})});if(!r.ok)throw new Error('File gagal dihapus dari GitHub.');}}await writeLibrary(data.items.filter(x=>x.id!==id),data.sha,'library: remove '+id);return res.status(200).json({ok:true});}
+        if(action==='delete'){const id=String(body.id||'').trim();const data=await readLibrary();const item=data.items.find(x=>x.id===id);if(!item)return res.status(404).json({error:'Item tidak ditemukan.'});if(item.author_username!==account.username&&account.role!=='super_admin')return res.status(403).json({error:'Lu tidak punya akses menghapus item ini.'});const wasPublished=item.status==='published';if(item.blob_url){try{await del(item.blob_url);}catch(e){console.error('Blob delete failed:',e);}} else if(item.path){const file=await githubFile(item.path);if(file){const r=await fetch(ROOT+item.path,{method:'DELETE',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({message:'library: delete '+id,sha:file.sha,branch:'main'})});if(!r.ok)throw new Error('File gagal dihapus dari GitHub.');}}const remaining=data.items.filter(x=>x.id!==id);await writeLibrary(remaining,data.sha,'library: remove '+id);if(wasPublished) await writePublicLibrary(remaining,'library: refresh public index after delete '+id);return res.status(200).json({ok:true});}
         return res.status(400).json({error:'Aksi Library tidak dikenal.'});
     } catch(error) { return res.status(500).json({error:error.message||'Terjadi kesalahan pada Library.'}); }
 }
