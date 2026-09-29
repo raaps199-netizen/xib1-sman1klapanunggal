@@ -23,9 +23,7 @@ export default async function handler(req,res){
   try{
     const body=typeof req.body==='string'?JSON.parse(req.body):(req.body||{});
     if(!body || !body.type || !body.payload) throw new Error('Payload upload Blob tidak valid.');
-    if(!process.env.BLOB_READ_WRITE_TOKEN) throw new Error('BLOB_READ_WRITE_TOKEN belum tersedia di deployment.');
-    const jsonResponse=await handleUpload({
-      token:process.env.BLOB_READ_WRITE_TOKEN,
+    const uploadOptions={
       body,
       request:req,
       onBeforeGenerateToken:async(pathname,clientPayload)=>{
@@ -45,7 +43,9 @@ export default async function handler(req,res){
       onUploadCompleted:async({blob})=>{
         console.log('Library Blob upload completed:',blob.url);
       }
-    });
+    };
+    if(process.env.BLOB_READ_WRITE_TOKEN) uploadOptions.token=process.env.BLOB_READ_WRITE_TOKEN;
+    const jsonResponse=await handleUpload(uploadOptions);
     return res.status(200).json(jsonResponse);
   }catch(error){
     return res.status(400).json({error:error.message||'Gagal menyiapkan upload.'});
