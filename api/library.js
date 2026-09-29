@@ -52,7 +52,7 @@ export default async function handler(req, res) {
         }
         if (action === 'upload_file') {
             const title=String(body.title||'').trim(), category=String(body.category||'Dokumen').trim(), description=String(body.description||'').trim(), filename=String(body.filename||'').trim().replace(/[^a-zA-Z0-9._-]/g,'-'), mime=String(body.mime||''), base64=String(body.file_base64||'').replace(/^data:[^;]+;base64,/,'');
-            if (!title || !filename || !base64) return res.status(400).json({ error:'Judul dan file wajib diisi.' });
+            if (!title || !filename) return res.status(400).json({ error:'Judul dan file wajib diisi.' });
             if (!['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(mime)) return res.status(400).json({ error:'Format hanya PDF, DOC, atau DOCX.' });
             const blobUrl=String(body.blob_url||'').trim(); const bytes=Number(body.size||0); if(!blobUrl) return res.status(400).json({error:'Upload file belum selesai.'}); if(!bytes||bytes>10*1024*1024) return res.status(400).json({error:'Ukuran file maksimal 10 MB.'});
             const id='file-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
