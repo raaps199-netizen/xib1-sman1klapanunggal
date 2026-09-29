@@ -3,10 +3,57 @@
 <body class="bg-techDark text-slate-100 font-sans antialiased bg-grid min-h-screen"><nav class="fixed top-0 w-full z-50 bg-techDark/85 backdrop-blur-md border-b border-cyan-500/20"><div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between"><a href="library.html" class="text-sm text-cyan-300 hover:text-white">← Library</a><span class="text-xs text-slate-600">DOCUMENT UPLOAD</span></div></nav>
 <main class="pt-28 pb-20 max-w-3xl mx-auto px-5"><p class="text-xs text-techCyan uppercase tracking-[.3em] font-mono">LIBRARY / UPLOAD</p><h1 class="text-3xl font-black mt-2">Upload dokumen</h1><p class="text-sm text-slate-500 mt-2">PDF, DOC, atau DOCX. Maksimal 10 MB per file. Setelah upload, file akan menunggu konfirmasi admin.</p>
 <div class="mt-7 p-6 rounded-2xl bg-techCard border border-slate-800 space-y-4"><input id="title" class="w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-700 outline-none focus:border-techCyan/50" placeholder="Judul dokumen"><select id="category" class="w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-700"><option>Materi</option><option>Tugas</option><option>Modul</option><option>Dokumen</option></select><textarea id="description" rows="4" class="w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-700 outline-none" placeholder="Deskripsi"></textarea><label class="block p-7 rounded-2xl border border-dashed border-cyan-500/25 bg-slate-950/30 text-center cursor-pointer hover:bg-cyan-950/10"><i data-lucide="file-up" class="w-8 h-8 mx-auto text-techCyan"></i><p id="filename" class="text-sm font-bold mt-3">Pilih PDF / DOC / DOCX</p><input id="file" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden"></label><div class="flex justify-between items-center"><span id="status" class="text-xs text-slate-500"></span><button id="upload" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-black">Upload</button></div></div></main>
-<script src="library.js"></script><script type="module">import { upload as blobUpload } from "https://esm.sh/@vercel/blob@2.8.0/client";
-
+<script src="library.js"></script><script type="module">
 const fileInput=document.getElementById('file'),filenameEl=document.getElementById('filename'),uploadBtn=document.getElementById('upload'),statusEl=document.getElementById('status');
 fileInput.onchange=()=>filenameEl.textContent=fileInput.files[0]?fileInput.files[0].name:'Pilih PDF / DOC / DOCX';
-uploadBtn.onclick=async()=>{try{const f=fileInput.files[0],a=Library.session();if(!a.username||!a.password_sha256)throw new Error('Login dulu untuk upload.');if(!f)throw new Error('Pilih file dulu.');if(f.size>10*1024*1024)throw new Error('Ukuran file maksimal 10 MB.');uploadBtn.disabled=true;statusEl.textContent='Mengunggah 0%...';const blob=await blobUpload('library/'+Date.now()+'-'+f.name.replace(/[^a-zA-Z0-9._-]/g,'-'),f,{access:'public',handleUploadUrl:'/api/blob-upload',clientPayload:JSON.stringify({username:a.username,password_sha256:a.password_sha256}),multipart:true,onUploadProgress:e=>{statusEl.textContent='Mengunggah '+Math.round(e.percentage)+'%...'}});statusEl.textContent='Menyimpan data Library...';await Library.request({action:'upload_file',title:title.value,category:category.value,description:description.value,filename:f.name,mime:f.type,size:f.size,blob_url:blob.url});statusEl.textContent='Upload diterima. Menunggu konfirmasi admin.';setTimeout(()=>location.href='library.html',1200)}catch(e){statusEl.textContent=e.message||'Upload gagal.';uploadBtn.disabled=false}};
+
+uploadBtn.onclick=async()=>{
+  try{
+    const f=fileInput.files[0],a=Library.session();
+    if(!a.username||!a.password_sha256) throw new Error('Login dulu untuk upload.');
+    if(!f) throw new Error('Pilih file dulu.');
+    if(f.size>10*1024*1024) throw new Error('Ukuran file maksimal 10 MB.');
+    const allowed=['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if(!allowed.includes(f.type)) throw new Error('Format file tidak didukung.');
+    uploadBtn.disabled=true;
+    const safeName=f.name.replace(/[^a-zA-Z0-9._-]/g,'-');
+    const pathname='library/'+Date.now()+'-'+safeName;
+    statusEl.textContent='Menyiapkan upload...';
+
+    const tokenRes=await fetch('/api/blob-presign',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        pathname,
+        clientPayload:JSON.stringify({username:a.username,password_sha256:a.password_sha256}),
+        contentType:f.type,
+        size:f.size
+      })
+    });
+    const tokenData=await tokenRes.json();
+    if(!tokenRes.ok||!tokenData.presignedUrl) throw new Error(tokenData.error||'Gagal menyiapkan upload Blob.');
+
+    statusEl.textContent='Mengunggah 0%...';
+    const xhr=new XMLHttpRequest();
+    await new Promise((resolve,reject)=>{
+      xhr.open('PUT',tokenData.presignedUrl);
+      xhr.setRequestHeader('Content-Type',f.type);
+      xhr.upload.onprogress=e=>{if(e.lengthComputable)statusEl.textContent='Mengunggah '+Math.round(e.loaded/e.total*100)+'%...'};
+      xhr.onload=()=>xhr.status>=200&&xhr.status<300?resolve():reject(new Error('Upload Blob gagal (HTTP '+xhr.status+').'));
+      xhr.onerror=()=>reject(new Error('Koneksi ke Vercel Blob gagal.'));
+      xhr.onabort=()=>reject(new Error('Upload dibatalkan.'));
+      xhr.send(f);
+    });
+
+    const blobUrl=tokenData.presignedUrl.split('?')[0];
+    statusEl.textContent='Menyimpan data Library...';
+    await Library.request({action:'upload_file',title:title.value,category:category.value,description:description.value,filename:f.name,mime:f.type,size:f.size,blob_url:blobUrl});
+    statusEl.textContent='Upload diterima. Menunggu konfirmasi admin.';
+    setTimeout(()=>location.href='library.html',1200);
+  }catch(e){
+    statusEl.textContent=e.message||'Upload gagal.';
+    uploadBtn.disabled=false;
+  }
+};
 lucide.createIcons();
 </script></body></html>
