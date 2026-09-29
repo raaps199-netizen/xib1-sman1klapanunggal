@@ -236,3 +236,62 @@
         gap: 0.75rem;
     }
 }
+
+
+/* Desktop / laptop refinement */
+@media (min-width: 1024px) {
+    body {
+        font-size: 16px;
+    }
+
+    .hero-section {
+        min-height: 680px;
+        height: min(82vh, 820px);
+        background-size: cover;
+        background-position: center 38%;
+    }
+
+    .hero-content {
+        max-width: 980px;
+        padding: 2rem;
+    }
+
+    .hero-title {
+        font-size: clamp(4.5rem, 7vw, 7rem);
+        line-height: .95;
+    }
+
+    .hero-motto {
+        font-size: 1.35rem;
+    }
+
+    section > .max-w-7xl,
+    section > .max-w-6xl,
+    section > .max-w-5xl {
+        width: min(1180px, calc(100% - 3rem));
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1.1rem;
+    }
+
+    .gallery-item {
+        min-height: 240px;
+    }
+
+    .gallery-item.featured,
+    .gallery-item.featured img {
+        min-height: 490px;
+    }
+
+    .gallery-item img {
+        min-height: 240px;
+    }
+}
+
+@media (min-width: 1440px) {
+    .hero-section {
+        height: 820px;
+    }
+}
