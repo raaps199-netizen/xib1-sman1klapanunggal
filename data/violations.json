@@ -89,5 +89,18 @@
     "date": "2026-09-25",
     "time": "15:11:43",
     "created_at": "2026-09-25T08:11:43.782Z"
+  },
+  {
+    "id": "vio-1790732668551",
+    "student": "satria",
+    "student_name": "Satria Putra Pratama",
+    "category": "Kedisiplinan & Pembelajaran",
+    "violation": "Tidur di kelas",
+    "reported_by": "teacher",
+    "reported_by_name": "Pak Feri",
+    "subject": "PKWU",
+    "date": "2026-09-30",
+    "time": "08:44:28",
+    "created_at": "2026-09-30T01:44:28.522Z"
   }
 ]
