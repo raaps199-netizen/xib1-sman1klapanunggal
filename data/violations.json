@@ -115,5 +115,18 @@
     "date": "2026-09-30",
     "time": "08:45:24",
     "created_at": "2026-09-30T01:45:24.169Z"
+  },
+  {
+    "id": "vio-1790732816976",
+    "student": "wisnu",
+    "student_name": "Wisnu Panji Pratama",
+    "category": "Kedisiplinan & Pembelajaran",
+    "violation": "Tidak mengerjakan tugas",
+    "reported_by": "teacher",
+    "reported_by_name": "Pak Feri",
+    "subject": "PKWU",
+    "date": "2026-09-30",
+    "time": "08:46:56",
+    "created_at": "2026-09-30T01:46:56.945Z"
   }
 ]
