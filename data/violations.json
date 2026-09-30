@@ -102,5 +102,18 @@
     "date": "2026-09-30",
     "time": "08:44:28",
     "created_at": "2026-09-30T01:44:28.522Z"
+  },
+  {
+    "id": "vio-1790732724194",
+    "student": "dhirgam",
+    "student_name": "Dhirgam Nawi Hasb Dhiya Ul'Haq",
+    "category": "Kedisiplinan & Pembelajaran",
+    "violation": "Tidak mengerjakan tugas",
+    "reported_by": "teacher",
+    "reported_by_name": "Pak Feri",
+    "subject": "PKWU",
+    "date": "2026-09-30",
+    "time": "08:45:24",
+    "created_at": "2026-09-30T01:45:24.169Z"
   }
 ]
