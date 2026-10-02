@@ -117,7 +117,8 @@ if(!r.ok)throw new Error(d.error||'Data pengumpulan gagal dimuat.');
 state.items=d.students||[];
 state.dataStatus=d.status||'BELUM DIMULAI';
 state.students.clear();state.items.forEach(x=>state.students.set(x.username,x));
-$('dayInfo').textContent='Data: '+d.date+' • '+(d.status||'BELUM DIMULAI')+(d.operator?' • '+d.operator:'');
+const currentOperator=admin()?(session()?.full_name||session()?.username||''):(d.operator||'');
+$('dayInfo').textContent='Data: '+d.date+' • '+(d.status||'BELUM DIMULAI')+(currentOperator?' • '+currentOperator:'');
 $('studentCount').textContent=state.items.length;
 renderList();
 }
