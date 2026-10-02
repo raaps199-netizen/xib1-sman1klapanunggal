@@ -25,7 +25,7 @@
 <span class="px-3 py-1 rounded-full bg-cyan-950 text-cyan-300 text-xs font-mono">SCAN</span>
 </div>
 <div id="reader" class="overflow-hidden rounded-2xl bg-slate-950"></div>
-<button id="startBtn" class="hidden mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Aktifkan Scanner</button>
+<button id="startBtn" class="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Aktifkan Kamera</button>
 
 <div class="mt-5 grid grid-cols-3 gap-2 text-center">
 <div class="rounded-2xl bg-slate-950/60 p-3"><p id="verifiedCount" class="text-xl font-black">0</p><p class="text-[10px] text-slate-500 uppercase">Terverifikasi</p></div>
@@ -251,20 +251,46 @@ btn.textContent='Konfirmasi';
 
 async function startScanner(){
 if(state.running)return;
+const btn=$('startBtn');
+btn.disabled=true;
+btn.textContent='Meminta izin kamera...';
+$('scannerStatus').textContent='Izinkan kamera jika browser meminta akses.';
 try{
 if(!state.scanner)state.scanner=new Html5Qrcode('reader');
-await state.scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:250},aspectRatio:1},onScanSuccess,()=>{});
+let cameraConfig={facingMode:'environment'};
+try{
+const cameras=await Html5Qrcode.getCameras();
+if(cameras&&cameras.length){
+const back=cameras.find(c=>/back|rear|environment|belakang/i.test(c.label||''));
+cameraConfig={deviceId:{exact:(back||cameras[0]).id}};
+}
+}catch(cameraListError){
+console.warn('Daftar kamera tidak tersedia, pakai kamera belakang otomatis.',cameraListError);
+}
+await state.scanner.start(cameraConfig,{fps:10,qrbox:(viewfinderWidth,viewfinderHeight)=>{
+const size=Math.max(180,Math.min(280,Math.floor(Math.min(viewfinderWidth,viewfinderHeight)*0.72)));
+return {width:size,height:size};
+},aspectRatio:1},onScanSuccess,()=>{});
 state.running=true;
-$('scannerStatus').textContent='Kamera aktif. Scan siswa berikutnya.';
-$('startBtn').classList.add('hidden');
+$('scannerStatus').textContent='Kamera aktif. Arahkan ke QR siswa.';
+btn.textContent='Kamera Aktif ✓';
+btn.classList.add('hidden');
 }catch(e){
-console.error(e);
-$('scannerStatus').textContent='Kamera belum aktif.';
-$('startBtn').classList.remove('hidden');
+console.error('Scanner error:',e);
+const msg=String(e&&e.message||e||'Gagal mengaktifkan kamera');
+$('scannerStatus').textContent='Kamera gagal aktif. Cek izin kamera browser lalu tekan tombol lagi.';
+btn.disabled=false;
+btn.textContent='Aktifkan Kamera';
+btn.classList.remove('hidden');
 }
 }
 $('startBtn').onclick=startScanner;
-(async()=>{try{await loadStudents();await startScanner();}catch(e){$('scannerStatus').textContent=e.message||'Gagal memuat data.';$('startBtn').classList.remove('hidden');}})();
+(async()=>{try{
+await loadStudents();
+$('scannerStatus').textContent='Tekan "Aktifkan Kamera" untuk mulai scan.';
+}catch(e){
+$('scannerStatus').textContent=e.message||'Gagal memuat data.';
+}})();
 </script>
 </body>
 </html>
