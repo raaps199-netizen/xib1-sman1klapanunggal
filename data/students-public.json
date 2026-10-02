@@ -1,0 +1,305 @@
+{
+  "updated_at": "2026-10-02T14:47:48.574Z",
+  "items": [
+    {
+      "id": 1,
+      "username": "khafi",
+      "full_name": "Ashabul Khafi",
+      "role": "student"
+    },
+    {
+      "id": 2,
+      "username": "arjasena",
+      "full_name": "Satria Arjasena Maulana",
+      "role": "student"
+    },
+    {
+      "id": 3,
+      "username": "orlen",
+      "full_name": "Danendra Orlen Wasatha",
+      "role": "student"
+    },
+    {
+      "id": 4,
+      "username": "avisha",
+      "full_name": "Avisha Fakhiran Anwar",
+      "role": "student"
+    },
+    {
+      "id": 5,
+      "username": "fareal",
+      "full_name": "Fareal Julyans Zalfine",
+      "role": "student"
+    },
+    {
+      "id": 6,
+      "username": "andrian",
+      "full_name": "Andrian Pranata Tambunan",
+      "role": "student"
+    },
+    {
+      "id": 7,
+      "username": "sadam",
+      "full_name": "Sadam Al Fahri",
+      "role": "student"
+    },
+    {
+      "id": 8,
+      "username": "wisnu",
+      "full_name": "Wisnu Panji Pratama",
+      "role": "student"
+    },
+    {
+      "id": 9,
+      "username": "tania",
+      "full_name": "Tania Fitri Izati",
+      "role": "student"
+    },
+    {
+      "id": 10,
+      "username": "jauharah",
+      "full_name": "Jauharah Tuhfah",
+      "role": "student"
+    },
+    {
+      "id": 11,
+      "username": "keyla",
+      "full_name": "Keyla Ajeng Firmansyah",
+      "role": "student"
+    },
+    {
+      "id": 12,
+      "username": "mikaela",
+      "full_name": "Mikaela Leona",
+      "role": "student"
+    },
+    {
+      "id": 13,
+      "username": "ridho",
+      "full_name": "Ridho Saputra Ependi",
+      "role": "student"
+    },
+    {
+      "id": 14,
+      "username": "rizky",
+      "full_name": "Rizky Dwi Saputra Hidayat",
+      "role": "student"
+    },
+    {
+      "id": 15,
+      "username": "zyella",
+      "full_name": "Zyella Almaira Sigit",
+      "role": "student"
+    },
+    {
+      "id": 16,
+      "username": "nishar",
+      "full_name": "Nishar Soma Maulana",
+      "role": "student"
+    },
+    {
+      "id": 17,
+      "username": "alvian",
+      "full_name": "Alvian Arkan Iniesta",
+      "role": "student"
+    },
+    {
+      "id": 18,
+      "username": "brella",
+      "full_name": "Brela Terta Zafina",
+      "role": "student"
+    },
+    {
+      "id": 19,
+      "username": "fathian",
+      "full_name": "Fathian Khairul Akbar",
+      "role": "student"
+    },
+    {
+      "id": 20,
+      "username": "reno",
+      "full_name": "Reno Ramzi Nararya",
+      "role": "student"
+    },
+    {
+      "id": 21,
+      "username": "lutfan",
+      "full_name": "Lutfan Attaullah Sultoni",
+      "role": "student"
+    },
+    {
+      "id": 22,
+      "username": "rafif",
+      "full_name": "Ahmad Rafif Hidayat",
+      "role": "student"
+    },
+    {
+      "id": 23,
+      "username": "kevin",
+      "full_name": "Kevin Habiyal Huda",
+      "role": "student"
+    },
+    {
+      "id": 24,
+      "username": "arya",
+      "full_name": "Arya Pratama",
+      "role": "student"
+    },
+    {
+      "id": 25,
+      "username": "almira",
+      "full_name": "Al Mira Berlian Handayani",
+      "role": "student"
+    },
+    {
+      "id": 26,
+      "username": "elang",
+      "full_name": "Elang Bari Dermawan",
+      "role": "student"
+    },
+    {
+      "id": 27,
+      "username": "dzaky",
+      "full_name": "Muhammad Dzaky Pradana",
+      "role": "student"
+    },
+    {
+      "id": 28,
+      "username": "aisahra",
+      "full_name": "Aisahra Mayjasti Aulia Putri",
+      "role": "student"
+    },
+    {
+      "id": 29,
+      "username": "satria",
+      "full_name": "Satria Putra Pratama",
+      "role": "student"
+    },
+    {
+      "id": 30,
+      "username": "putri",
+      "full_name": "Putri Aulia",
+      "role": "student"
+    },
+    {
+      "id": 31,
+      "username": "fahri",
+      "full_name": "Muhammad Fahri Maulana",
+      "role": "student"
+    },
+    {
+      "id": 32,
+      "username": "rifqi",
+      "full_name": "Rifqi Binangkit",
+      "role": "student"
+    },
+    {
+      "id": 33,
+      "username": "fadhil",
+      "full_name": "Askha Fadhil Raihan Adinomo",
+      "role": "student"
+    },
+    {
+      "id": 34,
+      "username": "yusuf",
+      "full_name": "Harazaki Yusuf Rahardjo Telaumbanua",
+      "role": "student"
+    },
+    {
+      "id": 35,
+      "username": "kirana",
+      "full_name": "Kirana Intan Permata",
+      "role": "student"
+    },
+    {
+      "id": 36,
+      "username": "effan",
+      "full_name": "Effan Zandra Arya Putra",
+      "role": "student"
+    },
+    {
+      "id": 37,
+      "username": "dzaki",
+      "full_name": "Dzakii Nizaar Akmal",
+      "role": "student"
+    },
+    {
+      "id": 38,
+      "username": "aura",
+      "full_name": "Aura Rizky Triyastuti",
+      "role": "student"
+    },
+    {
+      "id": 39,
+      "username": "reva",
+      "full_name": "Reva Amalia Achmad",
+      "role": "student"
+    },
+    {
+      "id": 40,
+      "username": "surya",
+      "full_name": "Surya Melano",
+      "role": "student"
+    },
+    {
+      "id": 41,
+      "username": "dhirgam",
+      "full_name": "Dhirgam Nawi Hasb Dhiya Ul'Haq",
+      "role": "student"
+    },
+    {
+      "id": 42,
+      "username": "yoga",
+      "full_name": "Yoga Rizki Ramadhan",
+      "role": "student"
+    },
+    {
+      "id": 43,
+      "username": "dude",
+      "full_name": "Dude Ramadhan",
+      "role": "student"
+    },
+    {
+      "id": 44,
+      "username": "daffa",
+      "full_name": "M. Daffa Azalia",
+      "role": "super_admin"
+    },
+    {
+      "id": 45,
+      "username": "irfan",
+      "full_name": "Irfan Asyraf Musyaffa",
+      "role": "student"
+    },
+    {
+      "id": 46,
+      "username": "ara",
+      "full_name": "Ara Ananda Putri",
+      "role": "student"
+    },
+    {
+      "id": 47,
+      "username": "anissa",
+      "full_name": "Annisa Zahra",
+      "role": "student"
+    },
+    {
+      "id": 48,
+      "username": "meli",
+      "full_name": "Meli Anggraeni",
+      "role": "student"
+    },
+    {
+      "id": 49,
+      "username": "gibran",
+      "full_name": "Gibran Ayatullah",
+      "role": "student"
+    },
+    {
+      "id": 50,
+      "username": "salsabila",
+      "full_name": "Salsabil Fajrianita",
+      "role": "student"
+    }
+  ]
+}
