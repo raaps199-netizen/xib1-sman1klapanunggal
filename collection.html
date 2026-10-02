@@ -15,7 +15,7 @@
 <header class="mb-7">
 <p class="text-xs text-techCyan uppercase tracking-[.3em] font-mono">XI.B1 • COLLECTION</p>
 <h1 class="text-3xl sm:text-5xl font-black mt-2">Pengumpulan HP</h1>
-<p class="text-slate-400 mt-2">Scan terus. Semua siswa masuk ke daftar, lalu bisa diedit sebelum laporan dikirim.</p>
+<p class="text-slate-400 mt-2">Semua siswa sudah ada di daftar. Scan QR untuk mengubah status menjadi terverifikasi.</p>
 </header>
 
 <section class="grid lg:grid-cols-[.9fr_1.1fr] gap-5">
@@ -26,126 +26,218 @@
 </div>
 <div id="reader" class="overflow-hidden rounded-2xl bg-slate-950"></div>
 <button id="startBtn" class="hidden mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Aktifkan Scanner</button>
+
 <div class="mt-5 grid grid-cols-3 gap-2 text-center">
-<div class="rounded-2xl bg-slate-950/60 p-3"><p id="totalCount" class="text-xl font-black">0</p><p class="text-[10px] text-slate-500 uppercase">Terkumpul</p></div>
-<div class="rounded-2xl bg-slate-950/60 p-3"><p id="remainingCount" class="text-xl font-black">0</p><p class="text-[10px] text-slate-500 uppercase">Belum</p></div>
-<div class="rounded-2xl bg-slate-950/60 p-3"><p id="studentCount" class="text-xl font-black">0</p><p class="text-[10px] text-slate-500 uppercase">Total Siswa</p></div>
+<div class="rounded-2xl bg-slate-950/60 p-3"><p id="verifiedCount" class="text-xl font-black">0</p><p class="text-[10px] text-slate-500 uppercase">Terverifikasi</p></div>
+<div class="rounded-2xl bg-slate-950/60 p-3"><p id="unverifiedCount" class="text-xl font-black">0</p><p class="text-[10px] text-slate-500 uppercase">Belum</p></div>
+<div class="rounded-2xl bg-slate-950/60 p-3"><p id="studentCount" class="text-xl font-black">0</p><p class="text-[10px] text-slate-500 uppercase">Total</p></div>
 </div>
 </div>
 
 <div class="rounded-3xl bg-techCard border border-slate-800 p-5 sm:p-6">
 <div class="flex items-center justify-between gap-3">
-<div><p class="text-xs text-slate-500 uppercase tracking-widest font-mono">Daftar Pengumpulan</p><h2 class="text-xl font-black mt-1">Hasil Scan</h2></div>
-<button id="reviewBtn" class="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-sm font-bold">Review</button>
+<div><p class="text-xs text-slate-500 uppercase tracking-widest font-mono">Daftar Siswa</p><h2 class="text-xl font-black mt-1">Status Pengumpulan</h2></div>
+<span id="progressText" class="text-xs text-slate-500">0 / 0</span>
 </div>
-<div id="list" class="mt-5 space-y-3">
-<div id="emptyState" class="py-16 text-center text-slate-500 text-sm">Belum ada siswa yang discan.</div>
-</div>
+<div id="list" class="mt-5 space-y-3"></div>
+
+<button id="finishBtn" class="mt-6 w-full py-4 rounded-2xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-black text-base disabled:opacity-40 disabled:cursor-not-allowed">
+Selesai Pengumpulan
+</button>
+<p class="text-center text-xs text-slate-500 mt-2">Setelah ini, siswa yang belum terverifikasi akan dikonfirmasi satu per satu.</p>
 </div>
 </section>
 </main>
 
-<div id="editModal" class="hidden fixed inset-0 z-50 bg-black/70 p-4 flex items-center justify-center">
+<div id="confirmModal" class="hidden fixed inset-0 z-50 bg-black/80 p-4 flex items-center justify-center">
+<div class="w-full max-w-2xl max-h-[90vh] overflow-auto rounded-3xl bg-techCard border border-slate-700 p-6">
+<div class="flex items-start justify-between gap-4">
+<div><p class="text-xs text-techCyan uppercase tracking-widest font-mono">Tahap Konfirmasi</p><h3 class="text-2xl font-black mt-1">Siswa Belum Terverifikasi</h3><p class="text-sm text-slate-400 mt-2">Tentukan alasan untuk setiap siswa yang belum discan.</p></div>
+<button id="closeConfirm" class="text-slate-400 text-2xl">×</button>
+</div>
+<div id="unverifiedList" class="mt-5 space-y-3"></div>
+<div class="mt-6 p-4 rounded-2xl bg-slate-950/60 border border-slate-800">
+<p class="text-xs text-slate-500">Status</p>
+<p id="confirmProgress" class="font-bold mt-1">0 siswa belum dikonfirmasi</p>
+</div>
+<button id="confirmBtn" class="mt-4 w-full py-4 rounded-2xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-black disabled:opacity-40 disabled:cursor-not-allowed">
+Konfirmasi
+</button>
+<p id="confirmResult" class="text-sm text-center mt-3"></p>
+</div>
+</div>
+
+<div id="editModal" class="hidden fixed inset-0 z-[60] bg-black/80 p-4 flex items-center justify-center">
 <div class="w-full max-w-md rounded-3xl bg-techCard border border-slate-700 p-6">
-<div class="flex items-center justify-between"><h3 class="text-xl font-black">Edit Status</h3><button onclick="closeEdit()" class="text-slate-400 text-xl">×</button></div>
+<div class="flex items-center justify-between"><h3 class="text-xl font-black">Edit Status</h3><button id="closeEdit" class="text-slate-400 text-xl">×</button></div>
 <p id="editStudent" class="text-sm text-slate-400 mt-2"></p>
 <div class="grid gap-2 mt-5">
-<button data-status="TERKUMPUL" class="editStatus text-left p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/20">📱 Terkumpul</button>
+<button data-status="TERVERIFIKASI" class="editStatus text-left p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/20">Terverifikasi</button>
 <button data-status="TIDAK BAWA HP" class="editStatus text-left p-3 rounded-xl bg-amber-950/50 border border-amber-500/20">Tidak bawa HP</button>
 <button data-status="TIDAK MASUK" class="editStatus text-left p-3 rounded-xl bg-blue-950/50 border border-blue-500/20">Tidak masuk</button>
 <button data-status="TIDAK ADA KETERANGAN" class="editStatus text-left p-3 rounded-xl bg-red-950/50 border border-red-500/20">Tidak ada keterangan</button>
 </div>
-<textarea id="editNote" rows="3" class="mt-4 w-full rounded-xl bg-slate-950 border border-slate-700 p-3 text-sm outline-none" placeholder="Catatan (opsional)"></textarea>
-<button id="saveEdit" class="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Simpan Perubahan</button>
-</div>
-</div>
-
-<div id="reviewModal" class="hidden fixed inset-0 z-50 bg-black/80 p-4 flex items-center justify-center">
-<div class="w-full max-w-2xl max-h-[90vh] overflow-auto rounded-3xl bg-techCard border border-slate-700 p-6">
-<h3 class="text-2xl font-black">Review Sebelum Kirim</h3>
-<p class="text-sm text-slate-400 mt-1">Periksa semua data. Manusia memang baru percaya setelah melihat daftar untuk ketiga kalinya.</p>
-<div id="reviewContent" class="mt-5"></div>
-<div class="flex gap-3 mt-6">
-<button onclick="closeReview()" class="flex-1 py-3 rounded-xl bg-slate-700 font-bold">Kembali Edit</button>
-<button id="sendBtn" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Kirim Laporan</button>
-</div>
-<p id="sendResult" class="text-sm text-center mt-4"></p>
+<textarea id="editNote" rows="2" class="mt-4 w-full rounded-xl bg-slate-950 border border-slate-700 p-3 text-sm outline-none" placeholder="Catatan (opsional)"></textarea>
+<button id="saveEdit" class="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Simpan</button>
 </div>
 </div>
 
 <script>
-const state={items:[],scanner:null,running:false,lastScan:'',lastScanAt:0,collected:new Map(),editUsername:null};
+const state={items:[],students:new Map(),scanner:null,running:false,lastScan:'',lastScanAt:0,editUsername:null,pendingEditStatus:null};
 const $=id=>document.getElementById(id);
 
 async function loadStudents(){
 const r=await fetch('data/students-public.json',{cache:'no-store'});
 if(!r.ok)throw new Error('Data siswa tidak dapat dimuat.');
-const d=await r.json();state.items=d.items||[];$('studentCount').textContent=state.items.length;updateStats();
-}
-function parsePayload(text){const m=String(text||'').trim().match(/^BIONEST:STUDENT:(.+)$/i);return m?m[1].trim():null;}
-function statusClass(s){return s==='TERKUMPUL'?'text-emerald-300 bg-emerald-950/40 border-emerald-500/20':s==='TIDAK MASUK'?'text-blue-300 bg-blue-950/40 border-blue-500/20':s==='TIDAK BAWA HP'?'text-amber-300 bg-amber-950/40 border-amber-500/20':'text-red-300 bg-red-950/40 border-red-500/20';}
-function renderList(){
-const list=$('list');
-if(!state.collected.size){list.innerHTML='<div id="emptyState" class="py-16 text-center text-slate-500 text-sm">Belum ada siswa yang discan.</div>';updateStats();return;}
-list.innerHTML='';
-for(const [username,item] of state.collected){
-const row=document.createElement('div');row.className='p-4 rounded-2xl border border-slate-700 bg-slate-950/40';
-row.innerHTML='<div class="flex items-start justify-between gap-3"><div class="min-w-0"><p class="font-bold truncate">'+escapeHtml(item.full_name)+'</p><p class="text-xs text-slate-500 mt-1">@'+escapeHtml(item.username)+'</p></div><button class="editBtn px-3 py-1.5 rounded-lg bg-slate-700 text-xs font-bold">Edit</button></div><div class="mt-3 flex items-center justify-between gap-2"><span class="px-2.5 py-1 rounded-lg border text-xs font-bold '+statusClass(item.status)+'">'+escapeHtml(item.status)+'</span><span class="text-xs text-slate-500">'+(item.note?escapeHtml(item.note):'')+'</span></div>';
-row.querySelector('.editBtn').onclick=()=>openEdit(username);
-list.appendChild(row);
-}
-updateStats();lucide.createIcons();
-}
-function escapeHtml(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
-function updateStats(){
-const collected=[...state.collected.values()].filter(x=>x.status==='TERKUMPUL').length;
-$('totalCount').textContent=collected;
-$('remainingCount').textContent=Math.max(0,state.items.length-state.collected.size);
-}
-function onScanSuccess(decodedText){
-const now=Date.now();if(decodedText===state.lastScan&&now-state.lastScanAt<2500)return;
-state.lastScan=decodedText;state.lastScanAt=now;
-const username=parsePayload(decodedText);
-if(!username){alert('QR bukan QR siswa XI.B1.');return;}
-const student=state.items.find(x=>String(x.username).toLowerCase()===username.toLowerCase());
-if(!student){alert('QR valid, tetapi data siswa tidak ditemukan.');return;}
-if(state.collected.has(student.username)){openEdit(student.username);return;}
-state.collected.set(student.username,{...student,status:'TERKUMPUL',note:''});
+const d=await r.json();
+state.items=(d.items||[]).map(x=>({...x,status:'BELUM DIVERIFIKASI',note:''}));
+state.students.clear();
+state.items.forEach(x=>state.students.set(x.username,x));
+$('studentCount').textContent=state.items.length;
 renderList();
 }
+function parsePayload(text){const m=String(text||'').trim().match(/^BIONEST:STUDENT:(.+)$/i);return m?m[1].trim():null;}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function statusClass(s){
+if(s==='TERVERIFIKASI')return 'text-emerald-300 bg-emerald-950/40 border-emerald-500/30';
+if(s==='TIDAK BAWA HP')return 'text-amber-300 bg-amber-950/40 border-amber-500/30';
+if(s==='TIDAK MASUK')return 'text-blue-300 bg-blue-950/40 border-blue-500/30';
+if(s==='TIDAK ADA KETERANGAN')return 'text-red-300 bg-red-950/40 border-red-500/30';
+return 'text-slate-400 bg-slate-900 border-slate-700';
+}
+function renderList(){
+const list=$('list');
+list.innerHTML=state.items.map((item,index)=>{
+const verified=item.status==='TERVERIFIKASI';
+return '<div id="student-'+escapeHtml(item.username)+'" class="p-4 rounded-2xl border '+(verified?'border-emerald-500/20':'border-slate-700')+' bg-slate-950/40 transition">'+
+'<div class="flex items-start justify-between gap-3"><div class="min-w-0 flex items-start gap-3">'+
+'<div class="w-8 h-8 shrink-0 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400">'+(index+1)+'</div>'+
+'<div class="min-w-0"><p class="font-bold truncate">'+escapeHtml(item.full_name)+'</p><p class="text-xs text-slate-500 mt-1">@'+escapeHtml(item.username)+'</p></div></div>'+
+'<button class="editBtn px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-bold">Edit</button></div>'+
+'<div class="mt-3 flex items-center justify-between gap-2"><span class="px-2.5 py-1 rounded-lg border text-xs font-bold '+statusClass(item.status)+'">'+escapeHtml(item.status)+'</span>'+
+(item.note?'<span class="text-xs text-slate-500 truncate">'+escapeHtml(item.note)+'</span>':'')+'</div></div>';
+}).join('');
+state.items.forEach(item=>{
+const row=$('student-'+item.username);
+row.querySelector('.editBtn').onclick=()=>openEdit(item.username);
+});
+updateStats();
+}
+function updateStats(){
+const verified=state.items.filter(x=>x.status==='TERVERIFIKASI').length;
+const unverified=state.items.filter(x=>x.status==='BELUM DIVERIFIKASI').length;
+$('verifiedCount').textContent=verified;
+$('unverifiedCount').textContent=unverified;
+$('studentCount').textContent=state.items.length;
+$('progressText').textContent=verified+' / '+state.items.length+' terverifikasi';
+$('finishBtn').disabled=state.items.length===0;
+}
+function highlight(username){
+const row=$('student-'+username);
+if(!row)return;
+row.scrollIntoView({behavior:'smooth',block:'center'});
+row.classList.add('ring-2','ring-cyan-400');
+setTimeout(()=>row.classList.remove('ring-2','ring-cyan-400'),1800);
+}
+function onScanSuccess(decodedText){
+const now=Date.now();
+if(decodedText===state.lastScan&&now-state.lastScanAt<2500)return;
+state.lastScan=decodedText;state.lastScanAt=now;
+const username=parsePayload(decodedText);
+if(!username){$('scannerStatus').textContent='QR tidak dikenali sebagai QR XI.B1.';return;}
+const item=state.items.find(x=>String(x.username).toLowerCase()===username.toLowerCase());
+if(!item){$('scannerStatus').textContent='QR valid, tetapi siswa tidak ditemukan.';return;}
+if(item.status==='TERVERIFIKASI'){
+$('scannerStatus').textContent=item.full_name+' sudah terverifikasi.';
+highlight(item.username);return;
+}
+item.status='TERVERIFIKASI';
+item.note='';
+renderList();
+$('scannerStatus').textContent=item.full_name+' • TERVERIFIKASI';
+highlight(item.username);
+}
 function openEdit(username){
-const item=state.collected.get(username);if(!item)return;
-state.editUsername=username;$('editStudent').textContent=item.full_name+' • @'+item.username;$('editNote').value=item.note||'';
+const item=state.students.get(username);if(!item)return;
+state.editUsername=username;state.pendingEditStatus=item.status;
+$('editStudent').textContent=item.full_name+' • @'+item.username;
+$('editNote').value=item.note||'';
+document.querySelectorAll('.editStatus').forEach(b=>b.classList.toggle('ring-2',b.dataset.status===item.status));
 $('editModal').classList.remove('hidden');
 }
-function closeEdit(){$('editModal').classList.add('hidden');state.editUsername=null;}
+function closeEdit(){ $('editModal').classList.add('hidden');state.editUsername=null;state.pendingEditStatus=null; }
 document.querySelectorAll('.editStatus').forEach(btn=>btn.onclick=()=>{
-document.querySelectorAll('.editStatus').forEach(x=>x.dataset.selected='');
-btn.dataset.selected='1';state.pendingStatus=btn.dataset.status;
+state.pendingEditStatus=btn.dataset.status;
+document.querySelectorAll('.editStatus').forEach(x=>x.classList.toggle('ring-2',x===btn));
 });
-$('saveEdit').onclick=()=>{if(!state.editUsername||!state.pendingStatus){alert('Pilih status dulu.');return;}const item=state.collected.get(state.editUsername);item.status=state.pendingStatus;item.note=$('editNote').value.trim();state.collected.set(state.editUsername,item);state.pendingStatus=null;closeEdit();renderList();};
-function openReview(){
-if(!state.collected.size){alert('Belum ada data pengumpulan.');return;}
-const groups={};for(const x of state.collected.values())(groups[x.status]??=[]).push(x);
-$('reviewContent').innerHTML=Object.entries(groups).map(([status,arr])=>'<div class="mb-4"><div class="px-3 py-2 rounded-xl border '+statusClass(status)+' font-bold text-sm">'+escapeHtml(status)+' • '+arr.length+'</div><div class="mt-2 space-y-1">'+arr.map(x=>'<div class="text-sm text-slate-300">'+escapeHtml(x.full_name)+(x.note?' <span class="text-slate-500">• '+escapeHtml(x.note)+'</span>':'')+'</div>').join('')+'</div>').join('');
-$('reviewModal').classList.remove('hidden');
-}
-function closeReview(){$('reviewModal').classList.add('hidden');}
-$('reviewBtn').onclick=openReview;
-$('sendBtn').onclick=()=>{
-const data={class:'XI.B1',date:new Date().toLocaleDateString('id-ID'),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),students:[...state.collected.values()]};
-navigator.clipboard?.writeText(JSON.stringify(data,null,2));
-$('sendResult').textContent='Data laporan sudah disiapkan. Integrasi WhatsApp tinggal disambungkan ke bot.';
-$('sendResult').className='text-sm text-center mt-4 text-emerald-300';
+$('saveEdit').onclick=()=>{
+if(!state.editUsername||!state.pendingEditStatus)return;
+const item=state.students.get(state.editUsername);
+item.status=state.pendingEditStatus;item.note=$('editNote').value.trim();
+closeEdit();renderList();
 };
+$('closeEdit').onclick=closeEdit;
+
+function openConfirmation(){
+const pending=state.items.filter(x=>x.status==='BELUM DIVERIFIKASI');
+$('confirmResult').textContent='';
+if(!pending.length){
+$('unverifiedList').innerHTML='<div class="p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/20 text-emerald-300">Semua siswa sudah terverifikasi. Tidak ada yang perlu dikonfirmasi.</div>';
+$('confirmProgress').textContent='Semua siswa sudah terverifikasi';
+$('confirmBtn').disabled=false;
+$('confirmModal').classList.remove('hidden');
+return;
+}
+$('unverifiedList').innerHTML=pending.map(item=>'<div class="p-4 rounded-2xl border border-slate-700 bg-slate-950/50">'+
+'<div class="flex items-center justify-between gap-3"><div><p class="font-bold">'+escapeHtml(item.full_name)+'</p><p class="text-xs text-slate-500 mt-1">@'+escapeHtml(item.username)+'</p></div><span class="text-[10px] px-2 py-1 rounded-lg border border-slate-700 text-slate-500">BELUM</span></div>'+
+'<div class="grid grid-cols-2 gap-2 mt-3">'+
+'<button class="reasonBtn p-2.5 rounded-xl border border-amber-500/20 bg-amber-950/30 text-amber-300 text-xs font-bold" data-user="'+escapeHtml(item.username)+'" data-reason="TIDAK BAWA HP">Tidak Bawa HP</button>'+
+'<button class="reasonBtn p-2.5 rounded-xl border border-blue-500/20 bg-blue-950/30 text-blue-300 text-xs font-bold" data-user="'+escapeHtml(item.username)+'" data-reason="TIDAK MASUK">Tidak Masuk</button>'+
+'</div><p id="reason-'+escapeHtml(item.username)+'" class="text-xs text-slate-500 mt-2">Belum dipilih</p></div>').join('');
+document.querySelectorAll('.reasonBtn').forEach(btn=>btn.onclick=()=>{
+const item=state.students.get(btn.dataset.user);
+item.status=btn.dataset.reason;
+item.note='';
+const parent=btn.parentElement;
+parent.querySelectorAll('.reasonBtn').forEach(x=>x.classList.remove('ring-2','ring-cyan-400'));
+btn.classList.add('ring-2','ring-cyan-400');
+$('reason-'+item.username).textContent='Dipilih: '+item.status;
+updateConfirmProgress();
+});
+updateConfirmProgress();
+$('confirmModal').classList.remove('hidden');
+}
+function updateConfirmProgress(){
+const pending=state.items.filter(x=>x.status==='BELUM DIVERIFIKASI').length;
+$('confirmProgress').textContent=pending+' siswa belum dikonfirmasi';
+$('confirmBtn').disabled=pending>0;
+}
+function closeConfirmation(){ $('confirmModal').classList.add('hidden'); }
+$('finishBtn').onclick=openConfirmation;
+$('closeConfirm').onclick=closeConfirmation;
+$('confirmBtn').onclick=()=>{
+const pending=state.items.filter(x=>x.status==='BELUM DIVERIFIKASI').length;
+if(pending)return;
+$('confirmResult').textContent='Semua status sudah dikonfirmasi. Data siap dikirim ke laporan.';
+$('confirmResult').className='text-sm text-center mt-3 text-emerald-300';
+$('confirmBtn').textContent='Selesai ✓';
+$('confirmBtn').disabled=true;
+renderList();
+};
+
 async function startScanner(){
 if(state.running)return;
 try{
 if(!state.scanner)state.scanner=new Html5Qrcode('reader');
 await state.scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:250},aspectRatio:1},onScanSuccess,()=>{});
-state.running=true;$('scannerStatus').textContent='Kamera aktif. Scan siswa berikutnya.';
+state.running=true;
+$('scannerStatus').textContent='Kamera aktif. Scan siswa berikutnya.';
 $('startBtn').classList.add('hidden');
-}catch(e){console.error(e);$('scannerStatus').textContent='Kamera belum aktif.';$('startBtn').classList.remove('hidden');}
+}catch(e){
+console.error(e);
+$('scannerStatus').textContent='Kamera belum aktif.';
+$('startBtn').classList.remove('hidden');
+}
 }
 $('startBtn').onclick=startScanner;
 (async()=>{try{await loadStudents();await startScanner();}catch(e){$('scannerStatus').textContent=e.message||'Gagal memuat data.';$('startBtn').classList.remove('hidden');}})();
