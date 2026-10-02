@@ -1,5 +1,14 @@
 [
   {
+    "id": "ann-1790954303502",
+    "date": "2 Oktober 2026",
+    "type": "Kas",
+    "title": "KAS DAN POE IBU",
+    "description": "halo guys, jangan lupa ya uang kas dan poe ibu",
+    "author": "M. Daffa Azalia",
+    "created_at": "2026-10-02T15:18:23.531Z"
+  },
+  {
     "id": "ann-library-1790677490054",
     "date": "29 September 2026",
     "type": "Library",
@@ -28,4 +37,4 @@
     "author": "Bionest One",
     "created_at": "2026-09-22T00:00:00+07:00"
   }
-]
+]\n
