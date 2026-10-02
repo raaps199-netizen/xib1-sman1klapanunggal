@@ -1,7 +1,7 @@
 import { put, list, del } from '@vercel/blob';
 
 const PREFIX = 'collection-reports/';
-const KEY = process.env.COLLECTION_BOT_KEY || '';
+const KEY = process.env.COLLECTION_BOT_KEY || process.env.LIBRARY_BOT_KEY || '';
 
 function json(res,status,data){return res.status(status).json(data);}
 
