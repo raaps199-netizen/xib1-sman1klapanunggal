@@ -143,7 +143,6 @@ $('verifiedCount').textContent=verified;$('unverifiedCount').textContent=unverif
 $('progressText').textContent=verified+' / '+state.items.length+' terverifikasi';
 $('finishBtn').disabled=!admin()||state.items.length===0;
 }
-function highlight(username){const row=$('student-'+username);if(!row)return;row.scrollIntoView({behavior:'smooth',block:'center'});row.classList.add('ring-2','ring-cyan-400');setTimeout(()=>row.classList.remove('ring-2','ring-cyan-400'),1800);}
 async function persist(status){
 const a=auth();
 try{await apiPost('save',{students:state.items,status:status||state.dataStatus,operator:a.operator});}catch(e){console.error(e);$('dayInfo').textContent='⚠ '+e.message;}
@@ -156,9 +155,9 @@ const m=String(decodedText||'').trim().match(/^BIONEST:STUDENT:(.+)$/i);
 const username=m?.[1]?.trim();if(!username){$('scannerStatus').textContent='QR tidak dikenali sebagai QR XI.B1.';return;}
 const item=state.items.find(x=>String(x.username).toLowerCase()===username.toLowerCase());
 if(!item){$('scannerStatus').textContent='QR valid, tetapi siswa tidak ditemukan.';return;}
-if(item.status==='TERVERIFIKASI'){$('scannerStatus').textContent=item.full_name+' sudah terverifikasi.';highlight(item.username);return;}
-item.status='TERVERIFIKASI';item.note='';state.dataStatus='BERLANGSUNG';renderList();highlight(item.username);
-$('scannerStatus').textContent=item.full_name+' • TERVERIFIKASI';
+if(item.status==='TERVERIFIKASI'){$('scannerStatus').textContent='✓ '+item.full_name+' sudah terverifikasi sebelumnya.';return;}
+item.status='TERVERIFIKASI';item.note='';state.dataStatus='BERLANGSUNG';renderList();
+$('scannerStatus').textContent='✓ '+item.full_name+' • TERVERIFIKASI';
 persist('BERLANGSUNG');
 }
 function openEdit(username){
