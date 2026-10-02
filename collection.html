@@ -11,133 +11,144 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-techDark text-slate-100 min-h-screen">
-<main class="min-h-screen max-w-5xl mx-auto px-4 py-8 sm:py-12">
-  <header class="mb-7">
-    <p class="text-xs text-techCyan uppercase tracking-[.3em] font-mono">XI.B1 • COLLECTION</p>
-    <h1 class="text-3xl sm:text-5xl font-black mt-2">Pengumpulan HP</h1>
-    <p class="text-slate-400 mt-2">Scan QR siswa. Data siswa langsung muncul di bawah scanner.</p>
-  </header>
+<main class="min-h-screen max-w-6xl mx-auto px-4 py-8 sm:py-12">
+<header class="mb-7">
+<p class="text-xs text-techCyan uppercase tracking-[.3em] font-mono">XI.B1 • COLLECTION</p>
+<h1 class="text-3xl sm:text-5xl font-black mt-2">Pengumpulan HP</h1>
+<p class="text-slate-400 mt-2">Scan terus. Semua siswa masuk ke daftar, lalu bisa diedit sebelum laporan dikirim.</p>
+</header>
 
-  <section class="grid lg:grid-cols-[1.1fr_.9fr] gap-5">
-    <div class="rounded-3xl bg-techCard border border-cyan-500/20 p-4 sm:p-6">
-      <div class="flex items-center justify-between gap-3 mb-4">
-        <div>
-          <p class="font-bold">Scanner QR</p>
-          <p id="scannerStatus" class="text-xs text-slate-500 mt-1">Menyiapkan kamera...</p>
-        </div>
-        <span class="px-3 py-1 rounded-full bg-cyan-950 text-cyan-300 text-xs font-mono">SCAN</span>
-      </div>
-      <div id="reader" class="overflow-hidden rounded-2xl bg-slate-950"></div>
-      <button id="startBtn" class="hidden mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Aktifkan Scanner</button>
-    </div>
+<section class="grid lg:grid-cols-[.9fr_1.1fr] gap-5">
+<div class="rounded-3xl bg-techCard border border-cyan-500/20 p-4 sm:p-6 lg:sticky lg:top-5 lg:self-start">
+<div class="flex items-center justify-between gap-3 mb-4">
+<div><p class="font-bold">Scanner QR</p><p id="scannerStatus" class="text-xs text-slate-500 mt-1">Menyiapkan kamera...</p></div>
+<span class="px-3 py-1 rounded-full bg-cyan-950 text-cyan-300 text-xs font-mono">SCAN</span>
+</div>
+<div id="reader" class="overflow-hidden rounded-2xl bg-slate-950"></div>
+<button id="startBtn" class="hidden mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Aktifkan Scanner</button>
+<div class="mt-5 grid grid-cols-3 gap-2 text-center">
+<div class="rounded-2xl bg-slate-950/60 p-3"><p id="totalCount" class="text-xl font-black">0</p><p class="text-[10px] text-slate-500 uppercase">Terkumpul</p></div>
+<div class="rounded-2xl bg-slate-950/60 p-3"><p id="remainingCount" class="text-xl font-black">0</p><p class="text-[10px] text-slate-500 uppercase">Belum</p></div>
+<div class="rounded-2xl bg-slate-950/60 p-3"><p id="studentCount" class="text-xl font-black">0</p><p class="text-[10px] text-slate-500 uppercase">Total Siswa</p></div>
+</div>
+</div>
 
-    <div class="rounded-3xl bg-techCard border border-slate-800 p-5 sm:p-6 min-h-[320px]">
-      <p class="text-xs text-slate-500 uppercase tracking-widest font-mono">Hasil Scan</p>
-      <div id="emptyState" class="h-64 flex items-center justify-center text-center text-slate-500 text-sm">
-        Belum ada QR yang discan.
-      </div>
-      <div id="studentCard" class="hidden">
-        <div class="mt-5 flex items-center gap-4">
-          <div class="w-16 h-16 rounded-2xl bg-cyan-950 text-cyan-300 flex items-center justify-center">
-            <i data-lucide="user-round" class="w-8 h-8"></i>
-          </div>
-          <div>
-            <p class="text-xs text-techCyan font-mono">SISWA TERDETEKSI</p>
-            <h2 id="studentName" class="text-2xl font-black mt-1"></h2>
-            <p id="studentUsername" class="text-sm text-slate-500 mt-1"></p>
-          </div>
-        </div>
-        <div class="mt-6 p-4 rounded-2xl bg-slate-950/60 border border-slate-800">
-          <p class="text-xs text-slate-500">Status</p>
-          <p class="text-lg font-bold text-emerald-300 mt-1">TERDETEKSI</p>
-          <p id="payload" class="text-[11px] text-slate-600 font-mono mt-2 break-all"></p>
-        </div>
-      </div>
-      <div id="errorCard" class="hidden mt-5 p-4 rounded-2xl bg-red-950/30 border border-red-500/20 text-red-300 text-sm"></div>
-    </div>
-  </section>
+<div class="rounded-3xl bg-techCard border border-slate-800 p-5 sm:p-6">
+<div class="flex items-center justify-between gap-3">
+<div><p class="text-xs text-slate-500 uppercase tracking-widest font-mono">Daftar Pengumpulan</p><h2 class="text-xl font-black mt-1">Hasil Scan</h2></div>
+<button id="reviewBtn" class="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-sm font-bold">Review</button>
+</div>
+<div id="list" class="mt-5 space-y-3">
+<div id="emptyState" class="py-16 text-center text-slate-500 text-sm">Belum ada siswa yang discan.</div>
+</div>
+</div>
+</section>
 </main>
 
+<div id="editModal" class="hidden fixed inset-0 z-50 bg-black/70 p-4 flex items-center justify-center">
+<div class="w-full max-w-md rounded-3xl bg-techCard border border-slate-700 p-6">
+<div class="flex items-center justify-between"><h3 class="text-xl font-black">Edit Status</h3><button onclick="closeEdit()" class="text-slate-400 text-xl">×</button></div>
+<p id="editStudent" class="text-sm text-slate-400 mt-2"></p>
+<div class="grid gap-2 mt-5">
+<button data-status="TERKUMPUL" class="editStatus text-left p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/20">📱 Terkumpul</button>
+<button data-status="TIDAK BAWA HP" class="editStatus text-left p-3 rounded-xl bg-amber-950/50 border border-amber-500/20">Tidak bawa HP</button>
+<button data-status="TIDAK MASUK" class="editStatus text-left p-3 rounded-xl bg-blue-950/50 border border-blue-500/20">Tidak masuk</button>
+<button data-status="TIDAK ADA KETERANGAN" class="editStatus text-left p-3 rounded-xl bg-red-950/50 border border-red-500/20">Tidak ada keterangan</button>
+</div>
+<textarea id="editNote" rows="3" class="mt-4 w-full rounded-xl bg-slate-950 border border-slate-700 p-3 text-sm outline-none" placeholder="Catatan (opsional)"></textarea>
+<button id="saveEdit" class="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Simpan Perubahan</button>
+</div>
+</div>
+
+<div id="reviewModal" class="hidden fixed inset-0 z-50 bg-black/80 p-4 flex items-center justify-center">
+<div class="w-full max-w-2xl max-h-[90vh] overflow-auto rounded-3xl bg-techCard border border-slate-700 p-6">
+<h3 class="text-2xl font-black">Review Sebelum Kirim</h3>
+<p class="text-sm text-slate-400 mt-1">Periksa semua data. Manusia memang baru percaya setelah melihat daftar untuk ketiga kalinya.</p>
+<div id="reviewContent" class="mt-5"></div>
+<div class="flex gap-3 mt-6">
+<button onclick="closeReview()" class="flex-1 py-3 rounded-xl bg-slate-700 font-bold">Kembali Edit</button>
+<button id="sendBtn" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Kirim Laporan</button>
+</div>
+<p id="sendResult" class="text-sm text-center mt-4"></p>
+</div>
+</div>
+
 <script>
-const state={items:[],scanner:null,running:false,lastScan:'',lastScanAt:0};
+const state={items:[],scanner:null,running:false,lastScan:'',lastScanAt:0,collected:new Map(),editUsername:null};
 const $=id=>document.getElementById(id);
 
 async function loadStudents(){
-  const r=await fetch('data/students-public.json',{cache:'no-store'});
-  if(!r.ok) throw new Error('Data siswa tidak dapat dimuat.');
-  const d=await r.json();
-  state.items=d.items||[];
+const r=await fetch('data/students-public.json',{cache:'no-store'});
+if(!r.ok)throw new Error('Data siswa tidak dapat dimuat.');
+const d=await r.json();state.items=d.items||[];$('studentCount').textContent=state.items.length;updateStats();
 }
-
-function parsePayload(text){
-  const raw=String(text||'').trim();
-  const m=raw.match(/^BIONEST:STUDENT:(.+)$/i);
-  return m?m[1].trim():null;
+function parsePayload(text){const m=String(text||'').trim().match(/^BIONEST:STUDENT:(.+)$/i);return m?m[1].trim():null;}
+function statusClass(s){return s==='TERKUMPUL'?'text-emerald-300 bg-emerald-950/40 border-emerald-500/20':s==='TIDAK MASUK'?'text-blue-300 bg-blue-950/40 border-blue-500/20':s==='TIDAK BAWA HP'?'text-amber-300 bg-amber-950/40 border-amber-500/20':'text-red-300 bg-red-950/40 border-red-500/20';}
+function renderList(){
+const list=$('list');
+if(!state.collected.size){list.innerHTML='<div id="emptyState" class="py-16 text-center text-slate-500 text-sm">Belum ada siswa yang discan.</div>';updateStats();return;}
+list.innerHTML='';
+for(const [username,item] of state.collected){
+const row=document.createElement('div');row.className='p-4 rounded-2xl border border-slate-700 bg-slate-950/40';
+row.innerHTML='<div class="flex items-start justify-between gap-3"><div class="min-w-0"><p class="font-bold truncate">'+escapeHtml(item.full_name)+'</p><p class="text-xs text-slate-500 mt-1">@'+escapeHtml(item.username)+'</p></div><button class="editBtn px-3 py-1.5 rounded-lg bg-slate-700 text-xs font-bold">Edit</button></div><div class="mt-3 flex items-center justify-between gap-2"><span class="px-2.5 py-1 rounded-lg border text-xs font-bold '+statusClass(item.status)+'">'+escapeHtml(item.status)+'</span><span class="text-xs text-slate-500">'+(item.note?escapeHtml(item.note):'')+'</span></div>';
+row.querySelector('.editBtn').onclick=()=>openEdit(username);
+list.appendChild(row);
 }
-
-function showStudent(student,payload){
-  $('emptyState').classList.add('hidden');
-  $('errorCard').classList.add('hidden');
-  $('studentCard').classList.remove('hidden');
-  $('studentName').textContent=student.full_name||'-';
-  $('studentUsername').textContent='@'+(student.username||'-');
-  $('payload').textContent=payload;
-  lucide.createIcons();
+updateStats();lucide.createIcons();
 }
-
-function showError(message){
-  $('studentCard').classList.add('hidden');
-  $('emptyState').classList.add('hidden');
-  $('errorCard').textContent=message;
-  $('errorCard').classList.remove('hidden');
+function escapeHtml(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function updateStats(){
+const collected=[...state.collected.values()].filter(x=>x.status==='TERKUMPUL').length;
+$('totalCount').textContent=collected;
+$('remainingCount').textContent=Math.max(0,state.items.length-state.collected.size);
 }
-
 function onScanSuccess(decodedText){
-  const now=Date.now();
-  if(decodedText===state.lastScan && now-state.lastScanAt<2500)return;
-  state.lastScan=decodedText;state.lastScanAt=now;
-
-  const username=parsePayload(decodedText);
-  if(!username){
-    showError('QR bukan QR siswa XI.B1.');
-    return;
-  }
-  const student=state.items.find(x=>String(x.username).toLowerCase()===username.toLowerCase());
-  if(!student){
-    showError('QR valid, tetapi data siswa tidak ditemukan.');
-    return;
-  }
-  showStudent(student,decodedText);
+const now=Date.now();if(decodedText===state.lastScan&&now-state.lastScanAt<2500)return;
+state.lastScan=decodedText;state.lastScanAt=now;
+const username=parsePayload(decodedText);
+if(!username){alert('QR bukan QR siswa XI.B1.');return;}
+const student=state.items.find(x=>String(x.username).toLowerCase()===username.toLowerCase());
+if(!student){alert('QR valid, tetapi data siswa tidak ditemukan.');return;}
+if(state.collected.has(student.username)){openEdit(student.username);return;}
+state.collected.set(student.username,{...student,status:'TERKUMPUL',note:''});
+renderList();
 }
-
+function openEdit(username){
+const item=state.collected.get(username);if(!item)return;
+state.editUsername=username;$('editStudent').textContent=item.full_name+' • @'+item.username;$('editNote').value=item.note||'';
+$('editModal').classList.remove('hidden');
+}
+function closeEdit(){$('editModal').classList.add('hidden');state.editUsername=null;}
+document.querySelectorAll('.editStatus').forEach(btn=>btn.onclick=()=>{
+document.querySelectorAll('.editStatus').forEach(x=>x.dataset.selected='');
+btn.dataset.selected='1';state.pendingStatus=btn.dataset.status;
+});
+$('saveEdit').onclick=()=>{if(!state.editUsername||!state.pendingStatus){alert('Pilih status dulu.');return;}const item=state.collected.get(state.editUsername);item.status=state.pendingStatus;item.note=$('editNote').value.trim();state.collected.set(state.editUsername,item);state.pendingStatus=null;closeEdit();renderList();};
+function openReview(){
+if(!state.collected.size){alert('Belum ada data pengumpulan.');return;}
+const groups={};for(const x of state.collected.values())(groups[x.status]??=[]).push(x);
+$('reviewContent').innerHTML=Object.entries(groups).map(([status,arr])=>'<div class="mb-4"><div class="px-3 py-2 rounded-xl border '+statusClass(status)+' font-bold text-sm">'+escapeHtml(status)+' • '+arr.length+'</div><div class="mt-2 space-y-1">'+arr.map(x=>'<div class="text-sm text-slate-300">'+escapeHtml(x.full_name)+(x.note?' <span class="text-slate-500">• '+escapeHtml(x.note)+'</span>':'')+'</div>').join('')+'</div>').join('');
+$('reviewModal').classList.remove('hidden');
+}
+function closeReview(){$('reviewModal').classList.add('hidden');}
+$('reviewBtn').onclick=openReview;
+$('sendBtn').onclick=()=>{
+const data={class:'XI.B1',date:new Date().toLocaleDateString('id-ID'),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),students:[...state.collected.values()]};
+navigator.clipboard?.writeText(JSON.stringify(data,null,2));
+$('sendResult').textContent='Data laporan sudah disiapkan. Integrasi WhatsApp tinggal disambungkan ke bot.';
+$('sendResult').className='text-sm text-center mt-4 text-emerald-300';
+};
 async function startScanner(){
-  if(state.running)return;
-  try{
-    if(!state.scanner)state.scanner=new Html5Qrcode('reader');
-    const config={fps:10,qrbox:{width:250,height:250},aspectRatio:1.0};
-    await state.scanner.start({facingMode:'environment'},config,onScanSuccess,()=>{});
-    state.running=true;
-    $('scannerStatus').textContent='Kamera aktif. Arahkan ke QR siswa.';
-    $('startBtn').classList.add('hidden');
-  }catch(e){
-    console.error(e);
-    $('scannerStatus').textContent='Kamera belum aktif.';
-    $('startBtn').classList.remove('hidden');
-    showError('Kamera tidak bisa digunakan. Pastikan izin kamera diberikan dan halaman dibuka lewat HTTPS.');
-  }
+if(state.running)return;
+try{
+if(!state.scanner)state.scanner=new Html5Qrcode('reader');
+await state.scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:250},aspectRatio:1},onScanSuccess,()=>{});
+state.running=true;$('scannerStatus').textContent='Kamera aktif. Scan siswa berikutnya.';
+$('startBtn').classList.add('hidden');
+}catch(e){console.error(e);$('scannerStatus').textContent='Kamera belum aktif.';$('startBtn').classList.remove('hidden');}
 }
-
 $('startBtn').onclick=startScanner;
-
-(async()=>{
-  try{
-    await loadStudents();
-    await startScanner();
-  }catch(e){
-    $('scannerStatus').textContent=e.message||'Gagal memuat data.';
-    $('startBtn').classList.remove('hidden');
-  }
-})();
+(async()=>{try{await loadStudents();await startScanner();}catch(e){$('scannerStatus').textContent=e.message||'Gagal memuat data.';$('startBtn').classList.remove('hidden');}})();
 </script>
 </body>
 </html>
