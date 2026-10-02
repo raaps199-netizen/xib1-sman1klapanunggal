@@ -41,7 +41,7 @@
 </div>
 
 <div class="rounded-3xl bg-techCard border border-slate-800 p-5 sm:p-6">
-<div id="viewerNotice" class="hidden mb-5 p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/20 text-sm text-cyan-200">Mode lihat saja. Hanya Super Admin yang dapat mengubah status pengumpulan.</div>
+
 <div class="flex items-center justify-between gap-3">
 <div><p class="text-xs text-slate-500 uppercase tracking-widest font-mono">Daftar Siswa</p><h2 class="text-xl font-black mt-1">Status Pengumpulan</h2></div>
 <span id="progressText" class="text-xs text-slate-500">0 / 0</span>
@@ -196,8 +196,8 @@ if(!admin()||state.running)return;const btn=$('startBtn');btn.disabled=true;btn.
 try{if(!state.scanner)state.scanner=new Html5Qrcode('reader');let cfg={facingMode:'environment'};try{const cams=await Html5Qrcode.getCameras();if(cams?.length){const back=cams.find(c=>/back|rear|environment|belakang/i.test(c.label||''));cfg={deviceId:{exact:(back||cams[0]).id}};}}catch{}await state.scanner.start(cfg,{fps:10,qrbox:(w,h)=>{const s=Math.max(180,Math.min(280,Math.floor(Math.min(w,h)*.72)));return{width:s,height:s};},aspectRatio:1},onScanSuccess,()=>{});state.running=true;$('scannerStatus').textContent='Kamera aktif. Arahkan ke QR siswa.';btn.classList.add('hidden');}catch(e){$('scannerStatus').textContent='Kamera gagal aktif. Cek izin kamera browser.';btn.disabled=false;btn.textContent='Aktifkan Kamera';}}
 $('startBtn').onclick=startScanner;
 function setupMode(){
-const is=admin();$('viewMode').textContent=is?'SUPER ADMIN':'LIHAT SAJA';
-$('adminPanel').classList.toggle('hidden',!is);$('viewerNotice').classList.toggle('hidden',is);$('finishHint').classList.toggle('hidden',!is);
+const is=admin();$('viewMode').textContent='';
+$('adminPanel').classList.toggle('hidden',!is);$('viewerNotice')?.classList.add('hidden');$('finishHint').classList.toggle('hidden',!is);
 }
 (async()=>{setupMode();try{await loadDay();if(admin()&&state.dataStatus==='BELUM DIMULAI')await apiPost('start',{operator:auth().operator});if(admin())setTimeout(startScanner,250);}catch(e){$('dayInfo').textContent=e.message;}})();
 setInterval(async()=>{if(state.running)return;try{await loadDay();}catch(e){}},10000);
