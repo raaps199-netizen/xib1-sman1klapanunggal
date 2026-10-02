@@ -43,9 +43,8 @@ async function loadDay(day){
   return {data:await r.json(),blob};
 }
 async function saveDay(day,data,oldBlob){
-  // Reuse the blob discovered by loadDay instead of listing the store a second time.
-  if(oldBlob)await del(oldBlob.url);
-  await put(PREFIX+day+'.json',JSON.stringify(data),{access:'public',addRandomSuffix:false,contentType:'application/json',token:process.env.BLOB_READ_WRITE_TOKEN});
+  // Overwrite the same daily JSON blob instead of deleting and recreating it.
+  await put(PREFIX+day+'.json',JSON.stringify(data),{access:'public',addRandomSuffix:false,allowOverwrite:true,contentType:'application/json',token:process.env.BLOB_READ_WRITE_TOKEN});
   return data;
 }
 export default async function handler(req,res){
