@@ -551,6 +551,17 @@
       "hobby": "",
       "favourite_subject": "",
       "password_sha256": "52a487ab759d1efd7431d06ec0b3df8d6b948cbcc5b7eac6fb6d5981c403240d"
+    },
+    {
+      "username": "syifa",
+      "full_name": "Bu Syifa",
+      "role": "teacher",
+      "quote": "XI.B1",
+      "bio": "",
+      "instagram": "",
+      "hobby": "",
+      "favourite_subject": "",
+      "password_sha256": "b499d48662f079f25a69fca83e44b2a4c04367ba694b2096109548f79eab1408"
     }
   ]
 }
