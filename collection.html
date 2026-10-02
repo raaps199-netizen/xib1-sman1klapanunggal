@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Pengumpulan HP | XI.B1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>tailwind.config={theme:{extend:{colors:{techCyan:'#00f2fe',techBlue:'#4facfe',techDark:'#0b1120',techCard:'#1e293b'}}}};</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-techDark text-slate-100 min-h-screen">
+<main class="min-h-screen max-w-5xl mx-auto px-4 py-8 sm:py-12">
+  <header class="mb-7">
+    <p class="text-xs text-techCyan uppercase tracking-[.3em] font-mono">XI.B1 • COLLECTION</p>
+    <h1 class="text-3xl sm:text-5xl font-black mt-2">Pengumpulan HP</h1>
+    <p class="text-slate-400 mt-2">Scan QR siswa. Data siswa langsung muncul di bawah scanner.</p>
+  </header>
+
+  <section class="grid lg:grid-cols-[1.1fr_.9fr] gap-5">
+    <div class="rounded-3xl bg-techCard border border-cyan-500/20 p-4 sm:p-6">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <p class="font-bold">Scanner QR</p>
+          <p id="scannerStatus" class="text-xs text-slate-500 mt-1">Menyiapkan kamera...</p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-cyan-950 text-cyan-300 text-xs font-mono">SCAN</span>
+      </div>
+      <div id="reader" class="overflow-hidden rounded-2xl bg-slate-950"></div>
+      <button id="startBtn" class="hidden mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold">Aktifkan Scanner</button>
+    </div>
+
+    <div class="rounded-3xl bg-techCard border border-slate-800 p-5 sm:p-6 min-h-[320px]">
+      <p class="text-xs text-slate-500 uppercase tracking-widest font-mono">Hasil Scan</p>
+      <div id="emptyState" class="h-64 flex items-center justify-center text-center text-slate-500 text-sm">
+        Belum ada QR yang discan.
+      </div>
+      <div id="studentCard" class="hidden">
+        <div class="mt-5 flex items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl bg-cyan-950 text-cyan-300 flex items-center justify-center">
+            <i data-lucide="user-round" class="w-8 h-8"></i>
+          </div>
+          <div>
+            <p class="text-xs text-techCyan font-mono">SISWA TERDETEKSI</p>
+            <h2 id="studentName" class="text-2xl font-black mt-1"></h2>
+            <p id="studentUsername" class="text-sm text-slate-500 mt-1"></p>
+          </div>
+        </div>
+        <div class="mt-6 p-4 rounded-2xl bg-slate-950/60 border border-slate-800">
+          <p class="text-xs text-slate-500">Status</p>
+          <p class="text-lg font-bold text-emerald-300 mt-1">TERDETEKSI</p>
+          <p id="payload" class="text-[11px] text-slate-600 font-mono mt-2 break-all"></p>
+        </div>
+      </div>
+      <div id="errorCard" class="hidden mt-5 p-4 rounded-2xl bg-red-950/30 border border-red-500/20 text-red-300 text-sm"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const state={items:[],scanner:null,running:false,lastScan:'',lastScanAt:0};
+const $=id=>document.getElementById(id);
+
+async function loadStudents(){
+  const r=await fetch('data/students-public.json',{cache:'no-store'});
+  if(!r.ok) throw new Error('Data siswa tidak dapat dimuat.');
+  const d=await r.json();
+  state.items=d.items||[];
+}
+
+function parsePayload(text){
+  const raw=String(text||'').trim();
+  const m=raw.match(/^BIONEST:STUDENT:(.+)$/i);
+  return m?m[1].trim():null;
+}
+
+function showStudent(student,payload){
+  $('emptyState').classList.add('hidden');
+  $('errorCard').classList.add('hidden');
+  $('studentCard').classList.remove('hidden');
+  $('studentName').textContent=student.full_name||'-';
+  $('studentUsername').textContent='@'+(student.username||'-');
+  $('payload').textContent=payload;
+  lucide.createIcons();
+}
+
+function showError(message){
+  $('studentCard').classList.add('hidden');
+  $('emptyState').classList.add('hidden');
+  $('errorCard').textContent=message;
+  $('errorCard').classList.remove('hidden');
+}
+
+function onScanSuccess(decodedText){
+  const now=Date.now();
+  if(decodedText===state.lastScan && now-state.lastScanAt<2500)return;
+  state.lastScan=decodedText;state.lastScanAt=now;
+
+  const username=parsePayload(decodedText);
+  if(!username){
+    showError('QR bukan QR siswa XI.B1.');
+    return;
+  }
+  const student=state.items.find(x=>String(x.username).toLowerCase()===username.toLowerCase());
+  if(!student){
+    showError('QR valid, tetapi data siswa tidak ditemukan.');
+    return;
+  }
+  showStudent(student,decodedText);
+}
+
+async function startScanner(){
+  if(state.running)return;
+  try{
+    if(!state.scanner)state.scanner=new Html5Qrcode('reader');
+    const config={fps:10,qrbox:{width:250,height:250},aspectRatio:1.0};
+    await state.scanner.start({facingMode:'environment'},config,onScanSuccess,()=>{});
+    state.running=true;
+    $('scannerStatus').textContent='Kamera aktif. Arahkan ke QR siswa.';
+    $('startBtn').classList.add('hidden');
+  }catch(e){
+    console.error(e);
+    $('scannerStatus').textContent='Kamera belum aktif.';
+    $('startBtn').classList.remove('hidden');
+    showError('Kamera tidak bisa digunakan. Pastikan izin kamera diberikan dan halaman dibuka lewat HTTPS.');
+  }
+}
+
+$('startBtn').onclick=startScanner;
+
+(async()=>{
+  try{
+    await loadStudents();
+    await startScanner();
+  }catch(e){
+    $('scannerStatus').textContent=e.message||'Gagal memuat data.';
+    $('startBtn').classList.remove('hidden');
+  }
+})();
+</script>
+</body>
+</html>
