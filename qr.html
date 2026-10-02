@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>QR Siswa | XI.B1</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@latest"></script><script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>tailwind.config={theme:{extend:{colors:{techCyan:'#00f2fe',techBlue:'#4facfe',techDark:'#0b1120',techCard:'#1e293b'}}}};</script><link rel="stylesheet" href="style.css"></head>
+<body class="bg-techDark text-slate-100 min-h-screen">
+<nav class="fixed top-0 w-full z-50 bg-techDark/90 backdrop-blur-md border-b border-cyan-500/20"><div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between"><a href="index.html#siswa" class="font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-techCyan to-techBlue">XI.B1</a><a href="index.html#siswa" class="text-xs text-slate-500 hover:text-white">Kembali</a></div></nav>
+<main class="pt-28 pb-16 max-w-6xl mx-auto px-4"><div class="mb-8"><p class="text-xs text-techCyan uppercase tracking-[.3em] font-mono">STUDENT IDENTITY</p><h1 class="text-4xl font-black mt-2">QR Siswa</h1><p id="intro" class="text-slate-400 mt-2">QR pribadi untuk identitas siswa.</p></div>
+<div id="adminBar" class="hidden mb-6 p-4 rounded-2xl bg-techCard border border-cyan-500/20"><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><p class="font-bold">Mode Admin</p><p class="text-xs text-slate-500 mt-1">Lu bisa melihat dan mengunduh QR seluruh siswa.</p></div><div class="flex gap-2"><button id="allBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold text-sm">Tampilkan semua</button><button id="zipBtn" class="px-4 py-2 rounded-xl border border-cyan-500/25 text-cyan-200 text-sm">Download semua</button></div></div></div>
+<div id="status" class="text-sm text-slate-500 mb-5"></div><div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div></main>
+<script>
+const state={items:[],admin:false};
+const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function session(){try{return JSON.parse(sessionStorage.getItem('bionestSession')||localStorage.getItem('bionestSession')||'null')}catch{return null}}
+async function load(){
+ const p=session();state.admin=p?.role==='super_admin';
+ const r=await fetch('data/students-public.json',{cache:'no-store'});if(!r.ok)throw new Error('Data siswa tidak dapat dimuat.');
+ const d=await r.json();state.items=d.items||[];
+ const q=new URLSearchParams(location.search),requested=q.get('username'),name=q.get('name');
+ let visible=state.admin?(requested?state.items.filter(x=>x.username===requested):name?state.items.filter(x=>x.full_name===name):state.items):state.items.filter(x=>x.username===p?.username);
+ if(!visible.length){document.getElementById('status').textContent='QR hanya bisa dibuka untuk akun sendiri.';return}
+ document.getElementById('adminBar').classList.toggle('hidden',!state.admin);
+ document.getElementById('intro').textContent=state.admin?'Mode admin: QR bisa dilihat satu-satu atau semuanya.':'Ini QR pribadi akun lu. Simpan atau download, nanti QR ini dipakai saat pengumpulan HP.';
+ render(visible);
+}
+function render(items){
+ const grid=document.getElementById('grid');grid.innerHTML='';
+ items.forEach(s=>{
+  const card=document.createElement('article');card.className='p-5 rounded-3xl bg-techCard border border-slate-800';
+  card.innerHTML='<div class="flex items-start justify-between gap-3"><div><p class="text-[10px] text-techCyan font-mono">STUDENT QR</p><h2 class="font-bold mt-1">'+esc(s.full_name)+'</h2><p class="username text-xs text-slate-500 mt-1">@'+esc(s.username)+'</p></div><span class="text-[10px] px-2 py-1 rounded-full bg-cyan-950 text-cyan-300">XI.B1</span></div><div class="qr mt-5 bg-white rounded-2xl p-4 flex justify-center"></div><button class="download mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-bold text-sm">Download QR</button>';
+  grid.appendChild(card);
+  new QRCode(card.querySelector('.qr'),{text:'BIONEST:STUDENT:'+s.username,width:220,height:220,colorDark:'#0b1120',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  card.querySelector('.download').onclick=()=>downloadCard(card,s);
+ });
+}
+function downloadCard(card,s){const canvas=card.querySelector('canvas');if(!canvas)return;const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='QR-'+s.username+'-XI-B1.png';a.click()}
+document.getElementById('allBtn').onclick=()=>render(state.items);
+document.getElementById('zipBtn').onclick=async()=>{
+ if(!state.admin)return;const zip=new JSZip(),cards=[...document.querySelectorAll('#grid article')];
+ for(const card of cards){const username=card.querySelector('.username')?.textContent?.replace(/^@/,'');const s=state.items.find(x=>x.username===username),canvas=card.querySelector('canvas');if(s&&canvas)zip.file('QR-'+s.username+'-XI-B1.png',canvas.toDataURL('image/png').split(',')[1],{base64:true})}
+ const blob=await zip.generateAsync({type:'blob'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='QR-XI-B1.zip';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+load().catch(e=>document.getElementById('status').textContent=e.message||'Gagal memuat QR.');
+</script></body></html>
