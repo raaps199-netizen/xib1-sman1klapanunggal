@@ -32,30 +32,25 @@ async function createBlank(day){
     absen:i+1,id:x.id,username:x.username,full_name:x.full_name,status:'BELUM DIVERIFIKASI',note:''
   }));
   const data={date:day,class:'XI.B1',status:'BELUM DIMULAI',operator:'',started_at:null,finished_at:null,students};
-  await put(PREFIX+day+'.json',JSON.stringify(data),{access:'public',addRandomSuffix:false,contentType:'application/json',token:process.env.BLOB_READ_WRITE_TOKEN});
-  return data;
+  const blob=await put(PREFIX+day+'.json',JSON.stringify(data),{access:'public',addRandomSuffix:false,contentType:'application/json',token:process.env.BLOB_READ_WRITE_TOKEN});
+  return {data,blob};
 }
 async function loadDay(day){
   const blob=await getBlob(day);
   if(!blob)return createBlank(day);
   const r=await fetch(blob.url);
   if(!r.ok)throw new Error('Data pengumpulan gagal dibaca.');
-  return r.json();
+  return {data:await r.json(),blob};
 }
-async function saveDay(day,data){
-  const old=await getBlob(day);
-  if(old)await del(old.url);
+async function saveDay(day,data,oldBlob){
+  // Reuse the blob discovered by loadDay instead of listing the store a second time.
+  if(oldBlob)await del(oldBlob.url);
   await put(PREFIX+day+'.json',JSON.stringify(data),{access:'public',addRandomSuffix:false,contentType:'application/json',token:process.env.BLOB_READ_WRITE_TOKEN});
   return data;
-}
-async function cleanupOld(day){
-  const {blobs}=await list({prefix:PREFIX});
-  await Promise.all(blobs.filter(b=>b.pathname!==PREFIX+day+'.json').map(b=>del(b.url)));
 }
 export default async function handler(req,res){
   try{
     const day=today();
-    await cleanupOld(day);
 
     if(req.method==='GET'){
       if(KEY && String(req.headers['x-collection-bot-key']||'')===KEY){
@@ -65,7 +60,9 @@ export default async function handler(req,res){
         items.sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));
         return json(res,200,{items});
       }
-      const data=await loadDay(day);
+      // Let Vercel's CDN absorb frequent dashboard polling across visitors.
+      res.setHeader('Cache-Control','public, s-maxage=10, stale-while-revalidate=20');
+      const {data}=await loadDay(day);
       return json(res,200,{...data,server_date:day});
     }
 
@@ -78,8 +75,6 @@ export default async function handler(req,res){
         if(found)await del(found.url);return json(res,200,{ok:true});
       }
       if(!await verifyAdmin(body))return json(res,403,{error:'Akses hanya untuk Super Admin.'});
-      let data=await loadDay(day);
-
       if(body.action==='report'){
         const students=Array.isArray(body.students)?body.students:[];
         if(body.class!=='XI.B1'||!students.length)return json(res,400,{error:'Laporan tidak valid.'});
@@ -88,6 +83,8 @@ export default async function handler(req,res){
         await put(REPORT_PREFIX+id+'.json',JSON.stringify(report),{access:'public',addRandomSuffix:false,contentType:'application/json',token:process.env.BLOB_READ_WRITE_TOKEN});
         return json(res,201,{ok:true,id});
       }
+
+      let {data,blob}=await loadDay(day);
 
       if(body.action==='save'){
         if(Array.isArray(body.students))data.students=body.students.map((s,i)=>({
@@ -102,7 +99,7 @@ export default async function handler(req,res){
         data.operator=String(body.operator||data.operator||'').slice(0,100);
         if(data.status==='BERLANGSUNG'&&!data.started_at)data.started_at=new Date().toISOString();
         if(data.status==='SELESAI'&&!data.finished_at)data.finished_at=new Date().toISOString();
-        await saveDay(day,data);
+        await saveDay(day,data,blob);
         return json(res,200,{ok:true,data});
       }
 
@@ -110,7 +107,7 @@ export default async function handler(req,res){
         data.status='BERLANGSUNG';
         data.operator=String(body.operator||'').slice(0,100);
         data.started_at=data.started_at||new Date().toISOString();
-        await saveDay(day,data);
+        await saveDay(day,data,blob);
         return json(res,200,{ok:true,data});
       }
 
@@ -118,7 +115,7 @@ export default async function handler(req,res){
         data.status='SELESAI';
         data.operator=String(body.operator||data.operator||'').slice(0,100);
         data.finished_at=new Date().toISOString();
-        await saveDay(day,data);
+        await saveDay(day,data,blob);
         return json(res,200,{ok:true,data});
       }
 
