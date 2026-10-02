@@ -193,6 +193,7 @@ $('unverifiedList').innerHTML=pending.map(item=>'<div class="p-4 rounded-2xl bor
 '<div class="grid grid-cols-2 gap-2 mt-3">'+
 '<button class="reasonBtn p-2.5 rounded-xl border border-amber-500/20 bg-amber-950/30 text-amber-300 text-xs font-bold" data-user="'+escapeHtml(item.username)+'" data-reason="TIDAK BAWA HP">Tidak Bawa HP</button>'+
 '<button class="reasonBtn p-2.5 rounded-xl border border-blue-500/20 bg-blue-950/30 text-blue-300 text-xs font-bold" data-user="'+escapeHtml(item.username)+'" data-reason="TIDAK MASUK">Tidak Masuk</button>'+
+'<button class="reasonBtn col-span-2 p-2.5 rounded-xl border border-red-500/20 bg-red-950/30 text-red-300 text-xs font-bold" data-user="'+escapeHtml(item.username)+'" data-reason="TIDAK ADA KETERANGAN">Tidak Ada Keterangan</button>'+
 '</div><p id="reason-'+escapeHtml(item.username)+'" class="text-xs text-slate-500 mt-2">Belum dipilih</p></div>').join('');
 document.querySelectorAll('.reasonBtn').forEach(btn=>btn.onclick=()=>{
 const item=state.students.get(btn.dataset.user);
@@ -215,14 +216,37 @@ $('confirmBtn').disabled=pending>0;
 function closeConfirmation(){ $('confirmModal').classList.add('hidden'); }
 $('finishBtn').onclick=openConfirmation;
 $('closeConfirm').onclick=closeConfirmation;
-$('confirmBtn').onclick=()=>{
+$('confirmBtn').onclick=async()=>{
 const pending=state.items.filter(x=>x.status==='BELUM DIVERIFIKASI').length;
 if(pending)return;
-$('confirmResult').textContent='Semua status sudah dikonfirmasi. Data siap dikirim ke laporan.';
+const btn=$('confirmBtn');
+btn.disabled=true;
+btn.textContent='Mengirim...';
+$('confirmResult').textContent='';
+try{
+const session=JSON.parse(sessionStorage.getItem('bionestSession')||localStorage.getItem('bionestSession')||'null');
+const now=new Date();
+const payload={
+class:'XI.B1',
+date:now.toLocaleDateString('id-ID'),
+time:now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),
+operator:session?.full_name||session?.username||'Operator',
+students:state.items.map(x=>({absen:x.absen,full_name:x.full_name,username:x.username,status:x.status,note:x.note||''}))
+};
+const response=await fetch('/api/collection',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+const result=await response.json().catch(()=>({}));
+if(!response.ok)throw new Error(result.error||'Gagal mengirim laporan.');
+$('confirmResult').textContent='✅ Laporan terkirim ke antrean WhatsApp. Bot akan mengirimkannya.';
 $('confirmResult').className='text-sm text-center mt-3 text-emerald-300';
-$('confirmBtn').textContent='Selesai ✓';
-$('confirmBtn').disabled=true;
+btn.textContent='Terkirim ✓';
 renderList();
+}catch(error){
+console.error(error);
+$('confirmResult').textContent='❌ '+(error.message||'Gagal mengirim laporan.');
+$('confirmResult').className='text-sm text-center mt-3 text-red-300';
+btn.disabled=false;
+btn.textContent='Konfirmasi';
+}
 };
 
 async function startScanner(){
