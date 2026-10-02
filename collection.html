@@ -90,7 +90,7 @@ async function loadStudents(){
 const r=await fetch('data/students-public.json',{cache:'no-store'});
 if(!r.ok)throw new Error('Data siswa tidak dapat dimuat.');
 const d=await r.json();
-state.items=(d.items||[]).map(x=>({...x,status:'BELUM DIVERIFIKASI',note:''}));
+state.items=(d.items||[]).sort((a,b)=>String(a.full_name||'').localeCompare(String(b.full_name||''),'id',{sensitivity:'base'})).map((x,i)=>({...x,absen:i+1,status:'BELUM DIVERIFIKASI',note:''}));
 state.students.clear();
 state.items.forEach(x=>state.students.set(x.username,x));
 $('studentCount').textContent=state.items.length;
@@ -111,7 +111,7 @@ list.innerHTML=state.items.map((item,index)=>{
 const verified=item.status==='TERVERIFIKASI';
 return '<div id="student-'+escapeHtml(item.username)+'" class="p-4 rounded-2xl border '+(verified?'border-emerald-500/20':'border-slate-700')+' bg-slate-950/40 transition">'+
 '<div class="flex items-start justify-between gap-3"><div class="min-w-0 flex items-start gap-3">'+
-'<div class="w-8 h-8 shrink-0 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400">'+(index+1)+'</div>'+
+'<div class="w-10 h-8 shrink-0 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400">'+String(item.absen).padStart(2,'0')+'</div>'+
 '<div class="min-w-0"><p class="font-bold truncate">'+escapeHtml(item.full_name)+'</p><p class="text-xs text-slate-500 mt-1">@'+escapeHtml(item.username)+'</p></div></div>'+
 '<button class="editBtn px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-bold">Edit</button></div>'+
 '<div class="mt-3 flex items-center justify-between gap-2"><span class="px-2.5 py-1 rounded-lg border text-xs font-bold '+statusClass(item.status)+'">'+escapeHtml(item.status)+'</span>'+
