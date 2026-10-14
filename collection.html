@@ -70,6 +70,10 @@ Selesai Pengumpulan
 <button id="confirmBtn" class="mt-4 w-full py-4 rounded-2xl bg-gradient-to-r from-techCyan to-techBlue text-techDark font-black disabled:opacity-40 disabled:cursor-not-allowed">
 Konfirmasi
 </button>
+<button id="copyReportBtn" class="hidden mt-3 w-full py-3 rounded-2xl border border-cyan-400/40 bg-cyan-950/40 text-cyan-200 font-bold hover:bg-cyan-950/70 transition">
+Salin Data Laporan
+</button>
+<p id="copyReportHint" class="hidden text-xs text-center text-slate-400 mt-2">Data laporan siap ditempel ke WhatsApp.</p>
 <p id="confirmResult" class="text-sm text-center mt-3"></p>
 </div>
 </div>
@@ -181,11 +185,63 @@ updateConfirmProgress();$('confirmModal').classList.remove('hidden');
 function updateConfirmProgress(){const pending=state.items.filter(x=>x.status==='BELUM DIVERIFIKASI').length;$('confirmProgress').textContent=pending+' siswa belum dikonfirmasi';$('confirmBtn').disabled=pending>0;}
 function closeConfirmation(){$('confirmModal').classList.add('hidden');}
 $('finishBtn').onclick=openConfirmation;$('closeConfirm').onclick=closeConfirmation;
+function buildReportText(){
+const now=new Date();
+const date=now.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+const time=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+const groups=[
+{label:'TERVERIFIKASI',items:state.items.filter(x=>x.status==='TERVERIFIKASI')},
+{label:'TIDAK BAWA HP',items:state.items.filter(x=>x.status==='TIDAK BAWA HP')},
+{label:'TIDAK MASUK',items:state.items.filter(x=>x.status==='TIDAK MASUK')},
+{label:'TIDAK ADA KETERANGAN',items:state.items.filter(x=>x.status==='TIDAK ADA KETERANGAN')},
+{label:'STATUS LAINNYA',items:state.items.filter(x=>!['TERVERIFIKASI','TIDAK BAWA HP','TIDAK MASUK','TIDAK ADA KETERANGAN'].includes(x.status))}
+];
+const lines=[
+'📋 *LAPORAN PENGUMPULAN HP XI.B1*',
+'Tanggal: '+date,
+'Waktu: '+time,
+'Operator: '+(auth().operator||'Operator'),
+'',
+'Total siswa: '+state.items.length,
+'Terverifikasi: '+groups[0].items.length,
+'Tidak bawa HP: '+groups[1].items.length,
+'Tidak masuk: '+groups[2].items.length,
+'Tidak ada keterangan: '+groups[3].items.length
+];
+for(const group of groups){
+if(!group.items.length)continue;
+lines.push('', '*'+group.label+' ('+group.items.length+')*');
+for(const item of group.items){
+lines.push(String(item.absen).padStart(2,'0')+'. '+item.full_name+(item.note?' | Catatan: '+item.note:''));
+}
+}
+lines.push('','Status: SELESAI');
+return lines.join('\n');
+}
+$('copyReportBtn').onclick=async()=>{
+const btn=$('copyReportBtn');
+const text=buildReportText();
+try{
+if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);}
+else{
+const area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();
+const ok=document.execCommand('copy');area.remove();if(!ok)throw new Error('Clipboard tidak tersedia.');
+}
+btn.textContent='✓ Data Berhasil Disalin';
+$('copyReportHint').textContent='Buka WhatsApp, lalu tempelkan laporan ini ke chat tujuan.';
+$('copyReportHint').classList.remove('hidden');
+setTimeout(()=>btn.textContent='Salin Data Laporan',2200);
+}catch(e){
+$('copyReportHint').textContent='Gagal menyalin otomatis. Coba buka halaman lewat browser dan izinkan akses clipboard.';
+$('copyReportHint').classList.remove('hidden');
+}
+};
 $('confirmBtn').onclick=async()=>{
 if(state.items.some(x=>x.status==='BELUM DIVERIFIKASI'))return;
 const btn=$('confirmBtn');btn.disabled=true;btn.textContent='Mengirim...';
 try{
 const a=auth();await apiPost('save',{students:state.items,status:'SELESAI',operator:a.operator});
+$('copyReportBtn').classList.remove('hidden');$('copyReportHint').classList.remove('hidden');
 const now=new Date();const rr=await fetch('/api/collection',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'report',...a,class:'XI.B1',date:now.toLocaleDateString('id-ID'),time:now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),operator:a.operator,students:state.items})});
 const rd=await rr.json().catch(()=>({}));if(!rr.ok)throw new Error(rd.error||'Data tersimpan, tetapi laporan gagal dibuat.');
 state.dataStatus='SELESAI';$('confirmResult').textContent='✅ Pengumpulan selesai. Laporan masuk antrean WhatsApp.';$('confirmResult').className='text-sm text-center mt-3 text-emerald-300';btn.textContent='Selesai ✓';renderList();$('dayInfo').textContent='Data: '+new Date().toLocaleDateString('id-ID')+' • SELESAI • '+a.operator;
