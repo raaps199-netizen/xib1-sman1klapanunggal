@@ -877,7 +877,6 @@ document.querySelectorAll('.mobile-nav-link').forEach(link => {
 
 lucide.createIcons();
 
-
 /* Dynamic Gallery */
 const galleryGrid = document.getElementById('galleryGrid');
 const galleryLoading = document.getElementById('galleryLoading');
