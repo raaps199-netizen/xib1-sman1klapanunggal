@@ -26,9 +26,8 @@
     }
     </script>
 
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
+
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = {
@@ -48,8 +47,6 @@
 </head>
 <body class="bg-techDark text-slate-100 font-sans antialiased bg-grid relative overflow-x-hidden">
 
-
-    <!-- MEMBER / VISITOR GATE -->
     <div id="memberGate" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
         <div class="w-full max-w-md rounded-3xl bg-techCard border border-cyan-500/30 p-7 text-center shadow-2xl shadow-cyan-950/40">
             <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-cyan-950/70 border border-techCyan/30 flex items-center justify-center">
@@ -70,7 +67,6 @@
         </div>
     </div>
 
-    <!-- NAVBAR -->
     <nav class="fixed top-0 w-full z-50 bg-techDark/80 backdrop-blur-md border-b border-cyan-500/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -79,7 +75,7 @@
                     XI.B1
                 </a>
             </div>
-            
+
             <div class="hidden md:flex items-center gap-6 font-medium text-sm">
                 <a href="#home" class="hover:text-techCyan transition">Home</a>
                 <a href="#struktur" class="hover:text-techCyan transition">Struktur</a>
@@ -101,7 +97,6 @@
                     <i data-lucide="menu" id="mobileMenuIcon"></i>
                 </button>
 
-                <!-- Interaktif: Audio Toggle -->
                 <button id="bgmToggle" class="p-2 rounded-full border border-cyan-500/30 text-techCyan hover:bg-cyan-500/10 transition">
                     <i data-lucide="volume-x" id="bgmIcon"></i>
                 </button>
@@ -126,7 +121,6 @@
         </div>
     </nav>
 
-    <!-- HERO SECTION -->
     <section id="home" class="hero-section pt-16 flex items-center justify-center relative px-4 overflow-hidden">
         <div class="hero-overlay absolute inset-0"></div>
         <div class="hero-content text-center max-w-4xl z-10 relative">
@@ -161,7 +155,6 @@
                 </a>
             </div>
 
-            <!-- Interaktif: Countdown to Graduation -->
             <div class="mt-10 p-4 rounded-xl bg-black/25 border border-white/15 backdrop-blur-md inline-block">
                 <p class="text-xs text-white/60 mb-2 uppercase tracking-wider">Estimasi Menuju Kelulusan</p>
                 <div class="flex gap-4 text-center justify-center font-mono text-techCyan font-bold" id="countdown">
@@ -174,7 +167,6 @@
         </div>
     </section>
 
-    <!-- MEMBER PROFILE OVERVIEW -->
     <section id="memberOverview" class="hidden py-8 max-w-6xl mx-auto px-4">
         <div class="rounded-3xl bg-techCard border border-cyan-500/20 overflow-hidden shadow-2xl shadow-cyan-950/20">
             <div class="h-1 bg-gradient-to-r from-techCyan via-techBlue to-techCyan"></div>
@@ -246,7 +238,6 @@
         </div>
     </section>
 
-    <!-- XI.B1 TODAY -->
     <section id="today" class="py-16 max-w-6xl mx-auto px-4">
         <div class="flex items-center justify-between gap-4 mb-6">
             <div>
@@ -277,19 +268,17 @@
         </div>
     </section>
 
-    <!-- STATISTIK KELAS -->
     <section id="statistik" class="py-12 max-w-7xl mx-auto px-4">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="classStats"></div>
     </section>
 
-    <!-- STRUKTUR ORGANISASI -->
     <section id="struktur" class="py-20 max-w-7xl mx-auto px-4">
         <h2 class="text-3xl font-bold text-center mb-12 flex items-center justify-center gap-2">
             <i data-lucide="shield" class="text-techCyan"></i> Struktur Organisasi
         </h2>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Wali Kelas -->
+
             <div class="md:col-span-3 max-w-md mx-auto w-full p-6 rounded-2xl bg-techCard border border-cyan-500/30 text-center tech-glow">
                 <div class="w-24 h-24 mx-auto rounded-full bg-slate-700 mb-4 border-2 border-techCyan flex items-center justify-center text-3xl font-bold">
                     👨‍🏫
@@ -298,7 +287,6 @@
                 <p class="text-xs text-slate-400">Wali Kelas XI.B1</p>
             </div>
 
-            <!-- Ketua & Wakil -->
             <div class="p-6 rounded-2xl bg-techCard border border-slate-700 text-center hover:border-techCyan/50 transition">
                 <h4 class="text-sm font-semibold text-slate-400 uppercase">Ketua Kelas</h4>
                 <p class="text-lg font-bold text-white mt-1">M. Daffa Azalia</p>
@@ -326,7 +314,6 @@
         </div>
     </section>
 
-    <!-- DAFTAR ANGGOTA (INTERAKTIF MODAL) -->
     <section id="siswa" class="py-20 bg-slate-900/50">
         <div class="max-w-7xl mx-auto px-4">
             <h2 class="text-3xl font-bold text-center mb-4 flex items-center justify-center gap-2">
@@ -343,18 +330,16 @@
             <p id="studentSearchInfo" class="text-center text-xs text-slate-500 mb-6"></p>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4" id="studentGrid">
-                <!-- Data siswa akan di-render via JavaScript -->
+
             </div>
         </div>
     </section>
 
-    <!-- JADWAL PELAJARAN (INTERAKTIF TAB) -->
     <section id="jadwal" class="py-20 max-w-7xl mx-auto px-4">
         <h2 class="text-3xl font-bold text-center mb-8 flex items-center justify-center gap-2">
             <i data-lucide="calendar" class="text-techCyan"></i> Jadwal Mapel & Piket
         </h2>
 
-        <!-- Tab Hari -->
         <div class="flex flex-wrap justify-center gap-2 mb-8" id="dayTabs">
             <button data-day="Senin" class="tab-btn px-4 py-2 rounded-lg bg-techCyan text-techDark font-bold transition">Senin</button>
             <button data-day="Selasa" class="tab-btn px-4 py-2 rounded-lg bg-techCard text-slate-300 hover:text-white transition">Selasa</button>
@@ -363,26 +348,22 @@
             <button data-day="Jumat" class="tab-btn px-4 py-2 rounded-lg bg-techCard text-slate-300 hover:text-white transition">Jumat</button>
         </div>
 
-        <!-- Jadwal Content -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <div class="p-6 rounded-2xl bg-techCard border border-cyan-500/20">
                 <h3 class="font-bold text-techCyan mb-4 flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4"></i> Pelajaran</h3>
                 <ul id="scheduleList" class="space-y-3 text-sm">
-                    <!-- Dynamic -->
+
                 </ul>
             </div>
             <div class="p-6 rounded-2xl bg-techCard border border-cyan-500/20">
                 <h3 class="font-bold text-techCyan mb-4 flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4"></i> Petugas Piket</h3>
                 <div id="piketList" class="flex flex-wrap gap-2">
-                    <!-- Dynamic -->
+
                 </div>
             </div>
         </div>
     </section>
 
-
-
-    <!-- GALLERY -->
     <section id="gallery" class="py-20 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-10">
@@ -416,7 +397,6 @@
         </div>
     </section>
 
-    <!-- GALLERY LIGHTBOX -->
     <div id="galleryLightbox" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/90 backdrop-blur-md p-4">
         <button id="galleryClose" class="gallery-control absolute top-5 right-5" aria-label="Tutup gallery">
             <i data-lucide="x"></i>
@@ -438,7 +418,6 @@
         </div>
     </div>
 
-    <!-- PAPAN PENGUMUMAN -->
     <section id="pengumuman" class="py-20 max-w-5xl mx-auto px-4">
         <h2 class="text-3xl font-bold text-center mb-8 flex items-center justify-center gap-2">
             <i data-lucide="bell" class="text-techCyan"></i> Information Center
@@ -453,7 +432,6 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
     <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-500">
         <p>© 2026 XI.B1 SMAN 1 Klapanunggal. All rights reserved.</p>
         <div class="flex justify-center gap-4 mt-3">
@@ -469,7 +447,6 @@
         <p class="mt-2">Designed with Tech & Passion.</p>
     </footer>
 
-    <!-- MODAL POPUP DETAIL SISWA -->
     <div id="studentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-techCard border border-techCyan/50 rounded-2xl max-w-sm w-full p-6 relative tech-glow">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
@@ -527,12 +504,10 @@
         </div>
     </div>
 
-    <!-- AUDIO BACKSOUND AMBIENT (OPTIONAL) -->
     <audio id="bgmAudio" loop>
         <source src="https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script src="auth.js"></script>
     <script src="script.js"></script>
     <script src="qr.js"></script>
