@@ -58,7 +58,6 @@ export default async function handler(req, res) {
 
             const nowJakarta = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
 
-            // Kas kelas: Rp10.000 per bulan, mulai Agustus 2026.
             const kasStartDate = new Date('2026-08-01T00:00:00+07:00');
             const monthCursor = new Date(kasStartDate);
             const currentMonth = new Date(nowJakarta.getFullYear(), nowJakarta.getMonth(), 1);
@@ -74,7 +73,6 @@ export default async function handler(req, res) {
             const totalIncome = totalKas + totalPoe;
             const totalExpense = expenses.reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-            // Poe Ibu dihitung Rp1.000 per hari sekolah, mulai Senin pertama Agustus 2026.
             const poeStartDate = new Date('2026-08-03T00:00:00+07:00');
             const dayOnly = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
             let poeDueDays = 0;
