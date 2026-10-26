@@ -88,7 +88,6 @@ export default async function handler(req, res) {
         if (req.method === 'GET') {
             const notify = String(req.query?.notify || '').trim();
 
-            // Jalur khusus bot: data pelanggaran baru tidak dibuka ke publik.
             if (notify === '1') {
                 const auth = String(req.headers.authorization || '');
                 const expected = process.env.BOT_API_SECRET;
