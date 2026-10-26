@@ -16,7 +16,6 @@ export default async function handler(req, res) {
             ...(body.updates && typeof body.updates === 'object' ? body.updates : {})
         };
 
-        // Profile picture upload uses the same authenticated profile endpoint.
         if (body.action === 'profile_picture') {
             const image = String(body.image || '');
             if (image && !image.startsWith('data:image/')) {
@@ -139,8 +138,6 @@ export default async function handler(req, res) {
             });
         }
 
-        // Support both the current payload ({ updates: {...} })
-        // and older cached clients that send editable fields at the top level.
         for (const key of ['quote', 'bio', 'hobby', 'favourite_subject', 'instagram']) {
             if (Object.prototype.hasOwnProperty.call(body, key)) {
                 updates[key] = body[key];
