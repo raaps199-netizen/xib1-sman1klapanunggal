@@ -77,7 +77,7 @@ function getRoster(day,date){
 }
 function formatList(icon,title,names){return icon+" *"+title+":*\n"+names.map((name,i)=>"  "+(i+1)+". "+name).join("\n")+"\n";}
 function render(){
- const now=jakartaNow(),day=dayData[selectedDay],roster=getRoster(selectedDay,now);
+ const today=jakartaNow(); const now=new Date(today.getFullYear(),today.getMonth(),today.getDate()); const currentWeekday=now.getDay()||7; let offset=selectedDay-currentWeekday; if(offset<0) offset+=7; now.setDate(now.getDate()+offset); const day=dayData[selectedDay],roster=getRoster(selectedDay,now);
  document.getElementById("dateLabel").textContent=weekdays[now.getDay()]+", "+now.toLocaleDateString("id-ID",{timeZone:"Asia/Jakarta",day:"numeric",month:"long",year:"numeric"})+" · WIB";
  let html='<div class="rounded-2xl border border-cyan-500/20 bg-slate-950/50 p-4 sm:p-5"><h2 class="text-lg font-black text-cyan-200">📅 Jadwal Pelajaran — Hari '+day.name.toUpperCase()+'</h2><div class="mt-3 grid sm:grid-cols-2 gap-2">'+day.subjects.map((s,i)=>'<div class="rounded-xl bg-slate-900 px-3 py-2 text-sm"><span class="text-slate-500">Jam ke-'+(i+1)+':</span> <span class="font-semibold">'+s+'</span></div>').join("")+'</div></div>';
  html+='<div><h2 class="font-black text-lg mb-3">🧹 Pembagian Piket Kelas</h2><div class="grid sm:grid-cols-2 gap-3">'+roster.tasks.map(t=>'<article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4"><h3 class="font-bold">'+t.icon+' '+t.title+'</h3><ol class="list-decimal pl-6 mt-2 text-slate-300 space-y-1">'+t.names.map(n=>'<li>'+n+'</li>').join("")+'</ol></article>').join("")+'</div></div>';
