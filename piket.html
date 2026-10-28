@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1120">
+<title>Jadwal Piket | Bionest One XI.B1</title>
+<meta name="description" content="Pembagian piket harian XI.B1 dengan pengacakan otomatis setiap hari dan format siap salin ke WhatsApp.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-techDark text-slate-100 min-h-screen bg-grid">
+<nav class="sticky top-0 z-20 bg-techDark/90 backdrop-blur border-b border-cyan-500/20">
+<div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+<a href="index.html" class="font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-techCyan to-techBlue">XI.B1 · Bionest One</a>
+<a href="index.html" class="text-sm text-cyan-300 hover:text-white">← Kembali</a>
+</div>
+</nav>
+<main class="max-w-5xl mx-auto px-4 py-8 sm:py-12">
+<header class="mb-8">
+<p class="text-xs uppercase tracking-[.25em] text-cyan-300 font-mono mb-3">XI.B1 · Daily Duty</p>
+<h1 class="text-3xl sm:text-5xl font-black tracking-tight">Pembagian Piket</h1>
+<p class="text-slate-400 mt-3 max-w-2xl">Daftar tugas diacak otomatis berdasarkan tanggal Indonesia. Hasil hari ini tetap sama meski halaman dibuka ulang, lalu berganti saat pukul 00.00 WIB.</p>
+</header>
+<section class="rounded-3xl border border-cyan-500/20 bg-slate-900/80 p-5 sm:p-7 shadow-xl shadow-cyan-950/20">
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+<div>
+<label for="daySelect" class="block text-xs uppercase tracking-widest text-slate-500 mb-2">Pilih hari</label>
+<select id="daySelect" class="w-full sm:w-52 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-cyan-400">
+<option value="1">Senin</option><option value="2">Selasa</option><option value="3">Rabu</option><option value="4">Kamis</option><option value="5">Jumat</option>
+</select>
+</div>
+<div id="dateLabel" class="text-sm text-slate-400"></div>
+</div>
+<div id="roster" class="space-y-6"></div>
+<div class="mt-7 flex flex-col sm:flex-row gap-3">
+<button id="copyBtn" class="inline-flex justify-center items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-400 px-5 py-3 font-bold text-slate-950 hover:opacity-90 transition"><i data-lucide="copy" class="w-4 h-4"></i> Salin format WhatsApp</button>
+<button id="todayBtn" class="inline-flex justify-center items-center gap-2 rounded-xl border border-slate-700 px-5 py-3 font-semibold text-slate-200 hover:border-cyan-400 transition">Kembali ke hari ini</button>
+</div>
+<p id="copyStatus" role="status" class="text-sm text-emerald-300 mt-3 min-h-5"></p>
+</section>
+<p class="text-xs text-slate-600 mt-5">Pengacakan memakai daftar anggota dan pembagian tugas dari perintah .jadwal di bot WhatsApp. Pilihan hari hanya untuk melihat hasil hari tersebut, bukan mengubah tanggal sistem.</p>
+</main>
+<script>
+const dayData = {
+  1: {name:"Senin", key:"jsn", members:["Khafi","Arjasena","Orlen","Avisha","Fareal","Andrian","Sadam","Wisnu","Tania","Jauharah"], subjects:["MTK TL","Inggris","Fisika"]},
+  2: {name:"Selasa", key:"jsl", members:["Keyla","Mikaela","Ridho","Rizky","Zyella","Nishar","Alvian","Brella","Fathian","Reno"], subjects:["Fisika","Sunda","Informatika","PAI"]},
+  3: {name:"Rabu", key:"jrb", members:["Lutfan","Rafif","Kevin","Arya","Al Mira","Elang","Dzaki N.","Aisahra","Satria P","Putri"], subjects:["PKN","PKWU","Kimia","B. Indo","SBK"]},
+  4: {name:"Kamis", key:"jkm", members:["Fahri","Rifqi","Fadhil","Yusuf","Kirana","Effan","Dzaki","Aura","Reva","Surya"], subjects:["Kimia","Penjas","Sejarah","MTK U"]},
+  5: {name:"Jumat", key:"jjt", members:["Dhirgam","Yoga","Dude","Daffa","Irfan","Ara","Anissa","Meli","Gibran","Salsabila"], subjects:["MTK TL","MTK U","BK","B. Indo","Informatika"]}
+};
+const weekdays=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+let selectedDay=1, currentMessage="";
+function jakartaNow(){return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Jakarta"}));}
+function dateKey(date){return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");}
+function seededRandom(seed){let state=seed>>>0;return function(){state+=0x6D2B79F5;let t=state;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;};}
+function hashSeed(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function shuffle(items,seed){const arr=[...items],rand=seededRandom(seed);for(let i=arr.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function getRoster(day,date){
+ const data=dayData[day], seed=hashSeed(dateKey(date)+"|"+data.key);
+ const clean=shuffle(data.members,seed), mbg=shuffle(data.members,seed^0xA5A5A5A5), hp=shuffle(data.members,seed^0x39B1);
+ const tasks=[
+  {icon:"🧹",title:"Menyapu (2 Orang)",names:clean.slice(0,2)},
+  {icon:"🧽",title:"Mengepel (2 Orang)",names:clean.slice(2,4)},
+  {icon:"🪟",title:"Mengelap Kaca (2 Orang)",names:clean.slice(4,6)},
+  {icon:"🪑",title:"Mengangkat Bangku (2 Orang)",names:clean.slice(6,8)},
+  {icon:"🗑️",title:"Cek Kolong & Buang Sampah (1 Orang)",names:clean.slice(8,9)},
+  {icon:"🖊️",title:"Isi Spidol & Hapus Papan (1 Orang)",names:clean.slice(9,10)}
+ ];
+ const special=[
+  {icon:"🚚",title:"Tim Pengambil MBG (5 Orang)",names:mbg.slice(0,5)},
+  {icon:"🔄",title:"Tim Pengembali MBG (5 Orang)",names:mbg.slice(5,10)},
+  {icon:"📱",title:"Tim Kumpul HP ke Ruang Guru (2 Orang)",names:hp.slice(0,2)}
+ ];
+ return {data,tasks,special};
+}
+function formatList(icon,title,names){return icon+" *"+title+":*\n"+names.map((name,i)=>"  "+(i+1)+". "+name).join("\n")+"\n";}
+function render(){
+ const now=jakartaNow(),day=dayData[selectedDay],roster=getRoster(selectedDay,now);
+ document.getElementById("dateLabel").textContent=weekdays[now.getDay()]+", "+now.toLocaleDateString("id-ID",{timeZone:"Asia/Jakarta",day:"numeric",month:"long",year:"numeric"})+" · WIB";
+ let html='<div class="rounded-2xl border border-cyan-500/20 bg-slate-950/50 p-4 sm:p-5"><h2 class="text-lg font-black text-cyan-200">📅 Jadwal Pelajaran — Hari '+day.name.toUpperCase()+'</h2><div class="mt-3 grid sm:grid-cols-2 gap-2">'+day.subjects.map((s,i)=>'<div class="rounded-xl bg-slate-900 px-3 py-2 text-sm"><span class="text-slate-500">Jam ke-'+(i+1)+':</span> <span class="font-semibold">'+s+'</span></div>').join("")+'</div></div>';
+ html+='<div><h2 class="font-black text-lg mb-3">🧹 Pembagian Piket Kelas</h2><div class="grid sm:grid-cols-2 gap-3">'+roster.tasks.map(t=>'<article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4"><h3 class="font-bold">'+t.icon+' '+t.title+'</h3><ol class="list-decimal pl-6 mt-2 text-slate-300 space-y-1">'+t.names.map(n=>'<li>'+n+'</li>').join("")+'</ol></article>').join("")+'</div></div>';
+ html+='<div><h2 class="font-black text-lg mb-3">🍱 Pembagian Tugas Khusus</h2><div class="grid sm:grid-cols-2 gap-3">'+roster.special.map(t=>'<article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4"><h3 class="font-bold">'+t.icon+' '+t.title+'</h3><ol class="list-decimal pl-6 mt-2 text-slate-300 space-y-1">'+t.names.map(n=>'<li>'+n+'</li>').join("")+'</ol></article>').join("")+'</div></div>';
+ html+='<p class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-emerald-200">✨ Catatan: Diharapkan teman-teman yang bertugas bisa menjalankan kewajibannya tepat waktu ya. Semangat belajar! 🤝</p>';
+ document.getElementById("roster").innerHTML=html;
+ currentMessage='📅 *JADWAL PELAJARAN — HARI '+day.name.toUpperCase()+'*\n━━━━━━━━━━━━━━━━━━━━━━\n\n'+day.subjects.map((s,i)=>'📖 *Jam ke-'+(i+1)+':* '+s).join("\n")+'\n\n━━━━━━━━━━━━━━━━━━━━━━\n🧹 *PEMBAGIAN PIKET KELAS ('+day.name.toUpperCase()+')*\n━━━━━━━━━━━━━━━━━━━━━━\n\n'+roster.tasks.map(t=>formatList(t.icon,t.title,t.names)).join("\n")+'\n━━━━━━━━━━━━━━━━━━━━━━\n🍱 *PEMBAGIAN TUGAS KHUSUS ('+day.name.toUpperCase()+')*\n━━━━━━━━━━━━━━━━━━━━━━\n\n'+roster.special.map(t=>formatList(t.icon,t.title,t.names)).join("\n")+'\n✨ *Catatan:* Diharapkan teman-teman yang bertugas bisa menjalankan kewajibannya tepat waktu ya. Semangat belajar! 🤝';
+ lucide.createIcons();
+}
+function todayDay(){const d=jakartaNow().getDay();return d>=1&&d<=5?d:1;}
+document.getElementById("daySelect").addEventListener("change",e=>{selectedDay=Number(e.target.value);render();document.getElementById("copyStatus").textContent="";});
+document.getElementById("todayBtn").addEventListener("click",()=>{selectedDay=todayDay();document.getElementById("daySelect").value=String(selectedDay);render();});
+document.getElementById("copyBtn").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(currentMessage);document.getElementById("copyStatus").textContent="Berhasil disalin, tinggal tempel ke WhatsApp."; }catch(e){const area=document.createElement("textarea");area.value=currentMessage;area.style.position="fixed";area.style.opacity="0";document.body.appendChild(area);area.select();const ok=document.execCommand("copy");area.remove();document.getElementById("copyStatus").textContent=ok?"Berhasil disalin, tinggal tempel ke WhatsApp.":"Gagal menyalin. Coba buka lewat HTTPS lalu salin lagi."; }});
+selectedDay=todayDay();document.getElementById("daySelect").value=String(selectedDay);render();
+setInterval(()=>{const fresh=todayDay();if(fresh!==selectedDay){selectedDay=fresh;document.getElementById("daySelect").value=String(fresh);render();}},15000);
+</script>
+</body>
+</html>
